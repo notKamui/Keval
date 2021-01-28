@@ -19,6 +19,6 @@ class ASTTest {
         val op3 = Operator['-']!!
         assertEquals(op, Operator.MOD)
         assertNull(op2)
-        assertTrue(op3.symbol == '-' && op3.precedence == 2 && op3.apply(5.0, 2.0) == 3.0)
+        assertTrue(op3.symbol == '-' && op3.precedence == 2 && op3.isLeftAssociative && op3.apply(5.0, 2.0) == 3.0)
     }
 }

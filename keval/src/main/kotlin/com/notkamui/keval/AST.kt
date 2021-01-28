@@ -49,20 +49,22 @@ internal data class ValueNode(
  *
  * @property symbol is the symbol of the operator
  * @property precedence is the priority of the operator
+ * @property isLeftAssociative defines if the operator is left associative (false if right associative)
  * @property apply is the function linked to the operator
  * @constructor Creates an Operator type
  */
 internal enum class Operator(
     val symbol: Char,
     val precedence: Int,
+    val isLeftAssociative: Boolean,
     val apply: (Double, Double) -> Double
 ) {
-    ADD('+', 2, { a, b -> a + b }),
-    SUB('-', 2, { a, b -> a - b }),
-    MUL('*', 3, { a, b -> a * b }),
-    DIV('/', 3, { a, b -> a / b }),
-    MOD('%', 3, { a, b -> a % b }),
-    EXP('^', 4, { a, b -> a.pow(b) });
+    ADD('+', 2, true, { a, b -> a + b }),
+    SUB('-', 2, true, { a, b -> a - b }),
+    MUL('*', 3, true, { a, b -> a * b }),
+    DIV('/', 3, true, { a, b -> a / b }),
+    MOD('%', 3, true, { a, b -> a % b }),
+    POW('^', 4, false, { a, b -> a.pow(b) });
 
     companion object {
         /**
