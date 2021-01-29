@@ -17,7 +17,8 @@ class ShuntingYardTest {
         assertFailsWith<KevalInvalidExpressionException> {
             "((3+1) - 2".keval()
         }
-
-        println("(3+1) / 0".keval())
+        assertFailsWith<KevalZeroDivisionException> {
+            "(3+1) / 0".keval()
+        }
     }
 }
