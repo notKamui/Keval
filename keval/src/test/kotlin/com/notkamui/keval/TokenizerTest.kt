@@ -4,7 +4,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+/**
+ * Tests on the Tokenizer
+ */
 class TokenizerTest {
+
+    /**
+     * Tests for String.tokenize()
+     */
     @Test
     fun parseString() {
         val tokens = "((34+8)/3)+3.3*(5+2)%2^6".tokenize()

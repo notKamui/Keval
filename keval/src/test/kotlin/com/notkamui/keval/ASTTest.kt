@@ -5,13 +5,22 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+/**
+ * Tests on AbstractSyntaxTree
+ */
 class ASTTest {
+    /**
+     * Tests Node.eval()
+     */
     @Test
     fun simpleEvalTest() {
         val ast: Node = OperatorNode(ValueNode(3.0), Operator.ADD, ValueNode(2.0))
         assertEquals(ast.eval(), 5.0)
     }
 
+    /**
+     * Tests the get operator on enum Operator
+     */
     @Test
     fun operatorGetterTest() {
         val fake = Operator['a']
@@ -35,6 +44,9 @@ class ASTTest {
         }
     }
 
+    /**
+     * Checks if all symbols are present
+     */
     @Test
     fun symbolsTest() {
         assertTrue {
