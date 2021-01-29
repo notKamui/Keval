@@ -4,10 +4,10 @@
  * Gradle build file for Keval
  */
 
-version = "BETA-0.1"
+version = "0.5"
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.20"
+    id("org.jetbrains.kotlin.jvm") version "1.4.21"
     `java-library`
 }
 
