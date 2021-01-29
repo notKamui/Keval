@@ -20,16 +20,16 @@ internal interface Node {
  * An binary operator node
  *
  * @property left is its left child
- * @property operator is the actual operator
+ * @property op is the actual operator
  * @property right is its right child
  * @constructor Creates an operator node
  */
 internal data class OperatorNode(
     private val left: Node,
-    private val operator: Operator,
+    private val op: Operator,
     private val right: Node
 ) : Node {
-    override fun eval(): Double = operator.apply(left.eval(), right.eval())
+    override fun eval(): Double = op.apply(left.eval(), right.eval())
 }
 
 /**
@@ -59,8 +59,8 @@ internal enum class Operator(
     val isLeftAssociative: Boolean,
     val apply: (Double, Double) -> Double
 ) {
-    ADD('+', 2, true, { a, b -> a + b }),
     SUB('-', 2, true, { a, b -> a - b }),
+    ADD('+', 2, true, { a, b -> a + b }),
     MUL('*', 3, true, { a, b -> a * b }),
     DIV('/', 3, true, { a, b -> a / b }),
     MOD('%', 3, true, { a, b -> a % b }),
@@ -74,5 +74,16 @@ internal enum class Operator(
          * @return the corresponding operator (or null)
          */
         operator fun get(symbol: Char): Operator? = values().firstOrNull { it.symbol == symbol }
+
+        fun symbols(): String = values().joinToString("") { it.symbol.toString() }
     }
 }
+
+/**
+ * Invalid Operator Exception
+ *
+ * @property invalidOperator is the given invalid operator
+ * @property position is the token position of said invalid operator in the expression
+ */
+class InvalidOperatorException(val invalidOperator: String, val position: Int) :
+    Exception("Invalid operator: \"$invalidOperator\" at $position")

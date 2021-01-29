@@ -17,8 +17,17 @@ class ASTTest {
         val op = Operator['%']
         val op2 = Operator['a']
         val op3 = Operator['-']!!
-        assertEquals(op, Operator.MOD)
+        assertEquals(Operator.MOD, op)
         assertNull(op2)
         assertTrue(op3.symbol == '-' && op3.precedence == 2 && op3.isLeftAssociative && op3.apply(5.0, 2.0) == 3.0)
+    }
+
+    @Test
+    fun symbolsTest() {
+        assertTrue {
+            Operator.symbols().all {
+                it.toString() in "+-*/%^"
+            }
+        }
     }
 }
