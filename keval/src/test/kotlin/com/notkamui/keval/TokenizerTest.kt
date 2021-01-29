@@ -35,7 +35,7 @@ class TokenizerTest {
             tokens
         )
 
-        val tokens2 = "(3+4)(2-5)".tokenize() // check auto mul
+        val tokens2 = "(3+4 ) (2-5) ".tokenize() // check auto mul
         assertEquals(
             listOf("(", "3", "+", "4", ")", "*", "(", "2", "-", "5", ")"),
             tokens2
@@ -45,8 +45,8 @@ class TokenizerTest {
             try {
                 "(37+4)a+5".tokenize()
                 false
-            } catch (e: InvalidOperatorException) {
-                e.invalidOperator == "a" && e.position == 5
+            } catch (e: KevalInvalidOperatorException) {
+                e.invalidOperator == "a" && e.position == 6 && e.expression == "(37+4)a+5"
             }
         }
     }

@@ -12,6 +12,7 @@ internal interface Node {
      * Evaluates the value of this node
      *
      * @return the value of the node
+     * @throws KevalZeroDivisionException in case of a zero division
      */
     fun eval(): Double
 }
@@ -62,9 +63,23 @@ internal enum class Operator(
     SUB('-', 2, true, { a, b -> a - b }),
     ADD('+', 2, true, { a, b -> a + b }),
     MUL('*', 3, true, { a, b -> a * b }),
-    DIV('/', 3, true, { a, b -> a / b }),
-    MOD('%', 3, true, { a, b -> a % b }),
-    POW('^', 4, false, { a, b -> a.pow(b) });
+    DIV(
+        '/', 3, true,
+        { a, b ->
+            if (b == 0.0) throw KevalZeroDivisionException()
+            a / b
+        }
+    ),
+    MOD(
+        '%', 3, true,
+        { a, b ->
+            if (b == 0.0) throw KevalZeroDivisionException()
+            a % b
+        }
+    ),
+    POW('^', 4, false, { a, b -> a.pow(b) }),
+    LPA('(', 5, true, { _, _ -> 0.0 }),
+    RPA(')', 5, true, { _, _ -> 0.0 });
 
     companion object {
         /**
@@ -75,15 +90,11 @@ internal enum class Operator(
          */
         operator fun get(symbol: Char): Operator? = values().firstOrNull { it.symbol == symbol }
 
+        /**
+         * Get all the symbols in a string
+         *
+         * @return all the operators' symbols
+         */
         fun symbols(): String = values().joinToString("") { it.symbol.toString() }
     }
 }
-
-/**
- * Invalid Operator Exception
- *
- * @property invalidOperator is the given invalid operator
- * @property position is the token position of said invalid operator in the expression
- */
-class InvalidOperatorException(val invalidOperator: String, val position: Int) :
-    Exception("Invalid operator: \"$invalidOperator\" at $position")
