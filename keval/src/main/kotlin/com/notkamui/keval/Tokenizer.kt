@@ -11,12 +11,6 @@ private enum class TokenType {
     RPAREN,
 }
 
-/**
- * Checks if an auto multiplication (*) insert is possible after a given token type
- *
- * @param tokenType is the type of the previous token
- * @return true if auto multiplication is possible, false otherwise
- */
 private fun shouldAutoMul(tokenType: TokenType): Boolean =
     tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
 

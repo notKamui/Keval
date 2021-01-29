@@ -7,6 +7,19 @@ private fun MutableList<Node>.addOperator(operator: Operator): Boolean {
     return true
 }
 
+private fun MutableList<Node>.offerOperator(
+    operatorStack: MutableList<String>,
+    tokensToString: String,
+    currentPos: Int
+) {
+    val op = operatorStack.removeLast()
+    if (!this.addOperator(
+            Operator[op[0]]
+                ?: throw KevalInvalidOperatorException(op, tokensToString, currentPos)
+        )
+    ) throw KevalInvalidExpressionException(tokensToString, currentPos)
+}
+
 private fun checkPrecedence(topOperator: Operator, currentOperator: Operator): Boolean {
     val topIsStronger = topOperator.precedence > currentOperator.precedence
     val isLeftCompatible = topOperator.precedence == currentOperator.precedence && currentOperator.isLeftAssociative
@@ -26,12 +39,7 @@ private fun String.parseAsOperator(
             val topOperator = Operator[operatorStack.last()[0]]
                 ?: throw KevalInvalidOperatorException(operatorStack.last(), tokensToString, currentPos)
             if (checkPrecedence(topOperator, currentOperator) && operatorStack.last() != "(") {
-                val op = operatorStack.removeLast()
-                if (!outputQueue.addOperator(
-                        Operator[op[0]]
-                            ?: throw KevalInvalidOperatorException(op, tokensToString, currentPos)
-                    )
-                ) throw KevalInvalidExpressionException(tokensToString, currentPos)
+                outputQueue.offerOperator(operatorStack, tokensToString, currentPos)
             } else {
                 break
             }
@@ -48,13 +56,9 @@ private fun parseOnRightParenthesis(
 ) {
     try {
         while (operatorStack.last() != "(") {
-            if (operatorStack.isEmpty()) throw KevalInvalidExpressionException(tokensToString, currentPos)
-            val op = operatorStack.removeLast()
-            if (!outputQueue.addOperator(
-                    Operator[op[0]]
-                        ?: throw KevalInvalidOperatorException(op, tokensToString, currentPos)
-                )
-            ) throw KevalInvalidExpressionException(tokensToString, currentPos)
+            if (operatorStack.isEmpty())
+                throw KevalInvalidExpressionException(tokensToString, currentPos)
+            outputQueue.offerOperator(operatorStack, tokensToString, currentPos)
         }
         if (operatorStack.last() == "(") operatorStack.removeLast()
     } catch (e: NoSuchElementException) {
@@ -89,12 +93,7 @@ internal fun String.toAbstractSyntaxTree(): Node {
     }
 
     while (operatorStack.isNotEmpty()) {
-        val op = operatorStack.removeLast()
-        if (!outputQueue.addOperator(
-                Operator[op[0]]
-                    ?: throw KevalInvalidOperatorException(op, tokensToString, currentPos)
-            )
-        ) throw KevalInvalidExpressionException(tokensToString, currentPos)
+        outputQueue.offerOperator(operatorStack, tokensToString, currentPos)
     }
 
     return outputQueue.last()
