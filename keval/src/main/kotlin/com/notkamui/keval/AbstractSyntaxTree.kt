@@ -2,6 +2,7 @@ package com.notkamui.keval
 
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfo
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import kotlin.math.pow
 
@@ -171,7 +172,12 @@ internal data class OperatorNode(
         assert(op.parameterCount == 2) { "Operator must have exactly 2 parameters" }
         assert(op.parameterTypes.all { it == Double::class.java }) { "Operator must act on double" }
         assert(op.returnType == Double::class.java) { "Operator must return double" }
-        return  op.invoke(null, left.eval(), right.eval()) as Double // the first parameter is the class instance, all of our methods are statics, hence it is null
+
+        try {
+            return op.invoke(null, left.eval(), right.eval()) as Double // the first parameter is the class instance, all of our methods are statics, hence it is null
+        } catch (e: InvocationTargetException) {
+            throw e.cause!!
+        }
     }
 }
 
