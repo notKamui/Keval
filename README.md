@@ -8,8 +8,6 @@
 (You may need to watch out using it:
 having to evaluate a string into a number is more often than not a code smell)
 
-Documentation: https://notKamui.github.io/Keval
-
 ## Usage
 
 Keval can evaluate a mathematical expression as a `String` into a `Double` value.
