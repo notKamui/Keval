@@ -1,6 +1,8 @@
 package com.notkamui.keval
 
-private fun MutableList<Node>.addOperator(operator: Operator): Boolean {
+import java.lang.reflect.Method
+
+private fun MutableList<Node>.addOperator(operator: Method): Boolean {
     val right = this.removeLastOrNull() ?: return false
     val left = this.removeLastOrNull() ?: return false
     this.add(OperatorNode(left, operator, right))
@@ -8,36 +10,37 @@ private fun MutableList<Node>.addOperator(operator: Operator): Boolean {
 }
 
 private fun MutableList<Node>.offerOperator(
-    operatorStack: MutableList<String>,
-    tokensToString: String,
-    currentPos: Int
+        operatorStack: MutableList<String>,
+        tokensToString: String,
+        currentPos: Int
 ) {
     val op = operatorStack.removeLast()
-    if (!this.addOperator(
-            Operator[op[0]]
-                ?: throw KevalInvalidOperatorException(op, tokensToString, currentPos)
-        )
+    if (
+            !this.addOperator(
+                    getKevalOperator(op[0])
+                            ?: throw KevalInvalidOperatorException(op, tokensToString, currentPos)
+            )
     ) throw KevalInvalidExpressionException(tokensToString, currentPos)
 }
 
-private fun checkPrecedence(topOperator: Operator, currentOperator: Operator): Boolean {
-    val topIsStronger = topOperator.precedence > currentOperator.precedence
-    val isLeftCompatible = topOperator.precedence == currentOperator.precedence && currentOperator.isLeftAssociative
+private fun checkPrecedence(topOperator: Method, currentOperator: Method): Boolean {
+    val topIsStronger = topOperator.precedence() > currentOperator.precedence()
+    val isLeftCompatible = topOperator.precedence() == currentOperator.precedence() && currentOperator.isLeftAssociative()
     return topIsStronger || isLeftCompatible
 }
 
 private fun String.parseAsOperator(
-    operatorStack: MutableList<String>,
-    outputQueue: MutableList<Node>,
-    tokensToString: String,
-    currentPos: Int
+        operatorStack: MutableList<String>,
+        outputQueue: MutableList<Node>,
+        tokensToString: String,
+        currentPos: Int
 ) {
     if (operatorStack.isNotEmpty()) {
-        val currentOperator = Operator[this[0]]
-            ?: throw KevalInvalidOperatorException(this, tokensToString, currentPos)
+        val currentOperator = getKevalOperator(this[0])
+                ?: throw KevalInvalidOperatorException(this, tokensToString, currentPos)
         while (operatorStack.isNotEmpty()) {
-            val topOperator = Operator[operatorStack.last()[0]]
-                ?: throw KevalInvalidOperatorException(operatorStack.last(), tokensToString, currentPos)
+            val topOperator = getKevalOperator(operatorStack.last()[0])
+                    ?: throw KevalInvalidOperatorException(operatorStack.last(), tokensToString, currentPos)
             if (checkPrecedence(topOperator, currentOperator) && operatorStack.last() != "(") {
                 outputQueue.offerOperator(operatorStack, tokensToString, currentPos)
             } else {
@@ -49,10 +52,10 @@ private fun String.parseAsOperator(
 }
 
 private fun parseOnRightParenthesis(
-    operatorStack: MutableList<String>,
-    outputQueue: MutableList<Node>,
-    tokensToString: String,
-    currentPos: Int
+        operatorStack: MutableList<String>,
+        outputQueue: MutableList<Node>,
+        tokensToString: String,
+        currentPos: Int
 ) {
     try {
         while (operatorStack.last() != "(") {

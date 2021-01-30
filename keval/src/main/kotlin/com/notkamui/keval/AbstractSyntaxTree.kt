@@ -1,6 +1,99 @@
 package com.notkamui.keval
 
+import io.github.classgraph.ClassGraph
+import io.github.classgraph.ClassInfo
+import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
 import kotlin.math.pow
+
+@Target(AnnotationTarget.ANNOTATION_CLASS)
+private annotation class KevalSymbolDefinition
+
+//TODO: change `name` to `String`, it is currently a `Char` to be able to replace the Enum `Operator` easily
+
+@Target(AnnotationTarget.FUNCTION)
+@KevalSymbolDefinition
+annotation class KevalFunction(val name: Char, val argsNum: UInt)
+
+/**
+ * For now support only this.
+ *
+ * @property symbol is the symbol of the operator
+ * @property precedence is the priority of the operator
+ * @property isLeftAssociative defines if the operator is left associative (false if right associative)*/
+@Target(AnnotationTarget.FUNCTION)
+@KevalSymbolDefinition
+annotation class KevalBinaryOperator(
+        val symbol: Char,
+        val precedence: Int,
+        val isLeftAssociative: Boolean
+)
+
+@Target(AnnotationTarget.FUNCTION)
+@KevalSymbolDefinition
+annotation class KevalUnaryOperator(val name: Char)
+
+@Target(AnnotationTarget.FUNCTION)
+@KevalSymbolDefinition
+annotation class KevalConstant(val name: Char)
+
+/**
+ * Gets an operator by its symbol, currently checking only in this package.
+ *
+ * @param symbol is the symbol to get the corresponding operator
+ * @return the corresponding method (or null)
+ */
+fun getKevalOperator(symbol: Char): Method? =
+        ClassGraph()
+                .enableMethodInfo()
+                .enableClassInfo()
+                .enableAnnotationInfo()
+                .acceptPackages(KevalSymbolDefinition::class.java.packageName)
+                .scan()
+                .use {
+                    val binOperatorClass = it.getClassesWithMethodAnnotation("com.notkamui.keval.KevalBinaryOperator")
+                    binOperatorClass.flatMap { classInfo ->
+                        classInfo.methodInfo.asSequence()
+                    }.filter { methodInfo ->
+                        methodInfo.hasAnnotation(KevalBinaryOperator::class.java.name)
+                    }.firstOrNull { methodInfo ->
+                        methodInfo.getAnnotationInfo(KevalBinaryOperator::class.java.name)
+                                .parameterValues
+                                .getValue("symbol") as Char == symbol
+                    }?.loadClassAndGetMethod()
+                }
+
+/**
+ * Get all the symbols in a string
+ *
+ * @return all the operators' symbols
+ */
+fun kevalSymbols(): String = ClassGraph()
+        .enableMethodInfo()
+        .enableClassInfo()
+        .enableAnnotationInfo()
+        .acceptPackages(KevalSymbolDefinition::class.java.packageName)
+        .scan()
+        .use {
+            val binOperatorClass = it.getClassesWithMethodAnnotation("com.notkamui.keval.KevalBinaryOperator")
+            binOperatorClass.flatMap { classInfo ->
+                classInfo.methodInfo.asSequence()
+            }.filter { methodInfo ->
+                methodInfo.hasAnnotation(KevalBinaryOperator::class.java.name)
+            }.fold("") { acc, methodInfo ->
+                acc + methodInfo.getAnnotationInfo(KevalBinaryOperator::class.java.name)
+                        .parameterValues
+                        .getValue("symbol") as Char
+            }
+        }
+
+fun Method.precedence(): Int {
+    return getAnnotation(KevalBinaryOperator::class.java).precedence
+}
+
+fun Method.isLeftAssociative(): Boolean {
+    return getAnnotation(KevalBinaryOperator::class.java).isLeftAssociative
+}
 
 /**
  * Represents a node in an AST and can evaluate its value
@@ -26,11 +119,24 @@ internal interface Node {
  * @constructor Creates an operator node
  */
 internal data class OperatorNode(
-    private val left: Node,
-    private val op: Operator,
-    private val right: Node
+        private val left: Node,
+        private val op: Method,
+        private val right: Node
 ) : Node {
-    override fun eval(): Double = op.apply(left.eval(), right.eval())
+    override fun eval(): Double {
+        // Because we use reflection, there is no type checks, which will make sense when
+        //      we will allow functions(who can take arbitrary number of arguments) and
+        //      unary operators(which take 1 argument)
+        assert(op.parameterCount == 2) { "Operator must have exactly 2 parameters" }
+        assert(op.parameterTypes.all { it == Double::class.java }) { "Operator must act on double" }
+        assert(op.returnType == Double::class.java) { "Operator must return double" }
+
+        try {
+            return op.invoke(null, left.eval(), right.eval()) as Double // the first parameter is the class instance, all of our methods are statics, hence it is null
+        } catch (e: InvocationTargetException) {
+            throw e.cause!!
+        }
+    }
 }
 
 /**
@@ -40,61 +146,7 @@ internal data class OperatorNode(
  * @constructor Creates a value node
  */
 internal data class ValueNode(
-    private val value: Double
+        private val value: Double
 ) : Node {
     override fun eval(): Double = value
-}
-
-/**
- * Represents all operators
- *
- * @property symbol is the symbol of the operator
- * @property precedence is the priority of the operator
- * @property isLeftAssociative defines if the operator is left associative (false if right associative)
- * @property apply is the function linked to the operator
- * @constructor Creates an Operator type
- */
-internal enum class Operator(
-    val symbol: Char,
-    val precedence: Int,
-    val isLeftAssociative: Boolean,
-    val apply: (Double, Double) -> Double
-) {
-    SUB('-', 2, true, { a, b -> a - b }),
-    ADD('+', 2, true, { a, b -> a + b }),
-    MUL('*', 3, true, { a, b -> a * b }),
-    DIV(
-        '/', 3, true,
-        { a, b ->
-            if (b == 0.0) throw KevalZeroDivisionException()
-            a / b
-        }
-    ),
-    MOD(
-        '%', 3, true,
-        { a, b ->
-            if (b == 0.0) throw KevalZeroDivisionException()
-            a % b
-        }
-    ),
-    POW('^', 4, false, { a, b -> a.pow(b) }),
-    LPA('(', 5, true, { _, _ -> 0.0 }),
-    RPA(')', 5, true, { _, _ -> 0.0 });
-
-    companion object {
-        /**
-         * Gets an operator by its symbol
-         *
-         * @param symbol is the symbol to get the corresponding operator
-         * @return the corresponding operator (or null)
-         */
-        operator fun get(symbol: Char): Operator? = values().firstOrNull { it.symbol == symbol }
-
-        /**
-         * Get all the symbols in a string
-         *
-         * @return all the operators' symbols
-         */
-        fun symbols(): String = values().joinToString("") { it.symbol.toString() }
-    }
 }

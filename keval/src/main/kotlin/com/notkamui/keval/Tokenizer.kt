@@ -12,7 +12,7 @@ private enum class TokenType {
 }
 
 private fun shouldAutoMul(tokenType: TokenType): Boolean =
-    tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
+        tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
 
 /**
  * Checks if a string is numeric or not
@@ -31,7 +31,7 @@ internal fun String.isNumeric(): Boolean {
  * @receiver is the string to check
  * @return true if the string is a valid operator, false otherwise
  */
-internal fun String.isOperator(): Boolean = this in Operator.symbols() && this !in "()"
+internal fun String.isOperator(): Boolean = this in kevalSymbols() && this !in "()"
 
 /**
  * Tokenizes a mathematical expression
@@ -41,7 +41,15 @@ internal fun String.isOperator(): Boolean = this in Operator.symbols() && this !
  * @throws KevalInvalidOperatorException if the expression contains an invalid operator
  */
 internal fun String.tokenize(): List<String> {
-    val symbols = Operator.symbols()
+    // The order of "symbols" is non deterministic, in the case that `-` doesn't appear first or last, it should have an escape character
+    // TODO: Handle other special character symbols
+    val symbols = kevalSymbols()
+            .let {
+                if (it.first() != '-' && it.last() != '-')
+                    it.replace("-", "\\-")
+                else
+                    it
+            }
     val sanitized = this.replace("\\s".toRegex(), "")
     val tokens = sanitized.split("(?<=[$symbols])|(?=[$symbols])".toRegex())
     val tokensToString = tokens.joinToString("")
