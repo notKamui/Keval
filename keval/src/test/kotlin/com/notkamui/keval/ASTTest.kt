@@ -9,39 +9,27 @@ import kotlin.test.assertTrue
  * Tests on AbstractSyntaxTree
  */
 class ASTTest {
+    @Test
+    fun testDefinitionAnnotations() {
+        assertTrue {
+            KevalSymbolAnnotations.map { it.name }.containsAll(
+                    setOf(
+                            KevalBinaryOperator::class.java.name,
+                            KevalConstant::class.java.name,
+                            KevalFunction::class.java.name,
+                            KevalUnaryOperator::class.java.name
+                    )
+            )
+        }
+    }
+
     /**
      * Tests Node.eval()
      */
     @Test
     fun simpleEvalTest() {
-        val ast: Node = OperatorNode(ValueNode(3.0), Operator.ADD, ValueNode(2.0))
+        val ast: Node = OperatorNode(ValueNode(3.0), getKevalOperator('+')!!, ValueNode(2.0))
         assertEquals(ast.eval(), 5.0)
-    }
-
-    /**
-     * Tests the get operator on enum Operator
-     */
-    @Test
-    fun operatorGetterTest() {
-        val fake = Operator['a']
-        val fake2 = Operator['-']!!
-        assertNull(fake)
-        assertTrue {
-            fake2.symbol == '-' &&
-                fake2.precedence == 2 &&
-                fake2.isLeftAssociative &&
-                fake2.apply(5.0, 2.0) == 3.0
-        }
-        assertTrue {
-            Operator['-']!! == Operator.SUB &&
-                Operator['+']!! == Operator.ADD &&
-                Operator['*']!! == Operator.MUL &&
-                Operator['/']!! == Operator.DIV &&
-                Operator['^']!! == Operator.POW &&
-                Operator['%']!! == Operator.MOD &&
-                Operator['(']!! == Operator.LPA &&
-                Operator[')']!! == Operator.RPA
-        }
     }
 
     /**
@@ -50,8 +38,8 @@ class ASTTest {
     @Test
     fun symbolsTest() {
         assertTrue {
-            Operator.symbols().all {
-                it.toString() in "+-*/%^()"
+            "+-*/%^()".all {
+                it.toString() in kevalSymbols()
             }
         }
     }

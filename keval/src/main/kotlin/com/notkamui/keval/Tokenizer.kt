@@ -31,7 +31,7 @@ internal fun String.isNumeric(): Boolean {
  * @receiver is the string to check
  * @return true if the string is a valid operator, false otherwise
  */
-internal fun String.isOperator(): Boolean = this in Operator.symbols() && this !in "()"
+internal fun String.isOperator(): Boolean = this in kevalSymbols() && this !in "()"
 
 /**
  * Tokenizes a mathematical expression
@@ -41,7 +41,7 @@ internal fun String.isOperator(): Boolean = this in Operator.symbols() && this !
  * @throws KevalInvalidOperatorException if the expression contains an invalid operator
  */
 internal fun String.tokenize(): List<String> {
-    val symbols = Operator.symbols()
+    val symbols = kevalSymbols()
     val sanitized = this.replace("\\s".toRegex(), "")
     val tokens = sanitized.split("(?<=[$symbols])|(?=[$symbols])".toRegex())
     val tokensToString = tokens.joinToString("")
