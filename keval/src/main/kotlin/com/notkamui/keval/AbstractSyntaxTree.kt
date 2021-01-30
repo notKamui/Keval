@@ -1,6 +1,39 @@
 package com.notkamui.keval
 
+import io.github.classgraph.ClassGraph
+import io.github.classgraph.ClassInfo
 import kotlin.math.pow
+
+@Target(AnnotationTarget.ANNOTATION_CLASS)
+private annotation class KevalSymbolDefinition
+
+//TODO: change `name` to `String`, it is currently a `Char` to be able to replace the Enum `Operator` easily
+@Target(AnnotationTarget.FUNCTION)
+@KevalSymbolDefinition
+annotation class KevalFunction(val name: Char, val argsNum: UInt)
+
+@Target(AnnotationTarget.FUNCTION)
+@KevalSymbolDefinition
+annotation class KevalBinaryOperator(val name: Char)
+
+@Target(AnnotationTarget.FUNCTION)
+@KevalSymbolDefinition
+annotation class KevalUnaryOperator(val name: Char)
+
+@Target(AnnotationTarget.FUNCTION)
+@KevalSymbolDefinition
+annotation class KevalConstant(val name: Char)
+
+
+// Get all annotations in the package "com.notkamui.keval" that has the annotation "KevalSymbolDefinition"
+internal val KevalSymbolAnnotations: Set<ClassInfo> = ClassGraph()
+        .enableAnnotationInfo()
+        .acceptPackages("com.notkamui.keval")
+        .scan()
+        .use {
+            it.getClassesWithAnnotation("com.notkamui.keval.KevalSymbolDefinition")
+        }.toSet()
+
 
 /**
  * Represents a node in an AST and can evaluate its value
@@ -44,6 +77,8 @@ internal data class ValueNode(
 ) : Node {
     override fun eval(): Double = value
 }
+
+
 
 /**
  * Represents all operators
