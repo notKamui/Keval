@@ -234,7 +234,7 @@ div#paneSearch div.paneSearchInputWrapper span.paneSearchInputClearIcon {
 }
 
 .page-summary .content-wrapper {
-    padding: .5em 0 1em 0;
+    padding: .5em 0 1em;
     letter-spacing: .2px
 }
 
@@ -276,5 +276,3 @@ div#paneSearch div.paneSearchInputWrapper span.paneSearchInputClearIcon {
         display: none
     }
 }
-
-/*# sourceMappingURL=main.css.map*/

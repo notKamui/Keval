@@ -174,7 +174,7 @@ html ::-webkit-scrollbar-thumb {
 
 .cover ~ .divergent-group {
     margin-top: 24px;
-    padding: 24px 8px 8px 8px;
+    padding: 24px 8px 8px;
 }
 
 .cover ~ .divergent-group .main-subrow .symbol {
@@ -187,7 +187,7 @@ html ::-webkit-scrollbar-thumb {
 
 .divergent-group {
     background-color: white;
-    padding: 8px 0px 8px 0;
+    padding: 8px 0;
     margin-bottom: 2px;
 }
 
@@ -333,7 +333,7 @@ code.paragraph {
     cursor: default;
     border: 1px solid #D8DCE1;
     box-sizing: border-box;
-    box-shadow: 0px 5px 10px var(--ring-popup-shadow-color);
+    box-shadow: 0 5px 10px var(--ring-popup-shadow-color);
     border-radius: 3px;
 }
 
@@ -545,7 +545,7 @@ h3, h4, h5, h6 {
 }
 
 .UnderCoverText table {
-    margin: 8px 0 8px 0;
+    margin: 8px 0;
     word-break: break-word;
 }
 
@@ -972,7 +972,7 @@ td.content {
     flex-direction: column;
     background: white;
     border-bottom: 2px solid #f4f4f4;
-    padding: 16px 24px 16px 24px;
+    padding: 16px 24px;
 }
 
 .table-row .brief-comment {
