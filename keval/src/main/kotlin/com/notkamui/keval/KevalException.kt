@@ -8,7 +8,8 @@ package com.notkamui.keval
 sealed class KevalException(message: String) : Exception(message)
 
 /**
- * Invalid Expression Exception
+ * Invalid Expression Exception. Is thrown when the expression is considered invalid
+ * (i.e. Mismatched parenthesis or missing operands)
  *
  * @property expression is the invalid expression
  * @property position is the estimated position of the error
@@ -17,7 +18,7 @@ sealed class KevalInvalidExpressionException(val expression: String, val positio
     KevalException("Invalid expression at $position in $expression")
 
 /**
- * Invalid Operator Exception
+ * Invalid Operator Exception. Is thrown when an invalid/unknown operator is found
  *
  * @property invalidOperator is the given invalid operator
  * @param expression is the invalid expression
@@ -27,6 +28,7 @@ class KevalInvalidOperatorException(val invalidOperator: String, expression: Str
     KevalInvalidExpressionException(expression, position)
 
 /**
- * Zero Division Exception
+ * Zero Division Exception. Is thrown when a zero division occurs
+ * (i.e. x/0, x%0)
  */
 class KevalZeroDivisionException : KevalException("Division by zero")
