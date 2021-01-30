@@ -37,17 +37,6 @@ annotation class KevalUnaryOperator(val name: Char)
 @KevalSymbolDefinition
 annotation class KevalConstant(val name: Char)
 
-
-// Get all annotations in the package "com.notkamui.keval" that has the annotation "KevalSymbolDefinition"
-internal val KevalSymbolAnnotations: Set<ClassInfo> = ClassGraph()
-        .enableAnnotationInfo()
-        .acceptPackages("com.notkamui.keval")
-        .scan()
-        .use {
-            it.getClassesWithAnnotation(KevalSymbolDefinition::class.java.name)
-        }.toSet()
-
-
 /**
  * Gets an operator by its symbol, currently checking only in this package.
  *

@@ -1,28 +1,15 @@
 package com.notkamui.keval
 
+import io.github.classgraph.ClassGraph
+import io.github.classgraph.ClassInfo
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
  * Tests on AbstractSyntaxTree
  */
 class ASTTest {
-    @Test
-    fun testDefinitionAnnotations() {
-        assertTrue {
-            KevalSymbolAnnotations.map { it.name }.containsAll(
-                    setOf(
-                            KevalBinaryOperator::class.java.name,
-                            KevalConstant::class.java.name,
-                            KevalFunction::class.java.name,
-                            KevalUnaryOperator::class.java.name
-                    )
-            )
-        }
-    }
-
     /**
      * Tests Node.eval()
      */
