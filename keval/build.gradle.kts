@@ -4,10 +4,13 @@
  * Gradle build file for Keval
  */
 
+import java.net.URL
+
 version = "0.5"
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.21"
+    id("org.jetbrains.kotlin.jvm") version "1.4.20"
+    id("org.jetbrains.dokka") version "1.4.20"
     `java-library`
 }
 

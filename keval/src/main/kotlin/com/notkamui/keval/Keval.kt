@@ -1,7 +1,8 @@
 package com.notkamui.keval
 
 /**
- * Wrapper class for Keval (mainly for Java users)
+ * Wrapper class for Keval.
+ * Contains a companion object with the evaluation method
  */
 class Keval private constructor() {
     companion object {
