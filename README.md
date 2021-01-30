@@ -1,6 +1,6 @@
 # Keval
 
-***A Kotlin mini library for string evaluation***
+***A Kotlin/JVM mini library for string evaluation***
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0161eb0c1caa473cbb7f7e7f375e50c6)](https://www.codacy.com/gh/notKamui/Keval/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=notKamui/Keval&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/notkamui/keval/badge)](https://www.codefactor.io/repository/github/notkamui/keval)
@@ -55,3 +55,4 @@ In case of an error, Keval will throw one of several `KevalException`s:
 - Support for constants (PI, PHI, etc)
 - Support for functions (sin, cos, tan)
 - Support for custom operators from the user ?
+- Support for multiplateform
