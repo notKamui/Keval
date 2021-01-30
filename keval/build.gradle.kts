@@ -41,3 +41,22 @@ tasks.jar {
 java {
     withSourcesJar()
 }
+
+tasks.dokkaHtml.configure {
+    outputDirectory.set(rootDir.resolve("docs"))
+    moduleName.set("Keval")
+    dokkaSourceSets {
+        configureEach {
+            sourceLink {
+                localDirectory.set(file("src/main/kotlin"))
+                remoteUrl.set(
+                    URL(
+                        "https://github.com/notKamui/Keval/tree/main/keval/src/main/kotlin"
+                    )
+                )
+                remoteLineSuffix.set("#L")
+            }
+            jdkVersion.set(8)
+        }
+    }
+}
