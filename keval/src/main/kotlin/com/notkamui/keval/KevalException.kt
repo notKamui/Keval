@@ -14,7 +14,7 @@ sealed class KevalException(message: String) : Exception(message)
  * @property expression is the invalid expression
  * @property position is the estimated position of the error
  */
-sealed class KevalInvalidExpressionException(val expression: String, val position: Int) :
+open class KevalInvalidExpressionException(val expression: String, val position: Int) :
     KevalException("Invalid expression at $position in $expression")
 
 /**
