@@ -42,6 +42,7 @@ internal fun String.isOperator(): Boolean = this in kevalSymbols() && this !in "
  */
 internal fun String.tokenize(): List<String> {
     // The order of "symbols" is non deterministic, in the case that `-` doesn't appear first or last, it should have an escape character
+    // TODO: Handle other special character symbols
     val symbols = kevalSymbols()
             .let {
                 if (it.first() != '-' && it.last() != '-')
