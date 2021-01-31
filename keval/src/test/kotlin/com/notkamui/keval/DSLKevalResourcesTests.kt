@@ -6,19 +6,31 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
+/**
+ * DSL Tests
+ */
 class DSLKevalResourcesTests {
+    /**
+     * Checking built in operators
+     */
     @Test
     fun builtInOperators() {
         val operators = KevalResources().loadBuiltInOperators()
         assertEquals("+-*/%^()".toSet(), operators.keys)
     }
 
+    /**
+     * Checking with "all resources"
+     */
     @Test
     fun testGetAllResources() {
         val operators = KevalResources().loadAllResources()
         assertEquals("+-*/%^();".toSet(), operators.keys)
     }
 
+    /**
+     * Checking with specific resources
+     */
     @Test
     fun testSpecificResources() {
         val operators = KevalResources().loadResources("com.notkamui.keval.testOperators")
@@ -26,7 +38,13 @@ class DSLKevalResourcesTests {
     }
 }
 
+/**
+ * DSL tests
+ */
 class DLSTest {
+    /**
+     * Checking with a simple DSL
+     */
     @Test
     fun checkSimpleDLS() {
         val kvl = Keval {
@@ -52,6 +70,9 @@ class DLSTest {
         }
     }
 
+    /**
+     * Checking with combined resources
+     */
     @Test
     fun checkCombinedDSL() {
         val kvl = Keval {

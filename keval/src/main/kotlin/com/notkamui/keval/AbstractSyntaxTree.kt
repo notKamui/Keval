@@ -2,7 +2,18 @@ package com.notkamui.keval
 
 import java.lang.reflect.InvocationTargetException
 
-data class BinaryOperator(val implementation: (Double, Double) -> Double, val precedence: Int, val isLeftAssociative: Boolean)
+/**
+ * Represents a binary operator
+ *
+ * @property implementation is the actual implementation of the operator
+ * @property precedence is the precedence of the operator
+ * @property isLeftAssociative is true if left associative, false otherwise
+ */
+data class BinaryOperator(
+    val implementation: (Double, Double) -> Double,
+    val precedence: Int,
+    val isLeftAssociative: Boolean
+)
 
 /**
  * Represents a node in an AST and can evaluate its value
