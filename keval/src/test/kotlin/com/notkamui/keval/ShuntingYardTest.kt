@@ -1,6 +1,6 @@
 package com.notkamui.keval
 
-import com.notkamui.keval.framework.loadBuiltInOperators
+import com.notkamui.keval.framework.Resources
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -15,7 +15,7 @@ class ShuntingYardTest {
      */
     @Test
     fun syTest() {
-        val operators = loadBuiltInOperators()
+        val operators = Resources().loadBuiltInOperators()
         assertEquals(8.0, "3 + 5 * (2-1)".toAbstractSyntaxTree(operators).eval())
     }
 
