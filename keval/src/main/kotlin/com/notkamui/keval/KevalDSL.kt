@@ -1,6 +1,8 @@
 package com.notkamui.keval.framework
 
 import com.notkamui.keval.BinaryOperator
+import com.notkamui.keval.KevalZeroDivisionException
+import kotlin.math.pow
 
 class Resources internal constructor() {
     private val _operators: MutableMap<Char, BinaryOperator> = mutableMapOf()
@@ -37,14 +39,26 @@ class Resources internal constructor() {
 
     companion object {
         val defaultOperators: Map<Char, BinaryOperator> = mapOf(
-            '+' to BinaryOperator(::kevalAdd, 2, true),
-            '-' to BinaryOperator(::kevalSub, 2, true),
-            '/' to BinaryOperator(::kevalDiv, 3, true),
-            '%' to BinaryOperator(::kevalMod, 3, true),
-            '^' to BinaryOperator(::kevalPow, 4, false),
-            '*' to BinaryOperator(::kevalMul, 3, true),
-            '(' to BinaryOperator(::kevalRPA, 5, true),
-            ')' to BinaryOperator(::kevalLPA, 5, true)
+            '+' to BinaryOperator({ a, b -> a + b }, 2, true),
+            '-' to BinaryOperator({ a, b -> a - b }, 2, true),
+            '/' to BinaryOperator(
+                { a, b ->
+                    if (b == 0.0) throw KevalZeroDivisionException()
+                    a / b
+                },
+                3, true
+            ),
+            '%' to BinaryOperator(
+                { a, b ->
+                    if (b == 0.0) throw KevalZeroDivisionException()
+                    a % b
+                },
+                3, true
+            ),
+            '^' to BinaryOperator({ a, b -> a.pow(b) }, 4, false),
+            '*' to BinaryOperator({ a, b -> a * b }, 3, true),
+            '(' to BinaryOperator({ _, _ -> 0.0 }, 5, true),
+            ')' to BinaryOperator({ _, _ -> 0.0 }, 5, true)
         )
 
         data class Operator(
