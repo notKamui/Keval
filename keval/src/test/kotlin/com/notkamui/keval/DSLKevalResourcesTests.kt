@@ -1,28 +1,27 @@
 package com.notkamui.keval
 
-import com.notkamui.keval.framework.Resources
+import com.notkamui.keval.resources.KevalResources
 import kotlin.math.pow
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
-class DSLResourcesTests {
+class DSLKevalResourcesTests {
     @Test
     fun builtInOperators() {
-        val operators = Resources().loadBuiltInOperators()
+        val operators = KevalResources().loadBuiltInOperators()
         assertEquals("+-*/%^()".toSet(), operators.keys)
     }
 
     @Test
     fun testGetAllResources() {
-        val operators = Resources().loadAllResources()
+        val operators = KevalResources().loadAllResources()
         assertEquals("+-*/%^();".toSet(), operators.keys)
     }
 
     @Test
-    fun testSpecificResouces() {
-        val operators = Resources().loadResources("com.notkamui.keval.testOperators")
+    fun testSpecificResources() {
+        val operators = KevalResources().loadResources("com.notkamui.keval.testOperators")
         assertEquals(";".toSet(), operators.keys)
     }
 }
@@ -35,13 +34,13 @@ class DLSTest {
         }
 
         assertEquals(
-                5.0,
-                kvl.eval("3;4")
+            5.0,
+            kvl.eval("3;4")
         )
 
         assertEquals(
-                10.0,
-                kvl.eval("((3;4)*1.2);8")
+            10.0,
+            kvl.eval("((3;4)*1.2);8")
         )
 
         assertFailsWith(KevalInvalidOperatorException::class) {
@@ -61,13 +60,13 @@ class DLSTest {
         }
 
         assertEquals(
-                4.1,
-                kvl.eval("3;4-0.9")
+            4.1,
+            kvl.eval("3;4-0.9")
         )
 
         assertEquals(
-                8.85663593,
-                (kvl.eval("((3;4)-1.2);8")*10.0.pow(8)).toInt()/10.0.pow(8)
+            8.85663593,
+            (kvl.eval("((3;4)-1.2);8") * 10.0.pow(8)).toInt() / 10.0.pow(8)
         )
     }
 }

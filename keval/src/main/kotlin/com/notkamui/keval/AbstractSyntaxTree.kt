@@ -28,9 +28,9 @@ internal interface Node {
  * @constructor Creates an operator node
  */
 internal data class OperatorNode(
-        private val left: Node,
-        private val op: (Double, Double) -> Double,
-        private val right: Node
+    private val left: Node,
+    private val op: (Double, Double) -> Double,
+    private val right: Node
 ) : Node {
     override fun eval(): Double {
         try {
@@ -48,7 +48,7 @@ internal data class OperatorNode(
  * @constructor Creates a value node
  */
 internal data class ValueNode(
-        private val value: Double
+    private val value: Double
 ) : Node {
     override fun eval(): Double = value
 }

@@ -1,39 +1,59 @@
 package com.notkamui.keval.framework
 
-import com.notkamui.keval.BinaryOperator
 import io.github.classgraph.ClassGraph
 import java.lang.reflect.Method
 
+/**
+ * Defines Keval's symbols
+ */
 @Target(AnnotationTarget.ANNOTATION_CLASS)
-private annotation class KevalSymbolDefinition
+internal annotation class KevalSymbolDefinition
 
-//TODO: change `name` to `String`, it is currently a `Char` to be able to replace the Enum `Operator` easily
-
-@Target(AnnotationTarget.FUNCTION)
-@KevalSymbolDefinition
-annotation class KevalFunction(val name: Char, val argsNum: UInt)
+// TODO: change `name` to `String`, it is currently a `Char` to be able to replace the Enum `Operator` easily
 
 /**
- * For now support only this.
+ * Annotation class to designate functions for Keval
+ *
+ * @property name is the name of the function
+ * @property arity is the number of arguments the function takes
+ */
+@ExperimentalUnsignedTypes
+@Target(AnnotationTarget.FUNCTION)
+@KevalSymbolDefinition
+annotation class KevalFunction(val name: Char, val arity: UInt)
+
+/**
+ * Annotation class to designate binary operators for Keval
  *
  * @property symbol is the symbol of the operator
  * @property precedence is the priority of the operator
- * @property isLeftAssociative defines if the operator is left associative (false if right associative)*/
+ * @property isLeftAssociative defines if the operator is left associative (false if right associative)
+ */
 @Target(AnnotationTarget.FUNCTION)
 @KevalSymbolDefinition
 annotation class KevalBinaryOperator(
-        val symbol: Char,
-        val precedence: Int,
-        val isLeftAssociative: Boolean
+    val symbol: Char,
+    val precedence: Int,
+    val isLeftAssociative: Boolean
 )
 
+/**
+ * Annotation class to designate unary operators for Keval
+ *
+ * @property symbol is the symbol of the operator
+ */
 @Target(AnnotationTarget.FUNCTION)
 @KevalSymbolDefinition
-annotation class KevalUnaryOperator(val name: Char)
+annotation class KevalUnaryOperator(val symbol: Char)
 
+/**
+ * Annotation class to designate constants for Keval
+ *
+ * @property symbol is the symbol of the constant
+ */
 @Target(AnnotationTarget.FUNCTION)
 @KevalSymbolDefinition
-annotation class KevalConstant(val name: Char)
+annotation class KevalConstant(val symbol: Char)
 
 /**
  * Gets an operator by its symbol, currently checking only in this package.
@@ -42,31 +62,7 @@ annotation class KevalConstant(val name: Char)
  * @return the corresponding method (or null)
  */
 fun getKevalOperator(symbol: Char, _package: String, vararg packages: String): Method? =
-        ClassGraph()
-                .enableMethodInfo()
-                .enableClassInfo()
-                .enableAnnotationInfo()
-                .acceptPackages(_package, *packages)
-                .scan()
-                .use {
-                    val binOperatorClass = it.getClassesWithMethodAnnotation(KevalBinaryOperator::class.java.name)
-                    binOperatorClass.flatMap { classInfo ->
-                        classInfo.methodInfo.asSequence()
-                    }.filter { methodInfo ->
-                        methodInfo.hasAnnotation(KevalBinaryOperator::class.java.name)
-                    }.firstOrNull { methodInfo ->
-                        methodInfo.getAnnotationInfo(KevalBinaryOperator::class.java.name)
-                                .parameterValues
-                                .getValue("symbol") as Char == symbol
-                    }?.loadClassAndGetMethod()
-                }
-
-/**
- * Get all the symbols
- *
- * @return all the operators' symbols
- */
-fun kevalSymbolsDefault(_package: String, vararg packages: String): List<Char> = ClassGraph()
+    ClassGraph()
         .enableMethodInfo()
         .enableClassInfo()
         .enableAnnotationInfo()
@@ -78,44 +74,45 @@ fun kevalSymbolsDefault(_package: String, vararg packages: String): List<Char> =
                 classInfo.methodInfo.asSequence()
             }.filter { methodInfo ->
                 methodInfo.hasAnnotation(KevalBinaryOperator::class.java.name)
-            }.map { methodInfo ->
+            }.firstOrNull { methodInfo ->
                 methodInfo.getAnnotationInfo(KevalBinaryOperator::class.java.name)
-                        .parameterValues
-                        .getValue("symbol") as Char
-            }
+                    .parameterValues
+                    .getValue("symbol") as Char == symbol
+            }?.loadClassAndGetMethod()
         }
 
+/**
+ * Get all the symbols
+ *
+ * @return all the operators' symbols
+ */
+fun kevalSymbolsDefault(_package: String, vararg packages: String): List<Char> = ClassGraph()
+    .enableMethodInfo()
+    .enableClassInfo()
+    .enableAnnotationInfo()
+    .acceptPackages(_package, *packages)
+    .scan()
+    .use {
+        val binOperatorClass = it.getClassesWithMethodAnnotation(KevalBinaryOperator::class.java.name)
+        binOperatorClass.flatMap { classInfo ->
+            classInfo.methodInfo.asSequence()
+        }.filter { methodInfo ->
+            methodInfo.hasAnnotation(KevalBinaryOperator::class.java.name)
+        }.map { methodInfo ->
+            methodInfo.getAnnotationInfo(KevalBinaryOperator::class.java.name)
+                .parameterValues
+                .getValue("symbol") as Char
+        }
+    }
+
+/**
+ * Gets the precedence of an operator
+ */
 fun Method.precedence(): Int =
-        getAnnotation(KevalBinaryOperator::class.java).precedence
+    getAnnotation(KevalBinaryOperator::class.java).precedence
 
+/**
+ * Gets the associativity of an operator
+ */
 fun Method.isLeftAssociative(): Boolean =
-        getAnnotation(KevalBinaryOperator::class.java).isLeftAssociative
-
-
-class Resources internal constructor() {
-    private val _operators: MutableMap<Char, BinaryOperator> = mutableMapOf()
-    val operators: Map<Char, BinaryOperator>
-        get() = _operators
-
-    operator fun Map<Char, BinaryOperator>.unaryPlus() {
-        _operators += this
-    }
-
-    fun loadResources(_package: String, vararg packages: String): Map<Char, BinaryOperator> {
-        return kevalSymbolsDefault(_package, *packages).map {
-            val mthd = getKevalOperator(it, _package, *packages)!!
-            it to BinaryOperator(
-                    { x, y ->
-                        mthd.invoke(null, x, y) as Double
-                    },
-                    mthd.precedence(),
-                    mthd.isLeftAssociative())
-        }.toMap()
-    }
-
-    fun loadAllResources(): Map<Char, BinaryOperator> =
-            loadResources("")
-
-    fun loadBuiltInOperators(): Map<Char, BinaryOperator> =
-            loadResources(KevalSymbolDefinition::class.java.packageName)
-}
+    getAnnotation(KevalBinaryOperator::class.java).isLeftAssociative

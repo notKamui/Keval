@@ -12,7 +12,7 @@ private enum class TokenType {
 }
 
 private fun shouldAutoMul(tokenType: TokenType): Boolean =
-        tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
+    tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
 
 /**
  * Checks if a string is numeric or not
@@ -44,12 +44,12 @@ internal fun String.tokenize(symbolsSet: Set<Char>): List<String> {
     // The order of "symbols" is non deterministic, in the case that `-` doesn't appear first or last, it should have an escape character
     // TODO: Handle other special character symbols!!!!!!!
     val symbols = symbolsSet.joinToString("")
-            .let {
-                if (it.first() != '-' && it.last() != '-')
-                    it.replace("-", "\\-")
-                else
-                    it
-            }
+        .let {
+            if (it.first() != '-' && it.last() != '-')
+                it.replace("-", "\\-")
+            else
+                it
+        }
     val sanitized = this.replace("\\s".toRegex(), "")
     val tokens = sanitized.split("(?<=[$symbols])|(?=[$symbols])".toRegex())
     val tokensToString = tokens.joinToString("")

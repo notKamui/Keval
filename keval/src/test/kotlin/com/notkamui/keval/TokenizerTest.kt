@@ -1,6 +1,6 @@
 package com.notkamui.keval
 
-import com.notkamui.keval.framework.Resources
+import com.notkamui.keval.resources.KevalResources
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -15,7 +15,7 @@ class TokenizerTest {
      */
     @Test
     fun parseString() {
-        val operators = Resources().loadBuiltInOperators()
+        val operators = KevalResources().loadBuiltInOperators()
         val tokens = "((34+8)/3)+3.3*(5+2)%2^6".tokenize(operators.keys)
         assertEquals(
             listOf(
