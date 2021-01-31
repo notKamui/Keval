@@ -1,16 +1,19 @@
 package com.notkamui.keval
 
-import com.notkamui.keval.framework.KevalLPA
-import com.notkamui.keval.framework.KevalMul
-import com.notkamui.keval.framework.KevalRPA
-import com.notkamui.keval.framework.Resources
+import com.notkamui.keval.framework.*
 
 /**
  * Wrapper class for Keval.
  * Contains a companion object with the evaluation method
  */
 class Keval(
-        val generator: Resources.() -> Unit = { +loadBuiltInOperators() }
+        val generator: Resources.() -> Unit = {
+            +('+' to BinaryOperator(::KevalAdd, 2, true))
+            +('-' to BinaryOperator(::KevalSub, 2, true))
+            +('/' to BinaryOperator(::KevalDiv, 3, true))
+            +('%' to BinaryOperator(::KevalMod, 3, true))
+            +('^' to BinaryOperator(::KevalPow, 4, false))
+        }
 ) {
     companion object {
         /**

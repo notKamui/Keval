@@ -101,6 +101,11 @@ class Resources internal constructor() {
         _operators += this
     }
 
+    operator fun Pair<Char, BinaryOperator>.unaryPlus() {
+        _operators += this
+    }
+
+
     fun loadResources(_package: String, vararg packages: String): Map<Char, BinaryOperator> {
         return kevalSymbolsDefault(_package, *packages).map {
             val mthd = getKevalOperator(it, _package, *packages)!!
@@ -116,6 +121,13 @@ class Resources internal constructor() {
     fun loadAllResources(): Map<Char, BinaryOperator> =
             loadResources("")
 
+    @Deprecated(message = "reflection is super slow", replaceWith = ReplaceWith("""{
+            +('+' to BinaryOperator(::KevalAdd, 2, true))
+            +('-' to BinaryOperator(::KevalSub, 2, true))
+            +('/' to BinaryOperator(::KevalDiv, 3, true))
+            +('%' to BinaryOperator(::KevalMod, 3, true))
+            +('^' to BinaryOperator(::KevalPow, 4, false))
+        }"""))
     fun loadBuiltInOperators(): Map<Char, BinaryOperator> =
             loadResources(KevalSymbolDefinition::class.java.packageName)
 }
