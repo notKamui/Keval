@@ -1,5 +1,6 @@
-package com.notkamui.keval
+package com.notkamui.keval.framework
 
+import com.notkamui.keval.KevalZeroDivisionException
 import kotlin.math.pow
 
 @KevalBinaryOperator(symbol = '+', precedence = 2, isLeftAssociative = true)
