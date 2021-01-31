@@ -1,7 +1,5 @@
-package com.notkamui.keval.framework
+package com.notkamui.keval
 
-import com.notkamui.keval.BinaryOperator
-import com.notkamui.keval.KevalZeroDivisionException
 import kotlin.math.pow
 
 class Resources internal constructor() {
@@ -9,7 +7,7 @@ class Resources internal constructor() {
     val operators: Map<Char, BinaryOperator>
         get() = _operators.toMap()
 
-    val defaultOperators: Map<Char, BinaryOperator> = Resources.defaultOperators
+    val defaultOperators: Map<Char, BinaryOperator> = Companion.defaultOperators
 
     operator fun Map<Char, BinaryOperator>.unaryPlus() {
         _operators += this
@@ -19,26 +17,21 @@ class Resources internal constructor() {
         _operators += this
     }
 
-    operator fun Operator.unaryPlus() {
-        _operators += symbol!! to BinaryOperator(implementation!!, precedence, isLeftAssociative)
-    }
-
-    operator fun Collection<Char>.unaryMinus() {
-        _operators -= this
-    }
-
-    operator fun Char.unaryMinus() {
-        _operators -= this
-    }
-
-    fun operator(definition: Operator.() -> Unit): Operator {
-        val op = Operator()
+    fun operator(definition: OperatorDSL.() -> Unit) {
+        val op = OperatorDSL()
         op.definition()
-        return op
+
+        // checking if every field has been properly defined
+        op.symbol ?: throw KevalDSLException("symbol")
+        op.implementation ?: throw KevalDSLException("implementation")
+        op.precedence ?: throw KevalDSLException("precedence")
+        op.isLeftAssociative ?: throw KevalDSLException("isLeftAssociative")
+
+        _operators += op.symbol!! to BinaryOperator(op.implementation!!, op.precedence!!, op.isLeftAssociative!!)
     }
 
     companion object {
-        val defaultOperators: Map<Char, BinaryOperator> = mapOf(
+        internal val defaultOperators: Map<Char, BinaryOperator> = mapOf(
             '+' to BinaryOperator({ a, b -> a + b }, 2, true),
             '-' to BinaryOperator({ a, b -> a - b }, 2, true),
             '/' to BinaryOperator(
@@ -57,15 +50,13 @@ class Resources internal constructor() {
             ),
             '^' to BinaryOperator({ a, b -> a.pow(b) }, 4, false),
             '*' to BinaryOperator({ a, b -> a * b }, 3, true),
-            '(' to BinaryOperator({ _, _ -> 0.0 }, 5, true),
-            ')' to BinaryOperator({ _, _ -> 0.0 }, 5, true)
         )
 
-        data class Operator(
+        data class OperatorDSL(
             var symbol: Char? = null,
             var implementation: ((Double, Double) -> Double)? = null,
-            var precedence: Int = 1,
-            var isLeftAssociative: Boolean = false
+            var precedence: Int? = null,
+            var isLeftAssociative: Boolean? = null
         )
     }
 }

@@ -14,7 +14,7 @@ sealed class KevalException(message: String) : Exception(message)
  * @property expression is the invalid expression
  * @property position is the estimated position of the error
  */
-open class KevalInvalidExpressionException(val expression: String, val position: Int) :
+open class KevalInvalidExpressionException internal constructor(val expression: String, val position: Int) :
     KevalException("Invalid expression at $position in $expression")
 
 /**
@@ -24,11 +24,23 @@ open class KevalInvalidExpressionException(val expression: String, val position:
  * @param expression is the invalid expression
  * @param position is the estimated position of the error
  */
-class KevalInvalidOperatorException(val invalidOperator: String, expression: String, position: Int) :
+class KevalInvalidOperatorException internal constructor(
+    val invalidOperator: String,
+    expression: String,
+    position: Int
+) :
     KevalInvalidExpressionException(expression, position)
 
 /**
  * Zero Division Exception. Is thrown when a zero division occurs
  * (i.e. x/0, x%0)
  */
-class KevalZeroDivisionException : KevalException("Division by zero")
+class KevalZeroDivisionException internal constructor() : KevalException("Division by zero")
+
+/**
+ * DSL Exception. Is thrown when a required field isn't defined
+ *
+ * @param which is the name of the undefined field
+ */
+class KevalDSLException internal constructor(which: String) :
+    KevalException("All required fields must be defined: $which undefined")

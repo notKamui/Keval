@@ -1,6 +1,5 @@
 package com.notkamui.keval
 
-import com.notkamui.keval.framework.Resources
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.test.Test
@@ -9,28 +8,15 @@ import kotlin.test.assertFailsWith
 
 fun hypotenuse(x: Double, y: Double): Double = sqrt(x.pow(2) + y.pow(2))
 
-class DSLResourcesTests {
-    @Test
-    fun builtInOperators() {
-        val operators = Resources.defaultOperators
-        assertEquals("+-*/%^()".toSet(), operators.keys)
-    }
-
-    @Test
-    fun testGetAllResources() {
-        val operators = Resources.defaultOperators + (';' to BinaryOperator(::hypotenuse, 3, false))
-        assertEquals("+-*/%^();".toSet(), operators.keys)
-    }
-}
-
 class DLSTest {
     @Test
     fun checkSimpleDLS() {
         val kvl = Keval {
-            +operator {
+            operator {
                 symbol = ';'
                 implementation = ::hypotenuse
                 precedence = 3
+                isLeftAssociative = true
             }
         }
 
@@ -56,10 +42,11 @@ class DLSTest {
     @Test
     fun checkCombinedDSL() {
         val kvl = Keval {
-            +operator {
+            operator {
                 symbol = ';'
                 implementation = ::hypotenuse
                 precedence = 3
+                isLeftAssociative = true
             }
             +defaultOperators
         }

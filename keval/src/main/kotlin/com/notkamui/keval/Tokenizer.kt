@@ -41,23 +41,19 @@ internal fun String.isOperator(symbolsSet: Set<Char>): Boolean = this in symbols
  * @throws KevalInvalidOperatorException if the expression contains an invalid operator
  */
 internal fun String.tokenize(symbolsSet: Set<Char>): List<String> {
-    // The order of "symbols" is non deterministic, in the case that `-` doesn't appear first or last, it should have an escape character
-    // TODO: Handle other special character symbols!!!!!!!
-    val symbols = symbolsSet.joinToString("")
-        .let {
-            if (it.first() != '-' && it.last() != '-')
-                it.replace("-", "\\-")
-            else
-                it
-        }
+    // All symbols are escaped for the regex
+    // TODO clean that absolute garbage mess
+    val symbols = symbolsSet.joinToString("|\\")
     val sanitized = this.replace("\\s".toRegex(), "")
-    val tokens = sanitized.split("(?<=[$symbols])|(?=[$symbols])".toRegex())
+    val tokens = sanitized
+        .split("""(?<=(\$symbols|\(|\)))|(?=(\$symbols|\(|\)))""".toRegex())
+        .filter { it.isNotEmpty() }
     val tokensToString = tokens.joinToString("")
 
     var currentPos = 0
     var prevToken = TokenType.FIRST
     val ret = mutableListOf<String>()
-    tokens.filter { it.isNotEmpty() }.forEach { token ->
+    tokens.forEach { token ->
         prevToken = when {
             token.isNumeric() -> {
                 if (shouldAutoMul(prevToken))

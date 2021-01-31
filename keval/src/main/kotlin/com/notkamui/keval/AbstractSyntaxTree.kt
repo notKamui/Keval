@@ -1,6 +1,10 @@
 package com.notkamui.keval
 
-data class BinaryOperator(val implementation: (Double, Double) -> Double, val precedence: Int, val isLeftAssociative: Boolean)
+data class BinaryOperator(
+    val implementation: (Double, Double) -> Double,
+    val precedence: Int,
+    val isLeftAssociative: Boolean
+)
 
 /**
  * Represents a node in an AST and can evaluate its value

@@ -1,6 +1,5 @@
 package com.notkamui.keval
 
-import com.notkamui.keval.framework.Resources
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -27,7 +26,7 @@ class ShuntingYardTest {
         assertEquals(50.0, "(2 + 3)(4 + 6)".keval())
         assertEquals(50.0, Keval.eval("(2 + 3)(4 + 6)"))
         assertFailsWith<KevalInvalidExpressionException> {
-            "((3+1) - 2".keval()
+            "(3+1)) - 2".keval()
         }
         assertFailsWith<KevalZeroDivisionException> {
             "(3+1) / 0".keval()

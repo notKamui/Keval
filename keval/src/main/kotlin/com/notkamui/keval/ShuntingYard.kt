@@ -39,13 +39,16 @@ private fun String.parseAsOperator(
         val currentOperator = operators[this[0]]
             ?: throw KevalInvalidOperatorException(this, tokensToString, currentPos)
         while (operatorStack.isNotEmpty()) {
+            if (operatorStack.last() == "(") // even though the operator stack can contains parenthesis, they're not operators
+                break
+
             val topOperator = operators[operatorStack.last()[0]]
                 ?: throw KevalInvalidOperatorException(operatorStack.last(), tokensToString, currentPos)
-            if (checkPrecedence(topOperator, currentOperator) && operatorStack.last() != "(") {
+
+            if (checkPrecedence(topOperator, currentOperator))
                 outputQueue.offerOperator(operatorStack, tokensToString, currentPos, operators)
-            } else {
+            else
                 break
-            }
         }
     }
     operatorStack.add(this)

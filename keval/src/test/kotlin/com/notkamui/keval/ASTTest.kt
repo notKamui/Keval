@@ -1,6 +1,5 @@
 package com.notkamui.keval
 
-import com.notkamui.keval.framework.Resources
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
