@@ -1,6 +1,8 @@
 package com.notkamui.keval.framework
 
 import io.github.classgraph.ClassGraph
+import io.github.classgraph.MethodInfo
+import io.github.classgraph.ScanResult
 import java.lang.reflect.Method
 
 /**
@@ -55,6 +57,21 @@ annotation class KevalUnaryOperator(val symbol: Char)
 @KevalSymbolDefinition
 annotation class KevalConstant(val symbol: Char)
 
+private fun scanClassGraph(_package: String, vararg packages: String): ScanResult = ClassGraph()
+    .enableMethodInfo()
+    .enableClassInfo()
+    .enableAnnotationInfo()
+    .acceptPackages(_package, *packages)
+    .scan()
+
+private fun ScanResult.getMethodInfos(): List<MethodInfo> = this
+    .getClassesWithMethodAnnotation(KevalBinaryOperator::class.java.name)
+    .flatMap { classInfo ->
+        classInfo.methodInfo.asSequence()
+    }.filter { methodInfo ->
+        methodInfo.hasAnnotation(KevalBinaryOperator::class.java.name)
+    }
+
 /**
  * Gets an operator by its symbol, currently checking only in this package.
  *
@@ -62,19 +79,9 @@ annotation class KevalConstant(val symbol: Char)
  * @return the corresponding method (or null)
  */
 fun getKevalOperator(symbol: Char, _package: String, vararg packages: String): Method? =
-    ClassGraph()
-        .enableMethodInfo()
-        .enableClassInfo()
-        .enableAnnotationInfo()
-        .acceptPackages(_package, *packages)
-        .scan()
+    scanClassGraph(_package, *packages)
         .use {
-            val binOperatorClass = it.getClassesWithMethodAnnotation(KevalBinaryOperator::class.java.name)
-            binOperatorClass.flatMap { classInfo ->
-                classInfo.methodInfo.asSequence()
-            }.filter { methodInfo ->
-                methodInfo.hasAnnotation(KevalBinaryOperator::class.java.name)
-            }.firstOrNull { methodInfo ->
+            it.getMethodInfos().firstOrNull { methodInfo ->
                 methodInfo.getAnnotationInfo(KevalBinaryOperator::class.java.name)
                     .parameterValues
                     .getValue("symbol") as Char == symbol
@@ -86,24 +93,15 @@ fun getKevalOperator(symbol: Char, _package: String, vararg packages: String): M
  *
  * @return all the operators' symbols
  */
-fun kevalSymbolsDefault(_package: String, vararg packages: String): List<Char> = ClassGraph()
-    .enableMethodInfo()
-    .enableClassInfo()
-    .enableAnnotationInfo()
-    .acceptPackages(_package, *packages)
-    .scan()
-    .use {
-        val binOperatorClass = it.getClassesWithMethodAnnotation(KevalBinaryOperator::class.java.name)
-        binOperatorClass.flatMap { classInfo ->
-            classInfo.methodInfo.asSequence()
-        }.filter { methodInfo ->
-            methodInfo.hasAnnotation(KevalBinaryOperator::class.java.name)
-        }.map { methodInfo ->
-            methodInfo.getAnnotationInfo(KevalBinaryOperator::class.java.name)
-                .parameterValues
-                .getValue("symbol") as Char
+fun kevalSymbolsDefault(_package: String, vararg packages: String): List<Char> =
+    scanClassGraph(_package, *packages)
+        .use {
+            it.getMethodInfos().map { methodInfo ->
+                methodInfo.getAnnotationInfo(KevalBinaryOperator::class.java.name)
+                    .parameterValues
+                    .getValue("symbol") as Char
+            }
         }
-    }
 
 /**
  * Gets the precedence of an operator
