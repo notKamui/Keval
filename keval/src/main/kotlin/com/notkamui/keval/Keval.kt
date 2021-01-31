@@ -1,9 +1,6 @@
 package com.notkamui.keval
 
 import com.notkamui.keval.framework.Resources
-import com.notkamui.keval.framework.kevalLPA
-import com.notkamui.keval.framework.kevalMul
-import com.notkamui.keval.framework.kevalRPA
 
 /**
  * Wrapper class for Keval.
@@ -37,10 +34,10 @@ class Keval(
 
         val operators: Map<Char, BinaryOperator> = resources.operators
             // The method `tokenize` assumes multiplication, hence disallowing overriding `*` operator
-            .plus('*' to BinaryOperator(::kevalMul, 3, true))
+            .plus('*' to BinaryOperator({ a, b -> a * b }, 3, true))
             // Whatever your operators are, `(`,`)` should always exists
-            .plus('(' to BinaryOperator(::kevalRPA, 5, true))
-            .plus(')' to BinaryOperator(::kevalLPA, 5, true))
+            .plus('(' to BinaryOperator({ _, _ -> 0.0 }, 5, true))
+            .plus(')' to BinaryOperator({ _, _ -> 0.0 }, 5, true))
         return mathExpression.toAbstractSyntaxTree(operators).eval()
     }
 }
