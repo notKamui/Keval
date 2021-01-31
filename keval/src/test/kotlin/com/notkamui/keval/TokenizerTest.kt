@@ -15,7 +15,7 @@ class TokenizerTest {
      */
     @Test
     fun parseString() {
-        val operators = Resources().loadBuiltInOperators()
+        val operators = Resources.defaultOperators
         val tokens = "((34+8)/3)+3.3*(5+2)%2^6".tokenize(operators.keys)
         assertEquals(
             listOf(

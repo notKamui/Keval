@@ -1,19 +1,16 @@
 package com.notkamui.keval
 
-import com.notkamui.keval.framework.*
+import com.notkamui.keval.framework.KevalLPA
+import com.notkamui.keval.framework.KevalMul
+import com.notkamui.keval.framework.KevalRPA
+import com.notkamui.keval.framework.Resources
 
 /**
  * Wrapper class for Keval.
  * Contains a companion object with the evaluation method
  */
 class Keval(
-        val generator: Resources.() -> Unit = {
-            +('+' to BinaryOperator(::KevalAdd, 2, true))
-            +('-' to BinaryOperator(::KevalSub, 2, true))
-            +('/' to BinaryOperator(::KevalDiv, 3, true))
-            +('%' to BinaryOperator(::KevalMod, 3, true))
-            +('^' to BinaryOperator(::KevalPow, 4, false))
-        }
+        val generator: Resources.() -> Unit = { Resources.defaultOperators }
 ) {
     companion object {
         /**
@@ -28,7 +25,7 @@ class Keval(
         fun eval(
                 mathExpression: String,
         ): Double {
-            return mathExpression.toAbstractSyntaxTree(Resources().loadBuiltInOperators()).eval()
+            return mathExpression.toAbstractSyntaxTree(Resources.defaultOperators).eval()
         }
     }
 
@@ -59,7 +56,11 @@ class Keval(
  * @throws KevalZeroDivisionException in case of a zero division
  */
 fun String.keval(
-        generator: Resources.() -> Unit = { +loadBuiltInOperators() }
+        generator: Resources.() -> Unit
 ): Double {
     return Keval(generator).eval(this)
+}
+
+fun String.keval(): Double {
+    return Keval.eval(this)
 }

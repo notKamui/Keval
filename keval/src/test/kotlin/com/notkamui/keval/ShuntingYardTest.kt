@@ -15,7 +15,7 @@ class ShuntingYardTest {
      */
     @Test
     fun syTest() {
-        val operators = Resources().loadBuiltInOperators()
+        val operators = Resources.defaultOperators
         assertEquals(8.0, "3 + 5 * (2-1)".toAbstractSyntaxTree(operators).eval())
     }
 

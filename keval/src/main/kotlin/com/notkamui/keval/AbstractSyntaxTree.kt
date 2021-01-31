@@ -1,7 +1,5 @@
 package com.notkamui.keval
 
-import java.lang.reflect.InvocationTargetException
-
 data class BinaryOperator(val implementation: (Double, Double) -> Double, val precedence: Int, val isLeftAssociative: Boolean)
 
 /**
@@ -33,11 +31,8 @@ internal data class OperatorNode(
         private val right: Node
 ) : Node {
     override fun eval(): Double {
-        try {
-            return op.invoke(left.eval(), right.eval())
-        } catch (e: InvocationTargetException) {
-            throw e.cause!!
-        }
+        return op.invoke(left.eval(), right.eval())
+
     }
 }
 
