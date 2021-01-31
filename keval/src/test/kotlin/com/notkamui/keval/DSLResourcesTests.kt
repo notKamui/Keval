@@ -35,13 +35,13 @@ class DLSTest {
         }
 
         assertEquals(
-                5.0,
-                kvl.eval("3;4")
+            5.0,
+            kvl.eval("3;4")
         )
 
         assertEquals(
-                10.0,
-                kvl.eval("((3;4)*1.2);8")
+            10.0,
+            kvl.eval("((3;4)*1.2);8")
         )
 
         assertFailsWith(KevalInvalidOperatorException::class) {
@@ -65,13 +65,13 @@ class DLSTest {
         }
 
         assertEquals(
-                4.1,
-                kvl.eval("3;4-0.9")
+            4.1,
+            kvl.eval("3;4-0.9")
         )
 
         assertEquals(
-                8.85663593,
-                (kvl.eval("((3;4)-1.2);8") * 10.0.pow(8)).toInt() / 10.0.pow(8)
+            8.85663593,
+            (kvl.eval("((3;4)-1.2);8") * 10.0.pow(8)).toInt() / 10.0.pow(8)
         )
     }
 }

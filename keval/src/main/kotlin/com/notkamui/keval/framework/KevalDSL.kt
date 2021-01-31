@@ -37,21 +37,21 @@ class Resources internal constructor() {
 
     companion object {
         val defaultOperators: Map<Char, BinaryOperator> = mapOf(
-                '+' to BinaryOperator(::KevalAdd, 2, true),
-                '-' to BinaryOperator(::KevalSub, 2, true),
-                '/' to BinaryOperator(::KevalDiv, 3, true),
-                '%' to BinaryOperator(::KevalMod, 3, true),
-                '^' to BinaryOperator(::KevalPow, 4, false),
-                '*' to BinaryOperator(::KevalMul, 3, true),
-                '(' to BinaryOperator(::KevalRPA, 5, true),
-                ')' to BinaryOperator(::KevalLPA, 5, true)
+            '+' to BinaryOperator(::kevalAdd, 2, true),
+            '-' to BinaryOperator(::kevalSub, 2, true),
+            '/' to BinaryOperator(::kevalDiv, 3, true),
+            '%' to BinaryOperator(::kevalMod, 3, true),
+            '^' to BinaryOperator(::kevalPow, 4, false),
+            '*' to BinaryOperator(::kevalMul, 3, true),
+            '(' to BinaryOperator(::kevalRPA, 5, true),
+            ')' to BinaryOperator(::kevalLPA, 5, true)
         )
 
         data class Operator(
-                var symbol: Char? = null,
-                var implementation: ((Double, Double) -> Double)? = null,
-                var precedence: Int = 1,
-                var isLeftAssociative: Boolean = false
+            var symbol: Char? = null,
+            var implementation: ((Double, Double) -> Double)? = null,
+            var precedence: Int = 1,
+            var isLeftAssociative: Boolean = false
         )
     }
 }
