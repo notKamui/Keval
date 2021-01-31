@@ -1,5 +1,7 @@
 package com.notkamui.keval
 
+import com.notkamui.keval.framework.*
+
 /**
  * Wrapper class for Keval.
  * Contains a companion object with the evaluation method
@@ -15,7 +17,7 @@ class Keval private constructor() {
          * @throws KevalInvalidExpressionException in case the expression is invalid (i.e. mismatched parenthesis)
          * @throws KevalZeroDivisionException in case of a zero division
          */
-        fun eval(mathExpression: String): Double = mathExpression.toAbstractSyntaxTree().eval()
+        fun eval(mathExpression: String): Double = mathExpression.keval()
     }
 }
 
@@ -28,4 +30,7 @@ class Keval private constructor() {
  * @throws KevalInvalidExpressionException in case the expression is invalid (i.e. mismatched parenthesis)
  * @throws KevalZeroDivisionException in case of a zero division
  */
-fun String.keval(): Double = this.toAbstractSyntaxTree().eval()
+fun String.keval(): Double {
+    val operators: Map<Char, BinaryOperator> = loadBuiltInOperators()
+    return this.toAbstractSyntaxTree(operators).eval()
+}

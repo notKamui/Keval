@@ -31,7 +31,7 @@ internal fun String.isNumeric(): Boolean {
  * @receiver is the string to check
  * @return true if the string is a valid operator, false otherwise
  */
-internal fun String.isOperator(): Boolean = this in kevalSymbols() && this !in "()"
+internal fun String.isOperator(symbolsSet: Set<Char>): Boolean = this in symbolsSet.map { it.toString() } && this !in "()"
 
 /**
  * Tokenizes a mathematical expression
@@ -40,10 +40,10 @@ internal fun String.isOperator(): Boolean = this in kevalSymbols() && this !in "
  * @return the list of tokens
  * @throws KevalInvalidOperatorException if the expression contains an invalid operator
  */
-internal fun String.tokenize(): List<String> {
+internal fun String.tokenize(symbolsSet: Set<Char>): List<String> {
     // The order of "symbols" is non deterministic, in the case that `-` doesn't appear first or last, it should have an escape character
     // TODO: Handle other special character symbols
-    val symbols = kevalSymbols()
+    val symbols = symbolsSet.joinToString("")
             .let {
                 if (it.first() != '-' && it.last() != '-')
                     it.replace("-", "\\-")
@@ -64,7 +64,7 @@ internal fun String.tokenize(): List<String> {
                     ret.add("*")
                 TokenType.OPERAND
             }
-            token.isOperator() -> TokenType.OPERATOR
+            token.isOperator(symbolsSet) -> TokenType.OPERATOR
             token == "(" -> {
                 if (shouldAutoMul(prevToken))
                     ret.add("*")

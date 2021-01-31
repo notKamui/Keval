@@ -1,5 +1,6 @@
 package com.notkamui.keval
 
+import com.notkamui.keval.framework.loadBuiltInOperators
 import io.github.classgraph.ClassGraph
 import io.github.classgraph.ClassInfo
 import kotlin.test.Test
@@ -15,7 +16,8 @@ class ASTTest {
      */
     @Test
     fun simpleEvalTest() {
-        val ast: Node = OperatorNode(ValueNode(3.0), getKevalOperator('+')!!, ValueNode(2.0))
+        val operators = loadBuiltInOperators()
+        val ast: Node = OperatorNode(ValueNode(3.0), operators['+']!!.implementation, ValueNode(2.0))
         assertEquals(ast.eval(), 5.0)
     }
 
@@ -24,9 +26,10 @@ class ASTTest {
      */
     @Test
     fun symbolsTest() {
+        val operators = loadBuiltInOperators()
         assertTrue {
             "+-*/%^()".all {
-                it.toString() in kevalSymbols()
+                it in operators.keys
             }
         }
     }
