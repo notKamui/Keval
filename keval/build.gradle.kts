@@ -9,7 +9,7 @@ import java.net.URL
 version = "0.6"
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.4.20"
+    kotlin("jvm") version "1.4.20"
     id("org.jetbrains.dokka") version "1.4.20"
     `java-library`
 }
@@ -37,6 +37,12 @@ tasks.jar {
             )
         )
     }
+    from(sourceSets.main.get().output)
+
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
 }
 
 java {
