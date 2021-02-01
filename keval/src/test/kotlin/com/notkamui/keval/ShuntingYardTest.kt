@@ -14,7 +14,7 @@ class ShuntingYardTest {
      */
     @Test
     fun syTest() {
-        val operators = Resources.DEFAULT_OPERATORS
+        val operators = KevalDSL.DEFAULT_OPERATORS
         assertEquals(8.0, "3 + 5 * (2-1)".toAbstractSyntaxTree(operators).eval())
     }
 

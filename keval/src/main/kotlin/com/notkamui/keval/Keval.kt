@@ -5,7 +5,7 @@ package com.notkamui.keval
  * Contains a companion object with the evaluation method
  */
 class Keval(
-    val generator: Resources.() -> Unit = { Resources.DEFAULT_OPERATORS }
+    val generator: KevalDSL.() -> Unit = { KevalDSL.DEFAULT_OPERATORS }
 ) {
     companion object {
         /**
@@ -20,18 +20,18 @@ class Keval(
         fun eval(
             mathExpression: String,
         ): Double {
-            return mathExpression.toAbstractSyntaxTree(Resources.DEFAULT_OPERATORS).eval()
+            return mathExpression.toAbstractSyntaxTree(KevalDSL.DEFAULT_OPERATORS).eval()
         }
     }
 
     fun eval(
         mathExpression: String,
     ): Double {
-        val resources = Resources()
+        val resources = KevalDSL()
         resources.generator()
 
         // The tokenizer assumes multiplication, hence disallowing overriding `*` operator
-        val operators = resources.operators
+        val operators = resources.resources
             .plus("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
         return mathExpression.toAbstractSyntaxTree(operators).eval()
     }
@@ -47,7 +47,7 @@ class Keval(
  * @throws KevalZeroDivisionException in case of a zero division
  */
 fun String.keval(
-    generator: Resources.() -> Unit
+    generator: KevalDSL.() -> Unit
 ): Double {
     return Keval(generator).eval(this)
 }

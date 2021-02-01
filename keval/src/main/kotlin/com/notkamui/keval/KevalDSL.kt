@@ -2,15 +2,27 @@ package com.notkamui.keval
 
 import kotlin.math.pow
 
-class Resources internal constructor() {
-    private val _operators: MutableMap<String, KevalOperator> = mutableMapOf()
-    val operators: Map<String, KevalOperator>
-        get() = _operators.toMap()
+/**
+ * Resource wrapper for KevalDSL
+ */
+class KevalDSL internal constructor() {
+    private val _resources: MutableMap<String, KevalOperator> = mutableMapOf()
+    internal val resources: Map<String, KevalOperator>
+        get() = _resources.toMap()
 
+    /**
+     * Includes default operators and functions to Keval instance
+     */
     fun includeDefault() {
-        _operators += DEFAULT_OPERATORS
+        _resources += DEFAULT_OPERATORS
     }
 
+    /**
+     * Adds a new operator to Keval instance,
+     * every field MUST be defined: symbol, precedence, isLeftAssociative, implementation
+     *
+     * @param definition is the definition of the above fields
+     */
     fun operator(definition: BinaryOperatorDSL.() -> Unit) {
         val op = BinaryOperatorDSL()
         op.definition()
@@ -25,9 +37,15 @@ class Resources internal constructor() {
             throw IllegalArgumentException("Operator precedence must always be positive or 0")
         op.isLeftAssociative ?: throw KevalDSLException("isLeftAssociative")
 
-        _operators += op.symbol!! to KevalBinaryOperator(op.precedence!!, op.isLeftAssociative!!, op.implementation!!)
+        _resources += op.symbol!! to KevalBinaryOperator(op.precedence!!, op.isLeftAssociative!!, op.implementation!!)
     }
 
+    /**
+     * Adds a new function to Keval instance,
+     * every field MUST be defined: name, arity, implementation
+     *
+     * @param definition is the definition of the above fields
+     */
     fun function(definition: FunctionDSL.() -> Unit) {
         val fn = FunctionDSL()
         fn.definition()
@@ -39,7 +57,7 @@ class Resources internal constructor() {
             throw IllegalArgumentException("Function arity must always be positive or 0")
         fn.implementation ?: throw KevalDSLException("implementation")
 
-        _operators += fn.name!! to KevalFunction(fn.arity!!, fn.implementation!!)
+        _resources += fn.name!! to KevalFunction(fn.arity!!, fn.implementation!!)
     }
 
     companion object {
@@ -60,6 +78,14 @@ class Resources internal constructor() {
             "neg" to KevalFunction(1) { args -> -args[0] }
         )
 
+        /**
+         * DSL representation of a binary operator
+         *
+         * @property symbol is the symbol which represents the operator
+         * @property precedence is the precedence of the operator
+         * @property isLeftAssociative is true when the operator is left associative, false otherwise
+         * @property implementation is the actual implementation of the operator
+         */
         data class BinaryOperatorDSL(
             var symbol: String? = null,
             var precedence: Int? = null,
@@ -67,6 +93,13 @@ class Resources internal constructor() {
             var implementation: ((Double, Double) -> Double)? = null
         )
 
+        /**
+         * DSL representation of a function
+         *
+         * @property name is the identifier which represents the function
+         * @property arity is the arity of the function (how many arguments it takes)
+         * @property implementation is the actual implementation of the function
+         */
         data class FunctionDSL(
             var name: String? = null,
             var arity: Int? = null,
