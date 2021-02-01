@@ -32,7 +32,7 @@ class Keval(
 
         // The tokenizer assumes multiplication, hence disallowing overriding `*` operator
         val operators = resources.operators
-            .plus("*" to KevalBinaryOperator({ a, b -> a * b }, 3, true))
+            .plus("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
         return mathExpression.toAbstractSyntaxTree(operators).eval()
     }
 }

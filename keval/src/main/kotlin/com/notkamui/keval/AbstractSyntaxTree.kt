@@ -3,9 +3,9 @@ package com.notkamui.keval
 sealed class KevalOperator
 
 data class KevalBinaryOperator(
-    val implementation: (Double, Double) -> Double,
     val precedence: Int,
-    val isLeftAssociative: Boolean
+    val isLeftAssociative: Boolean,
+    val implementation: (Double, Double) -> Double
 ) : KevalOperator()
 
 data class KevalFunction(
