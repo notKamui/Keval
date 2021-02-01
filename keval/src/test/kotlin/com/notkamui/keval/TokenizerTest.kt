@@ -14,7 +14,7 @@ class TokenizerTest {
      */
     @Test
     fun parseString() {
-        val operators = KevalDSL.DEFAULT_OPERATORS
+        val operators = KevalDSL.DEFAULT_RESOURCES
         val tokens = "((34+8)/3)+3.3*(5+2)%2^6".tokenize(operators.keys)
         assertEquals(
             listOf(

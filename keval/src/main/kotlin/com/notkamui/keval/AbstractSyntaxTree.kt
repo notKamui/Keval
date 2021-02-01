@@ -1,14 +1,30 @@
 package com.notkamui.keval
 
-sealed class KevalOperator
+/**
+ * Represents an operator, may be either a binary operator, or a function
+ */
+internal sealed class KevalOperator
 
-data class KevalBinaryOperator(
+/**
+ * Represents a binary operator
+ *
+ * @property precedence is the precedence of the operator
+ * @property isLeftAssociative is true if the operator is left associative, false otherwise
+ * @property implementation is the actual implementation of the operator
+ */
+internal data class KevalBinaryOperator(
     val precedence: Int,
     val isLeftAssociative: Boolean,
     val implementation: (Double, Double) -> Double
 ) : KevalOperator()
 
-data class KevalFunction(
+/**
+ * Represents a function
+ *
+ * @property arity is the arity of the function (how many arguments it takes)
+ * @property implementation is the actual implementation of the function
+ */
+internal data class KevalFunction(
     val arity: Int,
     val implementation: (DoubleArray) -> Double
 ) : KevalOperator()

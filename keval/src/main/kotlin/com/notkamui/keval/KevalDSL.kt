@@ -14,7 +14,7 @@ class KevalDSL internal constructor() {
      * Includes default operators and functions to Keval instance
      */
     fun includeDefault() {
-        _resources += DEFAULT_OPERATORS
+        _resources += DEFAULT_RESOURCES
     }
 
     /**
@@ -61,7 +61,7 @@ class KevalDSL internal constructor() {
     }
 
     companion object {
-        internal val DEFAULT_OPERATORS: Map<String, KevalOperator> = mapOf(
+        internal val DEFAULT_RESOURCES: Map<String, KevalOperator> = mapOf(
             "+" to KevalBinaryOperator(2, true) { a, b -> a + b },
             "-" to KevalBinaryOperator(2, true) { a, b -> a - b },
             "/" to KevalBinaryOperator(3, true) { a, b ->
