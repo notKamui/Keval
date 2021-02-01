@@ -1,0 +1,51 @@
+---
+title: KevalException -
+---
+//[Keval](../../index.md)/[com.notkamui.keval](../index.md)/[KevalException](index.md)
+
+# KevalException
+
+[jvm] sealed
+class [KevalException](index.md) : [Exception](https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html)
+
+Generic Keval Exception
+
+## Parameters
+
+jvm
+
+|  Name|  Summary| 
+|---|---|
+| <a name="com.notkamui.keval/KevalException///PointingToDeclaration/"></a>message| <a name="com.notkamui.keval/KevalException///PointingToDeclaration/"></a><br><br>is the message to display in the stacktrace<br><br>
+
+## Functions
+
+|  Name|  Summary| 
+|---|---|
+| <a name="kotlin/Throwable/addSuppressed/#kotlin.Throwable/PointingToDeclaration/"></a>[addSuppressed](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FaddSuppressed%2F%23kotlin.Throwable%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Throwable/addSuppressed/#kotlin.Throwable/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>fun [addSuppressed](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FaddSuppressed%2F%23kotlin.Throwable%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(p0: [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html))  <br><br><br>
+| <a name="kotlin/Any/equals/#kotlin.Any?/PointingToDeclaration/"></a>[equals](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FAny%2Fequals%2F%23kotlin.Any%3F%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Any/equals/#kotlin.Any?/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>open operator fun [equals](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FAny%2Fequals%2F%23kotlin.Any%3F%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(other: [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)?): [Boolean](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)  <br><br><br>
+| <a name="kotlin/Throwable/fillInStackTrace/#/PointingToDeclaration/"></a>[fillInStackTrace](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FfillInStackTrace%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Throwable/fillInStackTrace/#/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>open fun [fillInStackTrace](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FfillInStackTrace%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(): [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)  <br><br><br>
+| <a name="kotlin/Throwable/getLocalizedMessage/#/PointingToDeclaration/"></a>[getLocalizedMessage](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FgetLocalizedMessage%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Throwable/getLocalizedMessage/#/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>open fun [getLocalizedMessage](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FgetLocalizedMessage%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)  <br><br><br>
+| <a name="kotlin/Throwable/getStackTrace/#/PointingToDeclaration/"></a>[getStackTrace](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FgetStackTrace%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Throwable/getStackTrace/#/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>open fun [getStackTrace](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FgetStackTrace%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(): [Array](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)<[StackTraceElement](https://docs.oracle.com/javase/8/docs/api/java/lang/StackTraceElement.html)>  <br><br><br>
+| <a name="kotlin/Throwable/getSuppressed/#/PointingToDeclaration/"></a>[getSuppressed](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FgetSuppressed%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Throwable/getSuppressed/#/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>fun [getSuppressed](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FgetSuppressed%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(): [Array](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)<[Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)>  <br><br><br>
+| <a name="kotlin/Any/hashCode/#/PointingToDeclaration/"></a>[hashCode](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FAny%2FhashCode%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Any/hashCode/#/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>open fun [hashCode](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FAny%2FhashCode%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)  <br><br><br>
+| <a name="kotlin/Throwable/initCause/#kotlin.Throwable/PointingToDeclaration/"></a>[initCause](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FinitCause%2F%23kotlin.Throwable%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Throwable/initCause/#kotlin.Throwable/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>open fun [initCause](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FinitCause%2F%23kotlin.Throwable%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(p0: [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)): [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)  <br><br><br>
+| <a name="kotlin/Throwable/printStackTrace/#/PointingToDeclaration/"></a>[printStackTrace](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FprintStackTrace%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Throwable/printStackTrace/#/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>open fun [printStackTrace](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FprintStackTrace%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)()  <br>open fun [printStackTrace](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FprintStackTrace%2F%23java.io.PrintStream%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(p0: [PrintStream](https://docs.oracle.com/javase/8/docs/api/java/io/PrintStream.html))  <br>open fun [printStackTrace](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FprintStackTrace%2F%23java.io.PrintWriter%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(p0: [PrintWriter](https://docs.oracle.com/javase/8/docs/api/java/io/PrintWriter.html))  <br><br><br>
+| <a name="kotlin/Throwable/setStackTrace/#kotlin.Array[java.lang.StackTraceElement]/PointingToDeclaration/"></a>[setStackTrace](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FsetStackTrace%2F%23kotlin.Array%5Bjava.lang.StackTraceElement%5D%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Throwable/setStackTrace/#kotlin.Array[java.lang.StackTraceElement]/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>open fun [setStackTrace](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FThrowable%2FsetStackTrace%2F%23kotlin.Array%5Bjava.lang.StackTraceElement%5D%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(p0: [Array](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html)<[StackTraceElement](https://docs.oracle.com/javase/8/docs/api/java/lang/StackTraceElement.html)>)  <br><br><br>
+| <a name="kotlin/Any/toString/#/PointingToDeclaration/"></a>[toString](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FAny%2FtoString%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)| <a name="kotlin/Any/toString/#/PointingToDeclaration/"></a>[jvm]  <br>Content  <br>open fun [toString](../-keval-d-s-l-exception/index.md#%5Bkotlin%2FAny%2FtoString%2F%23%2FPointingToDeclaration%2F%5D%2FFunctions%2F-408414666)(): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)  <br><br><br>
+
+## Properties
+
+|  Name|  Summary| 
+|---|---|
+| <a name="com.notkamui.keval/KevalException/cause/#/PointingToDeclaration/"></a>[cause](index.md#%5Bcom.notkamui.keval%2FKevalException%2Fcause%2F%23%2FPointingToDeclaration%2F%5D%2FProperties%2F-408414666)| <a name="com.notkamui.keval/KevalException/cause/#/PointingToDeclaration/"></a> [jvm] open val [cause](index.md#%5Bcom.notkamui.keval%2FKevalException%2Fcause%2F%23%2FPointingToDeclaration%2F%5D%2FProperties%2F-408414666): [Throwable](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html)?   <br>
+| <a name="com.notkamui.keval/KevalException/message/#/PointingToDeclaration/"></a>[message](index.md#%5Bcom.notkamui.keval%2FKevalException%2Fmessage%2F%23%2FPointingToDeclaration%2F%5D%2FProperties%2F-408414666)| <a name="com.notkamui.keval/KevalException/message/#/PointingToDeclaration/"></a> [jvm] open val [message](index.md#%5Bcom.notkamui.keval%2FKevalException%2Fmessage%2F%23%2FPointingToDeclaration%2F%5D%2FProperties%2F-408414666): [String](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)?   <br>
+
+## Inheritors
+
+|  Name| 
+|---|
+| <a name="com.notkamui.keval/KevalInvalidExpressionException///PointingToDeclaration/"></a>[KevalInvalidExpressionException](../-keval-invalid-expression-exception/index.md)
+| <a name="com.notkamui.keval/KevalZeroDivisionException///PointingToDeclaration/"></a>[KevalZeroDivisionException](../-keval-zero-division-exception/index.md)
+| <a name="com.notkamui.keval/KevalDSLException///PointingToDeclaration/"></a>[KevalDSLException](../-keval-d-s-l-exception/index.md)
+
