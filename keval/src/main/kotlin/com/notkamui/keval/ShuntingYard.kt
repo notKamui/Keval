@@ -11,12 +11,12 @@ private fun MutableList<Node>.offerOperator(
     operatorStack: MutableList<String>,
     tokensToString: String,
     currentPos: Int,
-    operators: Map<Char, BinaryOperator>
+    operators: Map<String, BinaryOperator>
 ) {
     val op = operatorStack.removeLast()
     if (
         !this.addOperator(
-            operators[op[0]]?.implementation
+            operators[op]?.implementation
                 ?: throw KevalInvalidOperatorException(op, tokensToString, currentPos)
         )
     ) throw KevalInvalidExpressionException(tokensToString, currentPos)
@@ -33,16 +33,16 @@ private fun String.parseAsOperator(
     outputQueue: MutableList<Node>,
     tokensToString: String,
     currentPos: Int,
-    operators: Map<Char, BinaryOperator>
+    operators: Map<String, BinaryOperator>
 ) {
     if (operatorStack.isNotEmpty()) {
-        val currentOperator = operators[this[0]]
+        val currentOperator = operators[this]
             ?: throw KevalInvalidOperatorException(this, tokensToString, currentPos)
         while (operatorStack.isNotEmpty()) {
             if (operatorStack.last() == "(") // even though the operator stack can contains parenthesis, they're not operators
                 break
 
-            val topOperator = operators[operatorStack.last()[0]]
+            val topOperator = operators[operatorStack.last()]
                 ?: throw KevalInvalidOperatorException(operatorStack.last(), tokensToString, currentPos)
 
             if (checkPrecedence(topOperator, currentOperator))
@@ -59,7 +59,7 @@ private fun parseOnRightParenthesis(
     outputQueue: MutableList<Node>,
     tokensToString: String,
     currentPos: Int,
-    operators: Map<Char, BinaryOperator>
+    operators: Map<String, BinaryOperator>
 ) {
     try {
         while (operatorStack.last() != "(") {
@@ -82,7 +82,7 @@ private fun parseOnRightParenthesis(
  * @throws KevalInvalidOperatorException if the expression contains an invalid operator
  * @throws KevalInvalidExpressionException if the expression is invalid (i.e. mismatched parenthesis or missing operand)
  */
-internal fun String.toAbstractSyntaxTree(operators: Map<Char, BinaryOperator>): Node {
+internal fun String.toAbstractSyntaxTree(operators: Map<String, BinaryOperator>): Node {
     val outputQueue = mutableListOf<Node>()
     val operatorStack = mutableListOf<String>()
     val tokens = this.tokenize(operators.keys)
@@ -92,7 +92,13 @@ internal fun String.toAbstractSyntaxTree(operators: Map<Char, BinaryOperator>): 
     tokens.forEach { token ->
         when {
             token.isNumeric() -> outputQueue.add(ValueNode(token.toDouble()))
-            token.isOperator(operators.keys) -> token.parseAsOperator(operatorStack, outputQueue, tokensToString, currentPos, operators)
+            token.isOperator(operators.keys) -> token.parseAsOperator(
+                operatorStack,
+                outputQueue,
+                tokensToString,
+                currentPos,
+                operators
+            )
             token == "(" -> operatorStack.add(token)
             token == ")" -> parseOnRightParenthesis(operatorStack, outputQueue, tokensToString, currentPos, operators)
         }

@@ -30,9 +30,9 @@ class Keval(
         val resources = Resources()
         resources.generator()
 
-        val operators: Map<Char, BinaryOperator> = resources.operators
-            // The method `tokenize` assumes multiplication, hence disallowing overriding `*` operator
-            .plus('*' to BinaryOperator({ a, b -> a * b }, 3, true))
+        // The tokenizer assumes multiplication, hence disallowing overriding `*` operator
+        val operators = resources.operators
+            .plus("*" to BinaryOperator({ a, b -> a * b }, 3, true))
         return mathExpression.toAbstractSyntaxTree(operators).eval()
     }
 }

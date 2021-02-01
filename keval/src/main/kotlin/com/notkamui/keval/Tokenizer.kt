@@ -1,8 +1,5 @@
 package com.notkamui.keval
 
-/**
- * The different token types
- */
 private enum class TokenType {
     FIRST,
     OPERAND,
@@ -11,8 +8,35 @@ private enum class TokenType {
     RPAREN,
 }
 
-private fun shouldAutoMul(tokenType: TokenType): Boolean =
+private fun shouldAssumeMul(tokenType: TokenType): Boolean =
     tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
+
+// This functions add product symbols where they should be assumed
+private fun List<String>.assumeMul(symbolsSet: Set<String>, tokensToString: String): List<String> {
+    var currentPos = 0
+    var prevToken = TokenType.FIRST
+    val ret = mutableListOf<String>()
+    this.forEach { token ->
+        prevToken = when {
+            token.isNumeric() -> {
+                if (shouldAssumeMul(prevToken))
+                    ret.add("*")
+                TokenType.OPERAND
+            }
+            token.isOperator(symbolsSet) -> TokenType.OPERATOR
+            token == "(" -> {
+                if (shouldAssumeMul(prevToken))
+                    ret.add("*")
+                TokenType.LPAREN
+            }
+            token == ")" -> TokenType.RPAREN
+            else -> throw KevalInvalidOperatorException(token, tokensToString, currentPos)
+        }
+        ret.add(token)
+        currentPos += token.length
+    }
+    return ret
+}
 
 /**
  * Checks if a string is numeric or not
@@ -31,7 +55,7 @@ internal fun String.isNumeric(): Boolean {
  * @receiver is the string to check
  * @return true if the string is a valid operator, false otherwise
  */
-internal fun String.isOperator(symbolsSet: Set<Char>): Boolean = this in symbolsSet.map { it.toString() } && this !in "()"
+internal fun String.isOperator(symbolsSet: Set<String>): Boolean = this in symbolsSet
 
 /**
  * Tokenizes a mathematical expression
@@ -40,38 +64,16 @@ internal fun String.isOperator(symbolsSet: Set<Char>): Boolean = this in symbols
  * @return the list of tokens
  * @throws KevalInvalidOperatorException if the expression contains an invalid operator
  */
-internal fun String.tokenize(symbolsSet: Set<Char>): List<String> {
-    // All symbols are escaped for the regex
-    // TODO clean that absolute garbage mess
-    val symbols = symbolsSet.joinToString("|\\")
-    val sanitized = this.replace("\\s".toRegex(), "")
-    val tokens = sanitized
-        .split("""(?<=(\$symbols|\(|\)))|(?=(\$symbols|\(|\)))""".toRegex())
-        .filter { it.isNotEmpty() }
+internal fun String.tokenize(symbolsSet: Set<String>): List<String> {
+    // All symbols are properly escaped for the regex
+    val symbols = symbolsSet.joinToString("|") {
+        it.replace("[^a-zA-Z0-9]".toRegex()) { c -> "\\${c.value}" }
+    }
+    val tokens = this
+        .replace("\\s".toRegex(), "") // sanitizing expression
+        .split("""(?<=($symbols|\(|\)))|(?=($symbols|\(|\)))""".toRegex()) // tokenizing
+        .filter { it.isNotEmpty() } // removing possible empty tokens
     val tokensToString = tokens.joinToString("")
 
-    var currentPos = 0
-    var prevToken = TokenType.FIRST
-    val ret = mutableListOf<String>()
-    tokens.forEach { token ->
-        prevToken = when {
-            token.isNumeric() -> {
-                if (shouldAutoMul(prevToken))
-                    ret.add("*")
-                TokenType.OPERAND
-            }
-            token.isOperator(symbolsSet) -> TokenType.OPERATOR
-            token == "(" -> {
-                if (shouldAutoMul(prevToken))
-                    ret.add("*")
-                TokenType.LPAREN
-            }
-            token == ")" -> TokenType.RPAREN
-            else -> throw KevalInvalidOperatorException(token, tokensToString, currentPos)
-        }
-        ret.add(token)
-        currentPos += token.length
-    }
-
-    return ret
+    return tokens.assumeMul(symbolsSet, tokensToString)
 }

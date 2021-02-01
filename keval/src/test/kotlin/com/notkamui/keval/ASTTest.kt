@@ -12,8 +12,8 @@ class ASTTest {
      */
     @Test
     fun simpleEvalTest() {
-        val operators: Map<Char, BinaryOperator> = Resources.defaultOperators
-        val ast: Node = OperatorNode(ValueNode(3.0), operators['+']!!.implementation, ValueNode(2.0))
+        val operators: Map<String, BinaryOperator> = Resources.defaultOperators
+        val ast: Node = OperatorNode(ValueNode(3.0), operators["+"]!!.implementation, ValueNode(2.0))
         assertEquals(ast.eval(), 5.0)
     }
 }
