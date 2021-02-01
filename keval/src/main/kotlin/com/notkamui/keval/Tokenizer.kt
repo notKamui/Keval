@@ -6,6 +6,7 @@ private enum class TokenType {
     OPERATOR,
     LPAREN,
     RPAREN,
+    COMMA,
 }
 
 private fun shouldAssumeMul(tokenType: TokenType): Boolean =
@@ -23,13 +24,14 @@ private fun List<String>.assumeMul(symbolsSet: Set<String>, tokensToString: Stri
                     ret.add("*")
                 TokenType.OPERAND
             }
-            token.isOperator(symbolsSet) -> TokenType.OPERATOR
+            token.isKevalOperator(symbolsSet) -> TokenType.OPERATOR
             token == "(" -> {
                 if (shouldAssumeMul(prevToken))
                     ret.add("*")
                 TokenType.LPAREN
             }
             token == ")" -> TokenType.RPAREN
+            token == "," -> TokenType.COMMA
             else -> throw KevalInvalidOperatorException(token, tokensToString, currentPos)
         }
         ret.add(token)
@@ -50,12 +52,12 @@ internal fun String.isNumeric(): Boolean {
 }
 
 /**
- * Checks if a string is an operator or not (neither LPAREN nor RPAREN are operators in this context
+ * Checks if a string is a Keval Operator or not
  *
  * @receiver is the string to check
  * @return true if the string is a valid operator, false otherwise
  */
-internal fun String.isOperator(symbolsSet: Set<String>): Boolean = this in symbolsSet
+internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in symbolsSet
 
 /**
  * Tokenizes a mathematical expression
@@ -71,9 +73,11 @@ internal fun String.tokenize(symbolsSet: Set<String>): List<String> {
     }
     val tokens = this
         .replace("\\s".toRegex(), "") // sanitizing expression
-        .split("""(?<=($symbols|\(|\)))|(?=($symbols|\(|\)))""".toRegex()) // tokenizing
+        .split("""(?<=($symbols|,|\(|\)))|(?=($symbols|,|\(|\)))""".toRegex()) // tokenizing
         .filter { it.isNotEmpty() } // removing possible empty tokens
     val tokensToString = tokens.joinToString("")
+
+    println(tokens)
 
     return tokens.assumeMul(symbolsSet, tokensToString)
 }

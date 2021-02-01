@@ -1,5 +1,6 @@
 package com.notkamui.keval
 
+import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.test.Test
@@ -42,18 +43,30 @@ class DLSTest {
     @Test
     fun checkCombinedDSL() {
         val kvl = Keval {
+            includeDefault()
             operator {
                 symbol = ";"
                 implementation = ::hypotenuse
                 precedence = 3
                 isLeftAssociative = true
             }
-            +defaultOperators
+            function {
+                name = "max"
+                arity = 2
+                implementation = { args ->
+                    max(args[0], args[1])
+                }
+            }
         }
 
         assertEquals(
-            4.1,
-            kvl.eval("3;4-0.9")
+            9.0,
+            kvl.eval("max(4, 2) + 5")
+        )
+
+        assertEquals(
+            5.0,
+            kvl.eval("neg(5) + 10")
         )
 
         assertEquals(

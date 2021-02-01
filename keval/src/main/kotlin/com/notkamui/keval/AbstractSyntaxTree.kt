@@ -10,7 +10,7 @@ data class KevalBinaryOperator(
 
 data class KevalFunction(
     val arity: Int,
-    val implementation: (Array<Double>) -> Double
+    val implementation: (DoubleArray) -> Double
 ) : KevalOperator()
 
 /**
@@ -41,9 +41,14 @@ internal data class OperatorNode(
     private val op: (Double, Double) -> Double,
     private val right: Node
 ) : Node {
-    override fun eval(): Double {
-        return op.invoke(left.eval(), right.eval())
-    }
+    override fun eval(): Double = op(left.eval(), right.eval())
+}
+
+internal data class FunctionNode(
+    private val func: (DoubleArray) -> Double,
+    private val children: List<Node>
+) : Node {
+    override fun eval(): Double = func(children.map { it.eval() }.toDoubleArray())
 }
 
 /**

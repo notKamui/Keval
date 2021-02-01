@@ -6,7 +6,7 @@
 
 import java.net.URL
 
-version = "0.5"
+version = "0.6"
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.4.20"

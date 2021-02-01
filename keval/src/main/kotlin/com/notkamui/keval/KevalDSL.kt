@@ -7,14 +7,8 @@ class Resources internal constructor() {
     val operators: Map<String, KevalOperator>
         get() = _operators.toMap()
 
-    val defaultOperators: Map<String, KevalOperator> = DEFAULT_OPERATORS
-
-    operator fun Map<String, KevalBinaryOperator>.unaryPlus() {
-        _operators += this
-    }
-
-    operator fun Pair<String, KevalBinaryOperator>.unaryPlus() {
-        _operators += this
+    fun includeDefault() {
+        _operators += DEFAULT_OPERATORS
     }
 
     fun operator(definition: BinaryOperatorDSL.() -> Unit) {
@@ -76,7 +70,7 @@ class Resources internal constructor() {
         data class FunctionDSL(
             var name: String? = null,
             var arity: Int? = null,
-            var implementation: ((Array<Double>) -> Double)? = null,
+            var implementation: ((DoubleArray) -> Double)? = null,
         )
     }
 }
