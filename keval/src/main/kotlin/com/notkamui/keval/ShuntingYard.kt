@@ -11,7 +11,7 @@ private fun MutableList<Node>.offerOperator(
     operatorStack: MutableList<String>,
     tokensToString: String,
     currentPos: Int,
-    operators: Map<String, BinaryOperator>
+    operators: Map<String, KevalBinaryOperator>
 ) {
     val op = operatorStack.removeLast()
     if (
@@ -22,7 +22,7 @@ private fun MutableList<Node>.offerOperator(
     ) throw KevalInvalidExpressionException(tokensToString, currentPos)
 }
 
-private fun checkPrecedence(topOperator: BinaryOperator, currentOperator: BinaryOperator): Boolean {
+private fun checkPrecedence(topOperator: KevalBinaryOperator, currentOperator: KevalBinaryOperator): Boolean {
     val topIsStronger = topOperator.precedence > currentOperator.precedence
     val isLeftCompatible = topOperator.precedence == currentOperator.precedence && currentOperator.isLeftAssociative
     return topIsStronger || isLeftCompatible
@@ -33,7 +33,7 @@ private fun String.parseAsOperator(
     outputQueue: MutableList<Node>,
     tokensToString: String,
     currentPos: Int,
-    operators: Map<String, BinaryOperator>
+    operators: Map<String, KevalBinaryOperator>
 ) {
     if (operatorStack.isNotEmpty()) {
         val currentOperator = operators[this]
@@ -59,7 +59,7 @@ private fun parseOnRightParenthesis(
     outputQueue: MutableList<Node>,
     tokensToString: String,
     currentPos: Int,
-    operators: Map<String, BinaryOperator>
+    operators: Map<String, KevalBinaryOperator>
 ) {
     try {
         while (operatorStack.last() != "(") {
@@ -82,7 +82,7 @@ private fun parseOnRightParenthesis(
  * @throws KevalInvalidOperatorException if the expression contains an invalid operator
  * @throws KevalInvalidExpressionException if the expression is invalid (i.e. mismatched parenthesis or missing operand)
  */
-internal fun String.toAbstractSyntaxTree(operators: Map<String, BinaryOperator>): Node {
+internal fun String.toAbstractSyntaxTree(operators: Map<String, KevalBinaryOperator>): Node {
     val outputQueue = mutableListOf<Node>()
     val operatorStack = mutableListOf<String>()
     val tokens = this.tokenize(operators.keys)

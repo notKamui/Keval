@@ -1,10 +1,17 @@
 package com.notkamui.keval
 
-data class BinaryOperator(
+sealed class KevalOperator
+
+data class KevalBinaryOperator(
     val implementation: (Double, Double) -> Double,
     val precedence: Int,
     val isLeftAssociative: Boolean
-)
+) : KevalOperator()
+
+data class KevalFunction(
+    val arity: Int,
+    val implementation: (Array<Double>) -> Double
+) : KevalOperator()
 
 /**
  * Represents a node in an AST and can evaluate its value

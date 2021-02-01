@@ -5,7 +5,7 @@ package com.notkamui.keval
  * Contains a companion object with the evaluation method
  */
 class Keval(
-    val generator: Resources.() -> Unit = { Resources.defaultOperators }
+    val generator: Resources.() -> Unit = { Resources.DEFAULT_OPERATORS }
 ) {
     companion object {
         /**
@@ -20,7 +20,7 @@ class Keval(
         fun eval(
             mathExpression: String,
         ): Double {
-            return mathExpression.toAbstractSyntaxTree(Resources.defaultOperators).eval()
+            return mathExpression.toAbstractSyntaxTree(Resources.DEFAULT_OPERATORS).eval()
         }
     }
 
@@ -32,7 +32,7 @@ class Keval(
 
         // The tokenizer assumes multiplication, hence disallowing overriding `*` operator
         val operators = resources.operators
-            .plus("*" to BinaryOperator({ a, b -> a * b }, 3, true))
+            .plus("*" to KevalBinaryOperator({ a, b -> a * b }, 3, true))
         return mathExpression.toAbstractSyntaxTree(operators).eval()
     }
 }
