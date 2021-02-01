@@ -43,7 +43,7 @@ java {
     withSourcesJar()
 }
 
-tasks.dokkaJekyll.configure {
+tasks.dokkaHtml.configure {
     outputDirectory.set(rootDir.resolve("docs"))
     moduleName.set("Keval")
     dokkaSourceSets {
