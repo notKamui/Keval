@@ -5,7 +5,7 @@ window.addEventListener('load', () => {
 
     document.querySelectorAll('span.anchor-icon').forEach(element => {
         element.addEventListener('click', (el) => {
-            if(element.hasAttribute('pointing-to')){
+            if (element.hasAttribute('pointing-to')) {
                 const location = hrefWithoutCurrentlyUsedAnchor() + '#' + element.getAttribute('pointing-to')
                 copyTextToClipboard(element, location)
             }
@@ -20,7 +20,7 @@ const copyElementsContentToClipboard = (element) => {
     selection.removeAllRanges();
     selection.addRange(range);
 
-    copyAndShowPopup(element,  () => selection.removeAllRanges())
+    copyAndShowPopup(element, () => selection.removeAllRanges())
 }
 
 const copyTextToClipboard = (element, text) => {
@@ -42,9 +42,8 @@ const copyAndShowPopup = (element, after) => {
         }, 1200);
     } catch (e) {
         console.error('Failed to write to clipboard:', e)
-    }
-    finally {
-        if(after) after()
+    } finally {
+        if (after) after()
     }
 }
 
