@@ -14,7 +14,7 @@ class DLSTest {
     fun checkSimpleDLS() {
         val kvl = Keval {
             operator {
-                symbol = ";"
+                symbol = ';'
                 implementation = ::hypotenuse
                 precedence = 3
                 isLeftAssociative = true
@@ -45,7 +45,7 @@ class DLSTest {
         val kvl = Keval {
             includeDefault()
             operator {
-                symbol = ";"
+                symbol = ';'
                 implementation = ::hypotenuse
                 precedence = 3
                 isLeftAssociative = true

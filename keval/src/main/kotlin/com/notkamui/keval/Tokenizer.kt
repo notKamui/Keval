@@ -68,16 +68,18 @@ internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in 
  */
 internal fun String.tokenize(symbolsSet: Set<String>): List<String> {
     // All symbols are properly escaped for the regex
-    val symbols = symbolsSet
+    /*val symbols = symbolsSet
         .sortedByDescending { it.length }
         .joinToString("|") {
             it.replace("[^a-zA-Z0-9]".toRegex()) { c -> "\\${c.value}" }
-        }
+        }*/
 
     val tokens = this
-        .split("""(?<=($symbols|,|\(|\)))|(?=($symbols|,|\(|\)))""".toRegex()) // tokenizing
+        .split("""(?<=(\b|,|\(|\)))|(?=(\b|,|\(|\)))""".toRegex()) // tokenizing
         .filter { it.isNotBlank() } // removing possible empty tokens
         .map { it.replace("\\s".toRegex(), "") } // sanitizing
+
+    println(tokens)
 
     val tokensToString = tokens.joinToString("")
 

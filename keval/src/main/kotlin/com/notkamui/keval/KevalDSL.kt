@@ -29,15 +29,22 @@ class KevalDSL internal constructor() {
 
         // checking if every field has been properly defined
         op.symbol ?: throw KevalDSLException("symbol")
-        if (op.symbol!![0] in '0'..'9')
-            throw IllegalArgumentException("Symbols cannot start with a digit: ${op.symbol}")
+        if (op.symbol!! in 'a'..'z' ||
+            op.symbol!! in 'A'..'Z' ||
+            op.symbol!! in '0'..'9' ||
+            op.symbol!! == '_'
+        ) throw IllegalArgumentException("A symbol must NOT be a letter, nor a digit, nor an underscore: ${op.symbol}")
         op.implementation ?: throw KevalDSLException("implementation")
         op.precedence ?: throw KevalDSLException("precedence")
         if (op.precedence!! < 0)
             throw IllegalArgumentException("Operator precedence must always be positive or 0")
         op.isLeftAssociative ?: throw KevalDSLException("isLeftAssociative")
 
-        _resources += op.symbol!! to KevalBinaryOperator(op.precedence!!, op.isLeftAssociative!!, op.implementation!!)
+        _resources += op.symbol!!.toString() to KevalBinaryOperator(
+            op.precedence!!,
+            op.isLeftAssociative!!,
+            op.implementation!!
+        )
     }
 
     /**
@@ -52,8 +59,10 @@ class KevalDSL internal constructor() {
 
         // checking if every field has been properly defined
         fn.name ?: throw KevalDSLException("name")
-        if (fn.name!![0] in '0'..'9')
-            throw IllegalArgumentException("Function names cannot start with a digit: ${fn.name}")
+        if (fn.name!!.isNotEmpty() ||
+            fn.name!![0] in '0'..'9' ||
+            fn.name!!.contains("[^a-zA-Z0-9_]".toRegex())
+        ) throw IllegalArgumentException("A function name cannot start with a digit and must contain only letters, digits or underscores: ${fn.name}")
         fn.arity ?: throw KevalDSLException("arity")
         if (fn.arity!! < 0)
             throw IllegalArgumentException("Function arity must always be positive or 0")
@@ -89,7 +98,7 @@ class KevalDSL internal constructor() {
          * @property implementation is the actual implementation of the operator
          */
         data class BinaryOperatorDSL(
-            var symbol: String? = null,
+            var symbol: Char? = null,
             var precedence: Int? = null,
             var isLeftAssociative: Boolean? = null,
             var implementation: ((Double, Double) -> Double)? = null
