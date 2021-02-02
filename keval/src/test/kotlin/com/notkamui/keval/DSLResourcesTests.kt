@@ -74,4 +74,26 @@ class DLSTest {
             (kvl.eval("((3;4)-1.2);8") * 10.0.pow(8)).toInt() / 10.0.pow(8)
         )
     }
+
+    @Test
+    fun conflictTests() {
+        val kvl = Keval {
+            function {
+                name = "a"
+                arity = 1
+                implementation = { it[0] }
+            }
+
+            function {
+                name = "ab"
+                arity = 1
+                implementation = { it[0] + 1 }
+            }
+        }
+
+        assertEquals(
+            2.0,
+            kvl.eval("ab(1)")
+        )
+    }
 }
