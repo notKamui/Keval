@@ -59,7 +59,7 @@ class KevalDSL internal constructor() {
 
         // checking if every field has been properly defined
         fn.name ?: throw KevalDSLException("name")
-        if (fn.name!!.isNotEmpty() ||
+        if (fn.name!!.isEmpty() ||
             fn.name!![0] in '0'..'9' ||
             fn.name!!.contains("[^a-zA-Z0-9_]".toRegex())
         ) throw IllegalArgumentException("A function name cannot start with a digit and must contain only letters, digits or underscores: ${fn.name}")
@@ -73,6 +73,7 @@ class KevalDSL internal constructor() {
 
     companion object {
         internal val DEFAULT_RESOURCES: Map<String, KevalOperator> = mapOf(
+            // binary operators
             "+" to KevalBinaryOperator(2, true) { a, b -> a + b },
             "-" to KevalBinaryOperator(2, true) { a, b -> a - b },
             "/" to KevalBinaryOperator(3, true) { a, b ->
@@ -86,7 +87,8 @@ class KevalDSL internal constructor() {
             "^" to KevalBinaryOperator(4, false) { a, b -> a.pow(b) },
             "*" to KevalBinaryOperator(3, true) { a, b -> a * b },
 
-            "neg" to KevalFunction(1) { args -> -args[0] }
+            // functions
+            "neg" to KevalFunction(1) { -it[0] }
         )
 
         /**

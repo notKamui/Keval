@@ -85,7 +85,7 @@ class DLSTest {
             }
 
             function {
-                name = "ab"
+                name = "ab_c"
                 arity = 1
                 implementation = { it[0] + 1 }
             }
@@ -93,7 +93,7 @@ class DLSTest {
 
         assertEquals(
             2.0,
-            kvl.eval("ab(1)")
+            kvl.eval("ab_c(1)")
         )
     }
 }
