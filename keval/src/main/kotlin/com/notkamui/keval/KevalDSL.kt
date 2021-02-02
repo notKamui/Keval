@@ -22,6 +22,7 @@ class KevalDSL internal constructor() {
      * every field MUST be defined: symbol, precedence, isLeftAssociative, implementation
      *
      * @param definition is the definition of the above fields
+     * @throws KevalDSLException if at least one of the field isn't set
      * @throws IllegalArgumentException if at least one of the field isn't set properly
      */
     fun operator(definition: BinaryOperatorDSL.() -> Unit) {
@@ -51,6 +52,7 @@ class KevalDSL internal constructor() {
      * every field MUST be defined: name, arity, implementation
      *
      * @param definition is the definition of the above fields
+     * @throws KevalDSLException if at least one of the field isn't set
      * @throws IllegalArgumentException if at least one of the field isn't set properly
      */
     fun function(definition: FunctionDSL.() -> Unit) {
