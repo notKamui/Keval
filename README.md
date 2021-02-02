@@ -21,38 +21,102 @@ Keval has full support for all classic binary operators:
 - Exponent `^`
 - Remainder (mod) `%`
 
-You can use it in two ways:
+Keval has support for functions of variable arity, it has one built-in function:
+
+- Negate/Oppose `neg(expr)` (where 'expr' is an expression)
+
+You can optionally add as many binary operators or functions to Keval, as long as you define every field properly, with
+a DSL (Domain Specific Language):
+
+- A **binary operator** is defined by:
+  - its **symbol** (a `Char` that is NOT a digit, nor a letter, nor an underscore)
+  - its **precedence**/priority level (a positive `Int`)
+  - its **associativity** (a `Boolean` true if left associative, false otherwise)
+  - its **implementation** (a function `(Double, Double) -> Double`)
+- A **function** is defined by:
+  - its **name** (a non-empty `String` identifier, that doesn't start with a digit, and only contains letters, digits or
+    underscores)
+  - its **arity**/number of arguments (a positive (or 0) `Int`)
+  - its **implementation** (a function `(DoubleArray) -> Double`)
+
+Keval will use the default operators and function if you choose not to define any new resource ; but if you choose to do
+so, you need to include them manually. You may also choose to use it as an extension function.
+
+You can use it in four ways:
 
 ```Kotlin
-Keval.eval("(3+4)(2/8 * 5)")
+Keval.eval("(3+4)(2/8 * 5)") // uses default resources
 
-"(3+4)(2/8 * 5)".keval()
+"(3+4)(2/8 * 5)".keval() // extension ; uses default resources
+
+Keval { // DSL instance
+    includeDefaults() // this function includes the built-in resources
+    
+    operator { // this DSL adds a binary operator ; you can call it several times
+        symbol = ';'
+        precedence = 3
+        isLeftAssociative = true
+        implementation = { a, b -> a.pow(2) + b.pow(2) }
+    }
+  
+    function { // this DSL adds a function ; you can call it several times
+        name = "max"
+        arity = 2
+        implementation = { args -> max(args[0], args[1]) }
+    }
+}.eval("2*max(2, 3) ; 4")
+
+"2*max(2, 3) ; 4".keval { // DSL instance + extension
+  includeDefaults()
+
+  operator {
+    symbol = ';'
+    precedence = 3
+    isLeftAssociative = true
+    implementation = { a, b -> a.pow(2) + b.pow(2) }
+  }
+
+  function {
+    name = "max"
+    arity = 2
+    implementation = { args -> max(args[0], args[1]) }
+  }
+}
 ```
 
-(The static option will mainly be used by Java users)
+The advantage of using `Keval {}` is that you may keep an instance of it in a variable so that you can call as
+many `eval` as you need.
 
-Keval has support for optional product symbol:
+Creating a resource with a name that already exists will overwrite the previous one.
+
+Keval assumes products/multiplications, and as such, the * symbol/name ***cannot*** be overwritten, and is the only
+operator to
+***always*** be present in the resource set of a Keval instance:
 
 ```Kotlin
 "(2+3)(6+4)".keval() == "(2+3)*(6+4)".keval()
 ```
 
+## Error Handling
+
 In case of an error, Keval will throw one of several `KevalException`s:
 
 - `KevalZeroDivisionException` in the case a zero division occurs
 - `KevalInvalidExpressionException` if the expression is invalid, with the following properties:
-    - `expression` contains the fully sanitized expression
-    - `position` is an estimate of the position of the error
+  - `expression` contains the fully sanitized expression
+  - `position` is an estimate of the position of the error
 - `KevalInvalidOperatorException` if the expression contains an invalid operator, with the following properties:
-    - `invalidOperator` contains the actual invalid operator
-    - `expression` contains the fully sanitized expression
-    - `position` is an estimate of the position of the error
+  - `invalidOperator` contains the actual invalid operator
+  - `expression` contains the fully sanitized expression
+  - `position` is an estimate of the position of the error
+
+`KevalZeroDivisionException` is instantiable so that you can throw it when implementing a custom operator/function.
+
+Keval will also throw an `IllegalArgumentException` if, in the DSL, one of the field is either not set, or doesn't
+follow its restrictions (defined above).
 
 ## Future Plans
 
-- Full support for unary operators (oppose/negate, factorial, etc)
-- Full support for operators of variable arity (more than 2)
 - Support for constants (PI, PHI, etc)
-- Support for functions (sin, cos, tan)
-- Support for custom operators from the user ?
+- Support for variables (will produce a `DoubleArray` instead of a single `Double`)
 - Support for multiplateform
