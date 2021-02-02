@@ -1,26 +1,42 @@
 package com.notkamui.keval
 
-private fun MutableList<Node>.addOperator(operator: Operator): Boolean {
+private fun MutableList<Node>.addOperator(operator: (Double, Double) -> Double): Boolean {
     val right = this.removeLastOrNull() ?: return false
     val left = this.removeLastOrNull() ?: return false
     this.add(OperatorNode(left, operator, right))
     return true
 }
 
+private fun MutableList<Node>.addFunction(arity: Int, func: (DoubleArray) -> Double): Boolean {
+    val children = mutableListOf<Node>()
+    repeat(arity) {
+        children += this.removeLastOrNull() ?: return false
+    }
+    this.add(FunctionNode(func, children))
+    return true
+}
+
 private fun MutableList<Node>.offerOperator(
     operatorStack: MutableList<String>,
     tokensToString: String,
-    currentPos: Int
+    currentPos: Int,
+    operators: Map<String, KevalOperator>
 ) {
-    val op = operatorStack.removeLast()
-    if (!this.addOperator(
-            Operator[op[0]]
-                ?: throw KevalInvalidOperatorException(op, tokensToString, currentPos)
-        )
-    ) throw KevalInvalidExpressionException(tokensToString, currentPos)
+    val op = operators[operatorStack.removeLast()]
+        ?: throw KevalInvalidExpressionException(tokensToString, currentPos)
+
+    when (op) {
+        is KevalBinaryOperator -> if (
+            !this.addOperator(op.implementation)
+        ) throw KevalInvalidExpressionException(tokensToString, currentPos)
+
+        is KevalFunction -> if (
+            !this.addFunction(op.arity, op.implementation)
+        ) throw KevalInvalidExpressionException(tokensToString, currentPos)
+    }
 }
 
-private fun checkPrecedence(topOperator: Operator, currentOperator: Operator): Boolean {
+private fun checkPrecedence(topOperator: KevalBinaryOperator, currentOperator: KevalBinaryOperator): Boolean {
     val topIsStronger = topOperator.precedence > currentOperator.precedence
     val isLeftCompatible = topOperator.precedence == currentOperator.precedence && currentOperator.isLeftAssociative
     return topIsStronger || isLeftCompatible
@@ -30,19 +46,24 @@ private fun String.parseAsOperator(
     operatorStack: MutableList<String>,
     outputQueue: MutableList<Node>,
     tokensToString: String,
-    currentPos: Int
+    currentPos: Int,
+    operators: Map<String, KevalOperator>
 ) {
+    val binaryOperators = mutableMapOf<String, KevalBinaryOperator>()
+    operators.map { entry ->
+        if (entry.value is KevalBinaryOperator)
+            binaryOperators += entry.key to entry.value as KevalBinaryOperator
+    }
+
     if (operatorStack.isNotEmpty()) {
-        val currentOperator = Operator[this[0]]
+        val currentOperator = binaryOperators[this]
             ?: throw KevalInvalidOperatorException(this, tokensToString, currentPos)
-        while (operatorStack.isNotEmpty()) {
-            val topOperator = Operator[operatorStack.last()[0]]
+        while (operatorStack.isNotEmpty() && operatorStack.last().isBinaryOperator(operators)) {
+            val topOperator = binaryOperators[operatorStack.last()]
                 ?: throw KevalInvalidOperatorException(operatorStack.last(), tokensToString, currentPos)
             if (checkPrecedence(topOperator, currentOperator) && operatorStack.last() != "(") {
-                outputQueue.offerOperator(operatorStack, tokensToString, currentPos)
-            } else {
-                break
-            }
+                outputQueue.offerOperator(operatorStack, tokensToString, currentPos, binaryOperators)
+            } else break
         }
     }
     operatorStack.add(this)
@@ -52,19 +73,29 @@ private fun parseOnRightParenthesis(
     operatorStack: MutableList<String>,
     outputQueue: MutableList<Node>,
     tokensToString: String,
-    currentPos: Int
+    currentPos: Int,
+    operators: Map<String, KevalOperator>
 ) {
     try {
         while (operatorStack.last() != "(") {
             if (operatorStack.isEmpty())
                 throw KevalInvalidExpressionException(tokensToString, currentPos)
-            outputQueue.offerOperator(operatorStack, tokensToString, currentPos)
+            outputQueue.offerOperator(operatorStack, tokensToString, currentPos, operators)
         }
-        if (operatorStack.last() == "(") operatorStack.removeLast()
+        if (operatorStack.isNotEmpty() && operatorStack.last() == "(")
+            operatorStack.removeLast()
+        if (operatorStack.isNotEmpty() && operatorStack.last().isFunction(operators))
+            outputQueue.offerOperator(operatorStack, tokensToString, currentPos, operators)
     } catch (e: NoSuchElementException) {
         throw KevalInvalidExpressionException(tokensToString, currentPos)
     }
 }
+
+private fun String.isFunction(operators: Map<String, KevalOperator>) =
+    this.isKevalOperator(operators.keys) && operators[this] is KevalFunction
+
+private fun String.isBinaryOperator(operators: Map<String, KevalOperator>) =
+    this.isKevalOperator(operators.keys) && operators[this] is KevalBinaryOperator
 
 /**
  * Converts a infix mathematical expression into an abstract syntax tree.
@@ -75,25 +106,36 @@ private fun parseOnRightParenthesis(
  * @throws KevalInvalidOperatorException if the expression contains an invalid operator
  * @throws KevalInvalidExpressionException if the expression is invalid (i.e. mismatched parenthesis or missing operand)
  */
-internal fun String.toAbstractSyntaxTree(): Node {
+internal fun String.toAbstractSyntaxTree(operators: Map<String, KevalOperator>): Node {
     val outputQueue = mutableListOf<Node>()
     val operatorStack = mutableListOf<String>()
-    val tokens = this.tokenize()
+    val tokens = this.tokenize(operators.keys)
     val tokensToString = tokens.joinToString("")
     var currentPos = 0
 
-    tokens.forEach { token ->
+    tokens.forEachIndexed { i, token ->
         when {
             token.isNumeric() -> outputQueue.add(ValueNode(token.toDouble()))
-            token.isOperator() -> token.parseAsOperator(operatorStack, outputQueue, tokensToString, currentPos)
+            token.isFunction(operators) -> {
+                if (tokens[i + 1] != "(")
+                    throw KevalInvalidExpressionException(tokensToString, currentPos)
+                operatorStack.add(token)
+            }
+            token.isBinaryOperator(operators) -> token.parseAsOperator(
+                operatorStack,
+                outputQueue,
+                tokensToString,
+                currentPos,
+                operators
+            )
             token == "(" -> operatorStack.add(token)
-            token == ")" -> parseOnRightParenthesis(operatorStack, outputQueue, tokensToString, currentPos)
+            token == ")" -> parseOnRightParenthesis(operatorStack, outputQueue, tokensToString, currentPos, operators)
         }
         currentPos += token.length
     }
 
     while (operatorStack.isNotEmpty()) {
-        outputQueue.offerOperator(operatorStack, tokensToString, currentPos)
+        outputQueue.offerOperator(operatorStack, tokensToString, currentPos, operators)
     }
 
     return outputQueue.last()

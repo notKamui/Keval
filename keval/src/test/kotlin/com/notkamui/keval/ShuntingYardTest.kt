@@ -14,7 +14,8 @@ class ShuntingYardTest {
      */
     @Test
     fun syTest() {
-        assertEquals(8.0, "3 + 5 * (2-1)".toAbstractSyntaxTree().eval())
+        val operators = KevalDSL.DEFAULT_RESOURCES
+        assertEquals(8.0, "3 + 5 * (2-1)".toAbstractSyntaxTree(operators).eval())
     }
 
     /**
@@ -25,7 +26,7 @@ class ShuntingYardTest {
         assertEquals(50.0, "(2 + 3)(4 + 6)".keval())
         assertEquals(50.0, Keval.eval("(2 + 3)(4 + 6)"))
         assertFailsWith<KevalInvalidExpressionException> {
-            "((3+1) - 2".keval()
+            "(3+1)) - 2".keval()
         }
         assertFailsWith<KevalZeroDivisionException> {
             "(3+1) / 0".keval()

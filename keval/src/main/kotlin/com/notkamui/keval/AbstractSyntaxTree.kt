@@ -1,6 +1,33 @@
 package com.notkamui.keval
 
-import kotlin.math.pow
+/**
+ * Represents an operator, may be either a binary operator, or a function
+ */
+internal sealed class KevalOperator
+
+/**
+ * Represents a binary operator
+ *
+ * @property precedence is the precedence of the operator
+ * @property isLeftAssociative is true if the operator is left associative, false otherwise
+ * @property implementation is the actual implementation of the operator
+ */
+internal data class KevalBinaryOperator(
+    val precedence: Int,
+    val isLeftAssociative: Boolean,
+    val implementation: (Double, Double) -> Double
+) : KevalOperator()
+
+/**
+ * Represents a function
+ *
+ * @property arity is the arity of the function (how many arguments it takes)
+ * @property implementation is the actual implementation of the function
+ */
+internal data class KevalFunction(
+    val arity: Int,
+    val implementation: (DoubleArray) -> Double
+) : KevalOperator()
 
 /**
  * Represents a node in an AST and can evaluate its value
@@ -27,10 +54,17 @@ internal interface Node {
  */
 internal data class OperatorNode(
     private val left: Node,
-    private val op: Operator,
+    private val op: (Double, Double) -> Double,
     private val right: Node
 ) : Node {
-    override fun eval(): Double = op.apply(left.eval(), right.eval())
+    override fun eval(): Double = op(left.eval(), right.eval())
+}
+
+internal data class FunctionNode(
+    private val func: (DoubleArray) -> Double,
+    private val children: List<Node>
+) : Node {
+    override fun eval(): Double = func(children.map { it.eval() }.toDoubleArray())
 }
 
 /**
@@ -43,58 +77,4 @@ internal data class ValueNode(
     private val value: Double
 ) : Node {
     override fun eval(): Double = value
-}
-
-/**
- * Represents all operators
- *
- * @property symbol is the symbol of the operator
- * @property precedence is the priority of the operator
- * @property isLeftAssociative defines if the operator is left associative (false if right associative)
- * @property apply is the function linked to the operator
- * @constructor Creates an Operator type
- */
-internal enum class Operator(
-    val symbol: Char,
-    val precedence: Int,
-    val isLeftAssociative: Boolean,
-    val apply: (Double, Double) -> Double
-) {
-    SUB('-', 2, true, { a, b -> a - b }),
-    ADD('+', 2, true, { a, b -> a + b }),
-    MUL('*', 3, true, { a, b -> a * b }),
-    DIV(
-        '/', 3, true,
-        { a, b ->
-            if (b == 0.0) throw KevalZeroDivisionException()
-            a / b
-        }
-    ),
-    MOD(
-        '%', 3, true,
-        { a, b ->
-            if (b == 0.0) throw KevalZeroDivisionException()
-            a % b
-        }
-    ),
-    POW('^', 4, false, { a, b -> a.pow(b) }),
-    LPA('(', 5, true, { _, _ -> 0.0 }),
-    RPA(')', 5, true, { _, _ -> 0.0 });
-
-    companion object {
-        /**
-         * Gets an operator by its symbol
-         *
-         * @param symbol is the symbol to get the corresponding operator
-         * @return the corresponding operator (or null)
-         */
-        operator fun get(symbol: Char): Operator? = values().firstOrNull { it.symbol == symbol }
-
-        /**
-         * Get all the symbols in a string
-         *
-         * @return all the operators' symbols
-         */
-        fun symbols(): String = values().joinToString("") { it.symbol.toString() }
-    }
 }
