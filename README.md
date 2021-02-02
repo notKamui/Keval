@@ -50,7 +50,7 @@ Keval.eval("(3+4)(2/8 * 5)") // uses default resources
 "(3+4)(2/8 * 5)".keval() // extension ; uses default resources
 
 Keval { // DSL instance
-    includeDefaults() // this function includes the built-in resources
+    includeDefault() // this function includes the built-in resources
     
     operator { // this DSL adds a binary operator ; you can call it several times
         symbol = ';'
@@ -67,7 +67,7 @@ Keval { // DSL instance
 }.eval("2*max(2, 3) ; 4")
 
 "2*max(2, 3) ; 4".keval { // DSL instance + extension
-  includeDefaults()
+  includeDefault()
 
   operator {
     symbol = ';'
