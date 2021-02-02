@@ -75,9 +75,10 @@ internal fun String.tokenize(symbolsSet: Set<String>): List<String> {
         }
 
     val tokens = this
-        .replace("\\s".toRegex(), "") // sanitizing expression
         .split("""(?<=($symbols|,|\(|\)))|(?=($symbols|,|\(|\)))""".toRegex()) // tokenizing
-        .filter { it.isNotEmpty() } // removing possible empty tokens
+        .filter { it.isNotBlank() } // removing possible empty tokens
+        .map { it.replace("\\s".toRegex(), "") } // sanitizing
+
     val tokensToString = tokens.joinToString("")
 
     return tokens.assumeMul(symbolsSet, tokensToString)
