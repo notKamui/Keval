@@ -34,20 +34,20 @@ var pages = [{
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/index.html",
     "searchKeys": ["KevalDSL", "class KevalDSL"]
 }, {
-    "name": "data class BinaryOperatorDSL(symbol: String?, precedence: Int?, isLeftAssociative: Boolean?, implementation: (Double, Double) -> Double?)",
+    "name": "data class BinaryOperatorDSL(symbol: Char?, precedence: Int?, isLeftAssociative: Boolean?, implementation: (Double, Double) -> Double?)",
     "description": "com.notkamui.keval.KevalDSL.Companion.BinaryOperatorDSL",
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-binary-operator-d-s-l/index.html",
-    "searchKeys": ["BinaryOperatorDSL", "data class BinaryOperatorDSL(symbol: String?, precedence: Int?, isLeftAssociative: Boolean?, implementation: (Double, Double) -> Double?)"]
+    "searchKeys": ["BinaryOperatorDSL", "data class BinaryOperatorDSL(symbol: Char?, precedence: Int?, isLeftAssociative: Boolean?, implementation: (Double, Double) -> Double?)"]
 }, {
-    "name": "fun BinaryOperatorDSL(symbol: String? = null, precedence: Int? = null, isLeftAssociative: Boolean? = null, implementation: (Double, Double) -> Double? = null)",
+    "name": "fun BinaryOperatorDSL(symbol: Char? = null, precedence: Int? = null, isLeftAssociative: Boolean? = null, implementation: (Double, Double) -> Double? = null)",
     "description": "com.notkamui.keval.KevalDSL.Companion.BinaryOperatorDSL.BinaryOperatorDSL",
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-binary-operator-d-s-l/-binary-operator-d-s-l.html",
-    "searchKeys": ["BinaryOperatorDSL", "fun BinaryOperatorDSL(symbol: String? = null, precedence: Int? = null, isLeftAssociative: Boolean? = null, implementation: (Double, Double) -> Double? = null)"]
+    "searchKeys": ["BinaryOperatorDSL", "fun BinaryOperatorDSL(symbol: Char? = null, precedence: Int? = null, isLeftAssociative: Boolean? = null, implementation: (Double, Double) -> Double? = null)"]
 }, {
-    "name": "operator fun component1(): String?",
+    "name": "operator fun component1(): Char?",
     "description": "com.notkamui.keval.KevalDSL.Companion.BinaryOperatorDSL.component1",
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-binary-operator-d-s-l/component1.html",
-    "searchKeys": ["component1", "operator fun component1(): String?"]
+    "searchKeys": ["component1", "operator fun component1(): Char?"]
 }, {
     "name": "operator fun component1(): String?",
     "description": "com.notkamui.keval.KevalDSL.Companion.FunctionDSL.component1",
@@ -79,10 +79,10 @@ var pages = [{
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-binary-operator-d-s-l/component4.html",
     "searchKeys": ["component4", "operator fun component4(): (Double, Double) -> Double?"]
 }, {
-    "name": "fun copy(symbol: String? = null, precedence: Int? = null, isLeftAssociative: Boolean? = null, implementation: (Double, Double) -> Double? = null): KevalDSL.Companion.BinaryOperatorDSL",
+    "name": "fun copy(symbol: Char? = null, precedence: Int? = null, isLeftAssociative: Boolean? = null, implementation: (Double, Double) -> Double? = null): KevalDSL.Companion.BinaryOperatorDSL",
     "description": "com.notkamui.keval.KevalDSL.Companion.BinaryOperatorDSL.copy",
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-binary-operator-d-s-l/copy.html",
-    "searchKeys": ["copy", "fun copy(symbol: String? = null, precedence: Int? = null, isLeftAssociative: Boolean? = null, implementation: (Double, Double) -> Double? = null): KevalDSL.Companion.BinaryOperatorDSL"]
+    "searchKeys": ["copy", "fun copy(symbol: Char? = null, precedence: Int? = null, isLeftAssociative: Boolean? = null, implementation: (Double, Double) -> Double? = null): KevalDSL.Companion.BinaryOperatorDSL"]
 }, {
     "name": "fun copy(name: String? = null, arity: Int? = null, implementation: (DoubleArray) -> Double? = null): KevalDSL.Companion.FunctionDSL",
     "description": "com.notkamui.keval.KevalDSL.Companion.FunctionDSL.copy",
@@ -109,10 +109,10 @@ var pages = [{
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-binary-operator-d-s-l/precedence.html",
     "searchKeys": ["precedence", "var precedence: Int? = null"]
 }, {
-    "name": "var symbol: String? = null",
+    "name": "var symbol: Char? = null",
     "description": "com.notkamui.keval.KevalDSL.Companion.BinaryOperatorDSL.symbol",
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-binary-operator-d-s-l/symbol.html",
-    "searchKeys": ["symbol", "var symbol: String? = null"]
+    "searchKeys": ["symbol", "var symbol: Char? = null"]
 }, {
     "name": "data class FunctionDSL(name: String?, arity: Int?, implementation: (DoubleArray) -> Double?)",
     "description": "com.notkamui.keval.KevalDSL.Companion.FunctionDSL",
@@ -174,18 +174,23 @@ var pages = [{
     "location": "-keval/com.notkamui.keval/-keval-invalid-expression-exception/position.html",
     "searchKeys": ["position", "val position: Int"]
 }, {
-    "name": "class KevalInvalidOperatorException : KevalInvalidExpressionException",
-    "description": "com.notkamui.keval.KevalInvalidOperatorException",
-    "location": "-keval/com.notkamui.keval/-keval-invalid-operator-exception/index.html",
-    "searchKeys": ["KevalInvalidOperatorException", "class KevalInvalidOperatorException : KevalInvalidExpressionException"]
+    "name": "class KevalInvalidSymbolException : KevalInvalidExpressionException",
+    "description": "com.notkamui.keval.KevalInvalidSymbolException",
+    "location": "-keval/com.notkamui.keval/-keval-invalid-symbol-exception/index.html",
+    "searchKeys": ["KevalInvalidSymbolException", "class KevalInvalidSymbolException : KevalInvalidExpressionException"]
 }, {
-    "name": "val invalidOperator: String",
-    "description": "com.notkamui.keval.KevalInvalidOperatorException.invalidOperator",
-    "location": "-keval/com.notkamui.keval/-keval-invalid-operator-exception/invalid-operator.html",
-    "searchKeys": ["invalidOperator", "val invalidOperator: String"]
+    "name": "val invalidSymbol: String",
+    "description": "com.notkamui.keval.KevalInvalidSymbolException.invalidSymbol",
+    "location": "-keval/com.notkamui.keval/-keval-invalid-symbol-exception/invalid-symbol.html",
+    "searchKeys": ["invalidSymbol", "val invalidSymbol: String"]
 }, {
     "name": "class KevalZeroDivisionException : KevalException",
     "description": "com.notkamui.keval.KevalZeroDivisionException",
     "location": "-keval/com.notkamui.keval/-keval-zero-division-exception/index.html",
     "searchKeys": ["KevalZeroDivisionException", "class KevalZeroDivisionException : KevalException"]
+}, {
+    "name": "fun KevalZeroDivisionException()",
+    "description": "com.notkamui.keval.KevalZeroDivisionException.KevalZeroDivisionException",
+    "location": "-keval/com.notkamui.keval/-keval-zero-division-exception/-keval-zero-division-exception.html",
+    "searchKeys": ["KevalZeroDivisionException", "fun KevalZeroDivisionException()"]
 }]

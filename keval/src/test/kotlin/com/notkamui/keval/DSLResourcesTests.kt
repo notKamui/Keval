@@ -31,11 +31,11 @@ class DLSTest {
             kvl.eval("((3;4)*1.2);8")
         )
 
-        assertFailsWith(KevalInvalidOperatorException::class) {
+        assertFailsWith(KevalInvalidSymbolException::class) {
             kvl.eval("6+4")
         }
 
-        assertFailsWith(KevalInvalidOperatorException::class) {
+        assertFailsWith(KevalInvalidSymbolException::class) {
             kvl.eval("6;(4-1)")
         }
     }

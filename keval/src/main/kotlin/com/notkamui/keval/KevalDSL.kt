@@ -22,6 +22,7 @@ class KevalDSL internal constructor() {
      * every field MUST be defined: symbol, precedence, isLeftAssociative, implementation
      *
      * @param definition is the definition of the above fields
+     * @throws IllegalArgumentException if at least one of the field isn't set properly
      */
     fun operator(definition: BinaryOperatorDSL.() -> Unit) {
         val op = BinaryOperatorDSL()
@@ -29,9 +30,7 @@ class KevalDSL internal constructor() {
 
         // checking if every field has been properly defined
         op.symbol ?: throw KevalDSLException("symbol")
-        if (op.symbol!! in 'a'..'z' ||
-            op.symbol!! in 'A'..'Z' ||
-            op.symbol!! in '0'..'9' ||
+        if (op.symbol!!.isLetterOrDigit() ||
             op.symbol!! == '_'
         ) throw IllegalArgumentException("A symbol must NOT be a letter, nor a digit, nor an underscore: ${op.symbol}")
         op.implementation ?: throw KevalDSLException("implementation")
@@ -52,6 +51,7 @@ class KevalDSL internal constructor() {
      * every field MUST be defined: name, arity, implementation
      *
      * @param definition is the definition of the above fields
+     * @throws IllegalArgumentException if at least one of the field isn't set properly
      */
     fun function(definition: FunctionDSL.() -> Unit) {
         val fn = FunctionDSL()
