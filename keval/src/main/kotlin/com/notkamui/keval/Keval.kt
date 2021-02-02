@@ -5,6 +5,8 @@ package com.notkamui.keval
  * Contains a companion object with the evaluation method
  *
  * @property generator is the DSL generator of Keval (defaults to the default resources)
+ * @throws KevalDSLException if at least one of the field isn't set
+ * @throws IllegalArgumentException if at least one of the field of the DSL isn't set properly
  */
 class Keval(
     private val generator: KevalDSL.() -> Unit = { includeDefault() }
@@ -18,8 +20,12 @@ class Keval(
          * @throws KevalInvalidSymbolException in case there's an invalid operator in the expression
          * @throws KevalInvalidExpressionException in case the expression is invalid (i.e. mismatched parenthesis)
          * @throws KevalZeroDivisionException in case of a zero division
-         * @throws IllegalArgumentException if at least one of the field of the DSL isn't set properly
          */
+        @Throws(
+            KevalInvalidSymbolException::class,
+            KevalInvalidSymbolException::class,
+            KevalZeroDivisionException::class
+        )
         fun eval(
             mathExpression: String,
         ): Double {
@@ -35,8 +41,16 @@ class Keval(
      * @throws KevalInvalidSymbolException in case there's an invalid operator in the expression
      * @throws KevalInvalidExpressionException in case the expression is invalid (i.e. mismatched parenthesis)
      * @throws KevalZeroDivisionException in case of a zero division
+     * @throws KevalDSLException if at least one of the field isn't set
      * @throws IllegalArgumentException if at least one of the field of the DSL isn't set properly
      */
+    @Throws(
+        KevalInvalidSymbolException::class,
+        KevalInvalidSymbolException::class,
+        KevalZeroDivisionException::class,
+        KevalDSLException::class,
+        IllegalArgumentException::class
+    )
     fun eval(
         mathExpression: String,
     ): Double {
@@ -60,8 +74,16 @@ class Keval(
  * @throws KevalInvalidSymbolException in case there's an invalid operator in the expression
  * @throws KevalInvalidExpressionException in case the expression is invalid (i.e. mismatched parenthesis)
  * @throws KevalZeroDivisionException in case of a zero division
+ * @throws KevalDSLException if at least one of the field isn't set
  * @throws IllegalArgumentException if at least one of the field of the DSL isn't set properly
  */
+@Throws(
+    KevalInvalidSymbolException::class,
+    KevalInvalidSymbolException::class,
+    KevalZeroDivisionException::class,
+    KevalDSLException::class,
+    IllegalArgumentException::class
+)
 fun String.keval(
     generator: KevalDSL.() -> Unit
 ): Double {
@@ -76,8 +98,12 @@ fun String.keval(
  * @throws KevalInvalidSymbolException in case there's an invalid operator in the expression
  * @throws KevalInvalidExpressionException in case the expression is invalid (i.e. mismatched parenthesis)
  * @throws KevalZeroDivisionException in case of a zero division
- * @throws IllegalArgumentException if at least one of the field of the DSL isn't set properly
  */
+@Throws(
+    KevalInvalidSymbolException::class,
+    KevalInvalidSymbolException::class,
+    KevalZeroDivisionException::class
+)
 fun String.keval(): Double {
     return Keval.eval(this)
 }
