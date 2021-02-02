@@ -64,11 +64,11 @@
     ]
   },
   {
-    "name": "KevalInvalidOperatorException",
+    "name": "KevalInvalidSymbolException",
     "description": null,
-    "location": "-keval/com.notkamui.keval/-keval-invalid-operator-exception/index.html",
+    "location": "-keval/com.notkamui.keval/-keval-invalid-symbol-exception/index.html",
     "searchKeys": [
-      "KevalInvalidOperatorException"
+      "KevalInvalidSymbolException"
     ]
   },
   {

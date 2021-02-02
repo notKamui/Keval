@@ -1158,7 +1158,6 @@ div.runnablesample {
     #main {
         max-width: 100%;
     }
-
     #leftColumn {
         position: fixed;
         margin-left: -280px;
@@ -1167,15 +1166,12 @@ div.runnablesample {
         background: white;
         height: 100%;
     }
-
     #leftColumn.open {
         margin-left: 0;
     }
-
     #leftColumn.open ~ #main #searchBar {
         display: none;
     }
-
     #leftToggler {
         display: unset;
         position: fixed;
@@ -1193,25 +1189,20 @@ div.runnablesample {
         padding: 8px 4px 8px 8px;
         background-color: white;
     }
-
     #leftToggler .icon-toggler:hover {
         cursor: pointer;
     }
-
     #leftColumn.open ~ #main #leftToggler {
         margin-left: 280px;
     }
-
     .icon-toggler::before {
         content: "\232A";
     }
-
     #leftColumn.open ~ #main .icon-toggler::before {
         content: "\2329";
         padding-right: 0.5em;
         margin-left: -0.5em;
     }
-
     .main-content > * {
         margin-left: var(--mobile-horizontal-spacing-for-content);
         margin-right: var(--mobile-horizontal-spacing-for-content);
@@ -1226,7 +1217,6 @@ div.runnablesample {
         padding-bottom: 16px;
         overflow: auto;
     }
-
     h1.cover {
         font-size: 32px;
         line-height: 32px;
