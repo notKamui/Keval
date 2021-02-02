@@ -7,7 +7,7 @@ package com.notkamui.keval
  * @property generator is the DSL generator of Keval (defaults to the default resources)
  */
 class Keval(
-    private val generator: KevalDSL.() -> Unit = { KevalDSL.DEFAULT_RESOURCES }
+    private val generator: KevalDSL.() -> Unit = { includeDefault() }
 ) {
     companion object {
         /**
