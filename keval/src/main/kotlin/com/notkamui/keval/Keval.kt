@@ -15,9 +15,10 @@ class Keval(
          *
          * @param mathExpression is the expression to evaluate
          * @return the value of the expression
-         * @throws KevalInvalidOperatorException in case there's an invalid operator in the expression
+         * @throws KevalInvalidSymbolException in case there's an invalid operator in the expression
          * @throws KevalInvalidExpressionException in case the expression is invalid (i.e. mismatched parenthesis)
          * @throws KevalZeroDivisionException in case of a zero division
+         * @throws IllegalArgumentException if at least one of the field of the DSL isn't set properly
          */
         fun eval(
             mathExpression: String,
@@ -31,9 +32,10 @@ class Keval(
      *
      * @param mathExpression is the expression to evaluate
      * @return the value of the expression
-     * @throws KevalInvalidOperatorException in case there's an invalid operator in the expression
+     * @throws KevalInvalidSymbolException in case there's an invalid operator in the expression
      * @throws KevalInvalidExpressionException in case the expression is invalid (i.e. mismatched parenthesis)
      * @throws KevalZeroDivisionException in case of a zero division
+     * @throws IllegalArgumentException if at least one of the field of the DSL isn't set properly
      */
     fun eval(
         mathExpression: String,
@@ -54,9 +56,10 @@ class Keval(
  * @receiver is the expression to evaluate
  * @param generator is the DSL generator of Keval
  * @return the value of the expression
- * @throws KevalInvalidOperatorException in case there's an invalid operator in the expression
+ * @throws KevalInvalidSymbolException in case there's an invalid operator in the expression
  * @throws KevalInvalidExpressionException in case the expression is invalid (i.e. mismatched parenthesis)
  * @throws KevalZeroDivisionException in case of a zero division
+ * @throws IllegalArgumentException if at least one of the field of the DSL isn't set properly
  */
 fun String.keval(
     generator: KevalDSL.() -> Unit
@@ -69,9 +72,10 @@ fun String.keval(
  *
  * @receiver is the expression to evaluate
  * @return the value of the expression
- * @throws KevalInvalidOperatorException in case there's an invalid operator in the expression
+ * @throws KevalInvalidSymbolException in case there's an invalid operator in the expression
  * @throws KevalInvalidExpressionException in case the expression is invalid (i.e. mismatched parenthesis)
  * @throws KevalZeroDivisionException in case of a zero division
+ * @throws IllegalArgumentException if at least one of the field of the DSL isn't set properly
  */
 fun String.keval(): Double {
     return Keval.eval(this)

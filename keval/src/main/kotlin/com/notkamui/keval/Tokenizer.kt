@@ -32,7 +32,7 @@ private fun List<String>.assumeMul(symbolsSet: Set<String>, tokensToString: Stri
             }
             token == ")" -> TokenType.RPAREN
             token == "," -> TokenType.COMMA
-            else -> throw KevalInvalidOperatorException(token, tokensToString, currentPos)
+            else -> throw KevalInvalidSymbolException(token, tokensToString, currentPos)
         }
         ret.add(token)
         currentPos += token.length
@@ -64,7 +64,7 @@ internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in 
  *
  * @receiver is the string to tokenize
  * @return the list of tokens
- * @throws KevalInvalidOperatorException if the expression contains an invalid operator
+ * @throws KevalInvalidSymbolException if the expression contains an invalid symbol
  */
 internal fun String.tokenize(symbolsSet: Set<String>): List<String> {
     val limits = """ |[^a-zA-Z0-9._]|,|\(|\)"""

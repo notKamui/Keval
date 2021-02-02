@@ -53,8 +53,8 @@ class TokenizerTest {
             try {
                 "(37+4)a+5".tokenize(operators.keys)
                 false
-            } catch (e: KevalInvalidOperatorException) {
-                e.invalidOperator == "a" && e.position == 6 && e.expression == "(37+4)a+5"
+            } catch (e: KevalInvalidSymbolException) {
+                e.invalidSymbol == "a" && e.position == 6 && e.expression == "(37+4)a+5"
             }
         }
     }
