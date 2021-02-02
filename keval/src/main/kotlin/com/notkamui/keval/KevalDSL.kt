@@ -52,6 +52,8 @@ class KevalDSL internal constructor() {
 
         // checking if every field has been properly defined
         fn.name ?: throw KevalDSLException("name")
+        if (fn.name!![0] in '0'..'9')
+            throw IllegalArgumentException("Function names cannot start with a digit: ${fn.name}")
         fn.arity ?: throw KevalDSLException("arity")
         if (fn.arity!! < 0)
             throw IllegalArgumentException("Function arity must always be positive or 0")
