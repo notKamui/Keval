@@ -22,23 +22,22 @@ class KevalDSL internal constructor() {
      * every field MUST be defined: symbol, precedence, isLeftAssociative, implementation
      *
      * @param definition is the definition of the above fields
-     * @throws KevalDSLException if at least one of the field isn't set
-     * @throws IllegalArgumentException if at least one of the field isn't set properly
+     * @throws KevalDSLException if at least one of the field isn't set properly
      */
     fun operator(definition: BinaryOperatorDSL.() -> Unit) {
         val op = BinaryOperatorDSL()
         op.definition()
 
         // checking if every field has been properly defined
-        op.symbol ?: throw KevalDSLException("symbol")
+        op.symbol ?: throw KevalDSLException("symbol is not set")
         if (op.symbol!!.isLetterOrDigit() ||
             op.symbol!! == '_'
-        ) throw IllegalArgumentException("A symbol must NOT be a letter, nor a digit, nor an underscore: ${op.symbol}")
-        op.implementation ?: throw KevalDSLException("implementation")
-        op.precedence ?: throw KevalDSLException("precedence")
+        ) throw KevalDSLException("a symbol must NOT be a letter, nor a digit, nor an underscore: ${op.symbol}")
+        op.implementation ?: throw KevalDSLException("implementation is not set")
+        op.precedence ?: throw KevalDSLException("precedence is not set")
         if (op.precedence!! < 0)
-            throw IllegalArgumentException("Operator precedence must always be positive or 0")
-        op.isLeftAssociative ?: throw KevalDSLException("isLeftAssociative")
+            throw KevalDSLException("operator precedence must always be positive or 0")
+        op.isLeftAssociative ?: throw KevalDSLException("isLeftAssociative is not set")
 
         _resources += op.symbol!!.toString() to KevalBinaryOperator(
             op.precedence!!,
@@ -53,22 +52,21 @@ class KevalDSL internal constructor() {
      *
      * @param definition is the definition of the above fields
      * @throws KevalDSLException if at least one of the field isn't set
-     * @throws IllegalArgumentException if at least one of the field isn't set properly
      */
     fun function(definition: FunctionDSL.() -> Unit) {
         val fn = FunctionDSL()
         fn.definition()
 
         // checking if every field has been properly defined
-        fn.name ?: throw KevalDSLException("name")
+        fn.name ?: throw KevalDSLException("name is not set")
         if (fn.name!!.isEmpty() ||
             fn.name!![0] in '0'..'9' ||
             fn.name!!.contains("[^a-zA-Z0-9_]".toRegex())
-        ) throw IllegalArgumentException("A function name cannot start with a digit and must contain only letters, digits or underscores: ${fn.name}")
-        fn.arity ?: throw KevalDSLException("arity")
+        ) throw KevalDSLException("a function name cannot start with a digit and must contain only letters, digits or underscores: ${fn.name}")
+        fn.arity ?: throw KevalDSLException("arity is not set")
         if (fn.arity!! < 0)
-            throw IllegalArgumentException("Function arity must always be positive or 0")
-        fn.implementation ?: throw KevalDSLException("implementation")
+            throw KevalDSLException("function arity must always be positive or 0")
+        fn.implementation ?: throw KevalDSLException("implementation is not set")
 
         _resources += fn.name!! to KevalFunction(fn.arity!!, fn.implementation!!)
     }

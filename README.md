@@ -109,11 +109,10 @@ In case of an error, Keval will throw one of several `KevalException`s:
   - `invalidOperator` contains the actual invalid operator
   - `expression` contains the fully sanitized expression
   - `position` is an estimate of the position of the error
+- `KevalDSLException` if, in the DSL, one of the field is either not set, or doesn't follow its restrictions (defined
+  above)
 
 `KevalZeroDivisionException` is instantiable so that you can throw it when implementing a custom operator/function.
-
-Keval will also throw an `IllegalArgumentException` if, in the DSL, one of the field is either not set, or doesn't
-follow its restrictions (defined above).
 
 ## Future Plans
 
