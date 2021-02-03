@@ -6,7 +6,7 @@
 
 import java.net.URL
 
-version = "0.6.1"
+version = "0.7"
 
 plugins {
     kotlin("jvm") version "1.4.20"

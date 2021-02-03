@@ -119,4 +119,4 @@ follow its restrictions (defined above).
 
 - Support for constants (PI, PHI, etc)
 - Support for variables (will produce a `DoubleArray` instead of a single `Double`)
-- Support for multiplateform
+- Deployment to Maven and JCenter for ease of use with Maven and Gradle
