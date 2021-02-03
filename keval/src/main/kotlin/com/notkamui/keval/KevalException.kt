@@ -39,7 +39,7 @@ class KevalZeroDivisionException : KevalException("Division by zero")
 /**
  * DSL Exception, is thrown when a required field isn't defined
  *
- * @param which is the name of the undefined field
+ * @param what is the name of the undefined field
  */
-class KevalDSLException internal constructor(which: String) :
-    KevalException("All required fields must be defined: $which undefined")
+class KevalDSLException internal constructor(what: String) :
+    KevalException("All required fields must be properly defined: $what")

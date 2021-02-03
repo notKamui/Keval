@@ -30,6 +30,15 @@ internal data class KevalFunction(
 ) : KevalOperator()
 
 /**
+ * Represents a constant
+ *
+ * @property value is the value of the constant
+ */
+internal data class KevalConstant(
+    val value: Double
+) : KevalOperator()
+
+/**
  * Represents a node in an AST and can evaluate its value
  *
  * Can either be an operator, or a leaf (a value)

@@ -4,10 +4,10 @@ var pages = [{
     "location": "-keval/com.notkamui.keval/-keval/index.html",
     "searchKeys": ["Keval", "class Keval(generator: KevalDSL.() -> Unit)"]
 }, {
-    "name": "fun Keval(generator: KevalDSL.() -> Unit = { KevalDSL.DEFAULT_RESOURCES })",
+    "name": "fun Keval(generator: KevalDSL.() -> Unit = { includeDefault() })",
     "description": "com.notkamui.keval.Keval.Keval",
     "location": "-keval/com.notkamui.keval/-keval/-keval.html",
-    "searchKeys": ["Keval", "fun Keval(generator: KevalDSL.() -> Unit = { KevalDSL.DEFAULT_RESOURCES })"]
+    "searchKeys": ["Keval", "fun Keval(generator: KevalDSL.() -> Unit = { includeDefault() })"]
 }, {
     "name": "object Companion",
     "description": "com.notkamui.keval.Keval.Companion",
@@ -50,6 +50,11 @@ var pages = [{
     "searchKeys": ["component1", "operator fun component1(): Char?"]
 }, {
     "name": "operator fun component1(): String?",
+    "description": "com.notkamui.keval.KevalDSL.Companion.ConstantDSL.component1",
+    "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-constant-d-s-l/component1.html",
+    "searchKeys": ["component1", "operator fun component1(): String?"]
+}, {
+    "name": "operator fun component1(): String?",
     "description": "com.notkamui.keval.KevalDSL.Companion.FunctionDSL.component1",
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-function-d-s-l/component1.html",
     "searchKeys": ["component1", "operator fun component1(): String?"]
@@ -58,6 +63,11 @@ var pages = [{
     "description": "com.notkamui.keval.KevalDSL.Companion.BinaryOperatorDSL.component2",
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-binary-operator-d-s-l/component2.html",
     "searchKeys": ["component2", "operator fun component2(): Int?"]
+}, {
+    "name": "operator fun component2(): Double?",
+    "description": "com.notkamui.keval.KevalDSL.Companion.ConstantDSL.component2",
+    "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-constant-d-s-l/component2.html",
+    "searchKeys": ["component2", "operator fun component2(): Double?"]
 }, {
     "name": "operator fun component2(): Int?",
     "description": "com.notkamui.keval.KevalDSL.Companion.FunctionDSL.component2",
@@ -83,6 +93,11 @@ var pages = [{
     "description": "com.notkamui.keval.KevalDSL.Companion.BinaryOperatorDSL.copy",
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-binary-operator-d-s-l/copy.html",
     "searchKeys": ["copy", "fun copy(symbol: Char? = null, precedence: Int? = null, isLeftAssociative: Boolean? = null, implementation: (Double, Double) -> Double? = null): KevalDSL.Companion.BinaryOperatorDSL"]
+}, {
+    "name": "fun copy(name: String? = null, value: Double? = null): KevalDSL.Companion.ConstantDSL",
+    "description": "com.notkamui.keval.KevalDSL.Companion.ConstantDSL.copy",
+    "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-constant-d-s-l/copy.html",
+    "searchKeys": ["copy", "fun copy(name: String? = null, value: Double? = null): KevalDSL.Companion.ConstantDSL"]
 }, {
     "name": "fun copy(name: String? = null, arity: Int? = null, implementation: (DoubleArray) -> Double? = null): KevalDSL.Companion.FunctionDSL",
     "description": "com.notkamui.keval.KevalDSL.Companion.FunctionDSL.copy",
@@ -114,6 +129,31 @@ var pages = [{
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-binary-operator-d-s-l/symbol.html",
     "searchKeys": ["symbol", "var symbol: Char? = null"]
 }, {
+    "name": "data class ConstantDSL(name: String?, value: Double?)",
+    "description": "com.notkamui.keval.KevalDSL.Companion.ConstantDSL",
+    "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-constant-d-s-l/index.html",
+    "searchKeys": ["ConstantDSL", "data class ConstantDSL(name: String?, value: Double?)"]
+}, {
+    "name": "fun ConstantDSL(name: String? = null, value: Double? = null)",
+    "description": "com.notkamui.keval.KevalDSL.Companion.ConstantDSL.ConstantDSL",
+    "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-constant-d-s-l/-constant-d-s-l.html",
+    "searchKeys": ["ConstantDSL", "fun ConstantDSL(name: String? = null, value: Double? = null)"]
+}, {
+    "name": "var name: String? = null",
+    "description": "com.notkamui.keval.KevalDSL.Companion.ConstantDSL.name",
+    "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-constant-d-s-l/name.html",
+    "searchKeys": ["name", "var name: String? = null"]
+}, {
+    "name": "var name: String? = null",
+    "description": "com.notkamui.keval.KevalDSL.Companion.FunctionDSL.name",
+    "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-function-d-s-l/name.html",
+    "searchKeys": ["name", "var name: String? = null"]
+}, {
+    "name": "var value: Double? = null",
+    "description": "com.notkamui.keval.KevalDSL.Companion.ConstantDSL.value",
+    "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-constant-d-s-l/value.html",
+    "searchKeys": ["value", "var value: Double? = null"]
+}, {
     "name": "data class FunctionDSL(name: String?, arity: Int?, implementation: (DoubleArray) -> Double?)",
     "description": "com.notkamui.keval.KevalDSL.Companion.FunctionDSL",
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-function-d-s-l/index.html",
@@ -129,10 +169,10 @@ var pages = [{
     "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-function-d-s-l/arity.html",
     "searchKeys": ["arity", "var arity: Int? = null"]
 }, {
-    "name": "var name: String? = null",
-    "description": "com.notkamui.keval.KevalDSL.Companion.FunctionDSL.name",
-    "location": "-keval/com.notkamui.keval/-keval-d-s-l/-companion/-function-d-s-l/name.html",
-    "searchKeys": ["name", "var name: String? = null"]
+    "name": "fun constant(definition: KevalDSL.Companion.ConstantDSL.() -> Unit)",
+    "description": "com.notkamui.keval.KevalDSL.constant",
+    "location": "-keval/com.notkamui.keval/-keval-d-s-l/constant.html",
+    "searchKeys": ["constant", "fun constant(definition: KevalDSL.Companion.ConstantDSL.() -> Unit)"]
 }, {
     "name": "fun function(definition: KevalDSL.Companion.FunctionDSL.() -> Unit)",
     "description": "com.notkamui.keval.KevalDSL.function",

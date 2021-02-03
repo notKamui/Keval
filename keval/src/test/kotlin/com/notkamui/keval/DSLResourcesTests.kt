@@ -57,6 +57,10 @@ class DLSTest {
                     max(args[0], args[1])
                 }
             }
+            constant {
+                name = "PHI"
+                value = 1.618
+            }
         }
 
         assertEquals(
@@ -72,6 +76,11 @@ class DLSTest {
         assertEquals(
             8.85663593,
             (kvl.eval("((3;4)-1.2);8") * 10.0.pow(8)).toInt() / 10.0.pow(8)
+        )
+
+        assertEquals(
+            2.6179240000000004,
+            kvl.eval("PHI^2")
         )
     }
 
