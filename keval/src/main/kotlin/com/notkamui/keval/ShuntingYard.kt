@@ -18,6 +18,12 @@ private fun MutableList<Node>.addFunction(arity: Int, func: (DoubleArray) -> Dou
     return true
 }
 
+// pops a constant and add it as constant node
+private fun MutableList<Node>.addConstant(value: Double): Boolean {
+    this.add(ValueNode(value))
+    return true
+}
+
 // checks the type of the given operator to add it
 private fun MutableList<Node>.offerOperator(
     operatorStack: MutableList<String>,
@@ -35,6 +41,10 @@ private fun MutableList<Node>.offerOperator(
 
         is KevalFunction -> if (
             !this.addFunction(op.arity, op.implementation)
+        ) throw KevalInvalidExpressionException(tokensToString, currentPos)
+
+        is KevalConstant -> if (
+            !this.addConstant(op.value)
         ) throw KevalInvalidExpressionException(tokensToString, currentPos)
     }
 }
@@ -101,6 +111,9 @@ private fun String.isFunction(operators: Map<String, KevalOperator>) =
 private fun String.isBinaryOperator(operators: Map<String, KevalOperator>) =
     this.isKevalOperator(operators.keys) && operators[this] is KevalBinaryOperator
 
+private fun String.isConstant(operators: Map<String, KevalOperator>) =
+    this.isKevalOperator(operators.keys) && operators[this] is KevalConstant
+
 /**
  * Converts a infix mathematical expression into an abstract syntax tree,
  * Uses the Shunting-yard algorithm, by Edsger Dijkstra
@@ -120,6 +133,10 @@ internal fun String.toAbstractSyntaxTree(operators: Map<String, KevalOperator>):
     tokens.forEachIndexed { i, token ->
         when {
             token.isNumeric() -> outputQueue.add(ValueNode(token.toDouble()))
+            token.isConstant(operators) -> {
+                operatorStack.add(token)
+                outputQueue.offerOperator(operatorStack, tokensToString, currentPos, operators)
+            }
             token.isFunction(operators) -> {
                 if (tokens[i + 1] != "(")
                     throw KevalInvalidExpressionException(tokensToString, currentPos)

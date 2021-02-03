@@ -25,8 +25,13 @@ Keval has support for functions of variable arity, it has one built-in function:
 
 - Negate/Oppose `neg(expr)` (where 'expr' is an expression)
 
-You can optionally add as many binary operators or functions to Keval, as long as you define every field properly, with
-a DSL (Domain Specific Language):
+Keval has support for constants, it has two built-in constant:
+
+- π `PI`
+- *e* `e` (Euler's number)
+
+You can optionally add as many binary operators, functions or constants to Keval, as long as you define every field
+properly, with a DSL (Domain Specific Language):
 
 - A **binary operator** is defined by:
   - its **symbol** (a `Char` that is NOT a digit, nor a letter, nor an underscore)
@@ -38,16 +43,21 @@ a DSL (Domain Specific Language):
     underscores)
   - its **arity**/number of arguments (a positive (or 0) `Int`)
   - its **implementation** (a function `(DoubleArray) -> Double`)
+- A **constant** is defined by:
+  - its **name** (a non-empty `String` identifier, that doesn't start with a digit, and only contains letters, digits or
+    underscores)
+  - its **value** (a `Double`)
 
-Keval will use the default operators and function if you choose not to define any new resource ; but if you choose to do
-so, you need to include them manually. You may also choose to use it as an extension function.
+Keval will use the built-in operators, function and constants if you choose not to define any new resource ; but if you
+choose to do so, you need to include them manually. You may also choose to use Keval as an extension function.
 
 You can use it in four ways:
 
 ```Kotlin
-Keval.eval("(3+4)(2/8 * 5)") // uses default resources
 
-"(3+4)(2/8 * 5)".keval() // extension ; uses default resources
+Keval.eval("(3+4)(2/8 * 5) % PI") // uses default resources
+
+"(3+4)(2/8 * 5) % PI".keval() // extension ; uses default resources
 
 Keval { // DSL instance
     includeDefault() // this function includes the built-in resources
@@ -64,23 +74,33 @@ Keval { // DSL instance
         arity = 2
         implementation = { args -> max(args[0], args[1]) }
     }
-}.eval("2*max(2, 3) ; 4")
+  
+    constant { // this DSL adds a constant ; you can call it several times
+        name = "PHI"
+        value = 1.618
+    }
+}.eval("2*max(2, 3) ; 4 + PHI^2")
 
-"2*max(2, 3) ; 4".keval { // DSL instance + extension
-  includeDefault()
-
-  operator {
-    symbol = ';'
-    precedence = 3
-    isLeftAssociative = true
-    implementation = { a, b -> a.pow(2) + b.pow(2) }
-  }
-
-  function {
-    name = "max"
-    arity = 2
-    implementation = { args -> max(args[0], args[1]) }
-  }
+"2*max(2, 3) ; 4 + PHI^2".keval { // DSL instance + extension
+    includeDefault()
+  
+    operator {
+        symbol = ';'
+        precedence = 3
+        isLeftAssociative = true
+        implementation = { a, b -> a.pow(2) + b.pow(2) }
+    }
+  
+    function {
+        name = "max"
+        arity = 2
+        implementation = { args -> max(args[0], args[1]) }
+    }
+  
+    constant {
+        name = "PHI"
+        value = 1.618
+    }
 }
 ```
 
@@ -116,6 +136,5 @@ In case of an error, Keval will throw one of several `KevalException`s:
 
 ## Future Plans
 
-- Support for constants (PI, PHI, etc)
 - Support for variables (will produce a `DoubleArray` instead of a single `Double`)
 - Deployment to Maven and JCenter for ease of use with Maven and Gradle

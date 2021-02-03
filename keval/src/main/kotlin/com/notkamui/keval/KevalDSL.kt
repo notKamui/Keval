@@ -1,5 +1,7 @@
 package com.notkamui.keval
 
+import kotlin.math.E
+import kotlin.math.PI
 import kotlin.math.pow
 
 /**
@@ -36,7 +38,7 @@ class KevalDSL internal constructor() {
         op.implementation ?: throw KevalDSLException("implementation is not set")
         op.precedence ?: throw KevalDSLException("precedence is not set")
         if (op.precedence!! < 0)
-            throw KevalDSLException("operator precedence must always be positive or 0")
+            throw KevalDSLException("operator's precedence must always be positive or 0")
         op.isLeftAssociative ?: throw KevalDSLException("isLeftAssociative is not set")
 
         _resources += op.symbol!!.toString() to KevalBinaryOperator(
@@ -62,13 +64,28 @@ class KevalDSL internal constructor() {
         if (fn.name!!.isEmpty() ||
             fn.name!![0] in '0'..'9' ||
             fn.name!!.contains("[^a-zA-Z0-9_]".toRegex())
-        ) throw KevalDSLException("a function name cannot start with a digit and must contain only letters, digits or underscores: ${fn.name}")
+        ) throw KevalDSLException("a function's name cannot start with a digit and must contain only letters, digits or underscores: ${fn.name}")
         fn.arity ?: throw KevalDSLException("arity is not set")
         if (fn.arity!! < 0)
-            throw KevalDSLException("function arity must always be positive or 0")
+            throw KevalDSLException("function's arity must always be positive or 0")
         fn.implementation ?: throw KevalDSLException("implementation is not set")
 
         _resources += fn.name!! to KevalFunction(fn.arity!!, fn.implementation!!)
+    }
+
+    fun constant(definition: ConstantDSL.() -> Unit) {
+        val const = ConstantDSL()
+        const.definition()
+
+        // checking if every field has been properly defined
+        const.name ?: throw KevalDSLException("name is not set")
+        if (const.name!!.isEmpty() ||
+            const.name!![0] in '0'..'9' ||
+            const.name!!.contains("[^a-zA-Z0-9_]".toRegex())
+        ) throw KevalDSLException("a constant's name cannot start with a digit and must contain only letters, digits or underscores: ${const.name}")
+        const.value ?: throw KevalDSLException("value is not set")
+
+        _resources += const.name!! to KevalConstant(const.value!!)
     }
 
     companion object {
@@ -88,7 +105,11 @@ class KevalDSL internal constructor() {
             "*" to KevalBinaryOperator(3, true) { a, b -> a * b },
 
             // functions
-            "neg" to KevalFunction(1) { -it[0] }
+            "neg" to KevalFunction(1) { -it[0] },
+
+            // constants
+            "PI" to KevalConstant(PI),
+            "e" to KevalConstant(E)
         )
 
         /**
@@ -117,6 +138,17 @@ class KevalDSL internal constructor() {
             var name: String? = null,
             var arity: Int? = null,
             var implementation: ((DoubleArray) -> Double)? = null,
+        )
+
+        /**
+         * DSL representation of a constant
+         *
+         * @property name is the identifier which represents the constant
+         * @property value is the value of the constant
+         */
+        data class ConstantDSL(
+            var name: String? = null,
+            var value: Double? = null
         )
     }
 }
