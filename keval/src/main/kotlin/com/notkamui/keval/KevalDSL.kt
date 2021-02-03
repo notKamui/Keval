@@ -73,6 +73,13 @@ class KevalDSL internal constructor() {
         _resources += fn.name!! to KevalFunction(fn.arity!!, fn.implementation!!)
     }
 
+    /**
+     * Adds a new function to Keval instance,
+     * every field MUST be defined: name, value
+     *
+     * @param definition is the definition of the above fields
+     * @throws KevalDSLException if at least one of the field isn't set
+     */
     fun constant(definition: ConstantDSL.() -> Unit) {
         val const = ConstantDSL()
         const.definition()
