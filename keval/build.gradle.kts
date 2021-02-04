@@ -9,13 +9,13 @@ import java.net.URL
 version = "0.7"
 
 plugins {
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version "1.4.30"
     id("org.jetbrains.dokka") version "1.4.20"
     `java-library`
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
