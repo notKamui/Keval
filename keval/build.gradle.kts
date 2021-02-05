@@ -77,8 +77,8 @@ publishing {
         maven {
             setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
-                username = project.properties[System.getenv("OSSRH_USRNAME")] as String? ?: "Unknown user"
-                password = project.properties[System.getenv("OSSRH_PWD")] as String? ?: "Unknown user"
+                username = project.properties[project.property("ossrhUsername")] as String? ?: "Unknown user"
+                password = project.properties[project.property("ossrhPassword")] as String? ?: "Unknown user"
             }
         }
     }
