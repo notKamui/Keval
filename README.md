@@ -137,4 +137,3 @@ In case of an error, Keval will throw one of several `KevalException`s:
 ## Future Plans
 
 - Support for variables (will produce a `DoubleArray` instead of a single `Double`)
-- Deployment to Maven and JCenter for ease of use with Maven and Gradle

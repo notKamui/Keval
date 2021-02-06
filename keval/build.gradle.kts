@@ -71,24 +71,18 @@ tasks.dokkaHtml.configure {
     }
 }
 
+val repositoryUrl = if (version.toString().endsWith("SNAPSHOT"))
+    "https://oss.sonatype.org/content/repositories/snapshots/"
+else
+    "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 
 publishing {
-    repositories {
-        maven {
-            setUrl("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = project.properties[project.property("ossrhUsername")] as String? ?: "Unknown user"
-                password = project.properties[project.property("ossrhPassword")] as String? ?: "Unknown user"
-            }
-        }
-    }
     publications {
         create<MavenPublication>("mavenJava") {
+            from(components["java"])
             groupId = project.group.toString()
             artifactId = project.name.toLowerCase()
             version = project.version.toString()
-
-            from(components["java"])
 
             pom {
                 name.set("Keval")
@@ -115,8 +109,18 @@ publishing {
             }
         }
     }
+    repositories {
+        maven {
+            setUrl(repositoryUrl)
+            credentials {
+                username = project.properties["ossrhUsername"] as String? ?: "Unknown user"
+                password = project.properties["ossrhPassword"] as String? ?: "Unknown user"
+            }
+        }
+    }
 }
 
 signing {
+    useGpgCmd()
     sign(publishing.publications["mavenJava"])
 }
