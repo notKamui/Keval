@@ -12,7 +12,7 @@ version = "0.7.2"
 plugins {
     kotlin("jvm") version "1.4.30"
     id("org.jetbrains.dokka") version "1.4.20"
-    `java-library`
+    java
     `maven-publish`
     signing
 }
@@ -24,6 +24,14 @@ repositories {
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
+}
+
+val compileKotlin by tasks.getting(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+val compileTestKotlin by tasks.getting(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 tasks.jar {
@@ -40,10 +48,6 @@ tasks.jar {
 java {
     withJavadocJar()
     withSourcesJar()
-}
-
-tasks.compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
 }
 
 tasks {
