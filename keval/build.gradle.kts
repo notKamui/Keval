@@ -121,6 +121,14 @@ publishing {
                 password = project.properties["ossrhPassword"] as String? ?: "Unknown user"
             }
         }
+        maven {
+            name = "GitHubPackages"
+            setUrl("https://maven.pkg.github.com/notKamui/${project.name}")
+            credentials {
+                username = project.properties["githubUsername"] as String? ?: "Unknown user"
+                password = project.properties["githubPassword"] as String? ?: "Unknown user"
+            }
+        }
     }
 }
 
