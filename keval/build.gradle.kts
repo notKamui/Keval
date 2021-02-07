@@ -7,12 +7,12 @@
 import java.net.URL
 
 group = "com.notkamui.libs"
-version = "0.7.1"
+version = "0.7.2"
 
 plugins {
     kotlin("jvm") version "1.4.30"
     id("org.jetbrains.dokka") version "1.4.20"
-    `java-library`
+    java
     `maven-publish`
     signing
 }
@@ -22,12 +22,16 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("com.google.guava:guava:29.0-jre")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    api("org.apache.commons:commons-math3:3.6.1")
+}
+
+val compileKotlin by tasks.getting(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+val compileTestKotlin by tasks.getting(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 tasks.jar {
@@ -39,17 +43,17 @@ tasks.jar {
             )
         )
     }
-    from(sourceSets.main.get().output)
-
-    dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-    })
 }
 
 java {
     withJavadocJar()
     withSourcesJar()
+}
+
+tasks {
+    withType<Wrapper> {
+        distributionType = Wrapper.DistributionType.ALL
+    }
 }
 
 tasks.dokkaHtml.configure {
