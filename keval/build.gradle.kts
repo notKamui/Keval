@@ -22,10 +22,8 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-    api("org.apache.commons:commons-math3:3.6.1")
 }
 
 tasks.jar {
