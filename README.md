@@ -2,6 +2,7 @@
 
 ***A Kotlin/JVM mini library for string evaluation***
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.notkamui.libs/keval/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.notkamui.libs/keval)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0161eb0c1caa473cbb7f7e7f375e50c6)](https://www.codacy.com/gh/notKamui/Keval/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=notKamui/Keval&amp;utm_campaign=Badge_Grade)
 [![CodeFactor](https://www.codefactor.io/repository/github/notkamui/keval/badge)](https://www.codefactor.io/repository/github/notkamui/keval)
 
