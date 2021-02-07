@@ -8,6 +8,37 @@
 (You may need to watch out using it:
 having to evaluate a string into a number is more often than not a code smell)
 
+## Import
+
+You can import Keval directly with the jar files, or using your favorite dependency manager with the Maven Central
+repository:
+
+Maven
+
+```XML
+<dependencies>
+  <dependency>
+    <groupId>com.notkamui.libs</groupId>
+    <artifactId>keval</artifactId>
+    <version>{version}</version>
+  </dependency>
+</dependencies>
+```
+
+Gradle (here with KotlinDSL)
+
+```Kotlin
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation("com.notkamui.libs:keval:{version}")
+}
+```
+
+(In case you're using it with another language than Kotlin -- i.e. Java --, make sure you include kotlin stdlib too)
+
 ## Usage
 
 Keval can evaluate a mathematical expression as a `String` into a `Double` value.
