@@ -7,7 +7,7 @@
 import java.net.URL
 
 group = "com.notkamui.libs"
-version = "0.7.2"
+version = "0.7.3"
 
 plugins {
     kotlin("jvm") version "1.4.30"

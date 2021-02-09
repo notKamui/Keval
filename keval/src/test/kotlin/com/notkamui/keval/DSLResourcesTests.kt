@@ -105,4 +105,40 @@ class DLSTest {
             kvl.eval("ab_c(1)")
         )
     }
+
+    @Test
+    fun checkWith() {
+        val kvl = Keval()
+            .withDefault()
+            .withOperator(
+                ';',
+                3,
+                isLeftAssociative = true,
+                ::hypotenuse
+            ).withFunction(
+                "max",
+                2
+            ) { max(it[0], it[1]) }
+            .withConstant("PHI", 1.618)
+
+        assertEquals(
+            9.0,
+            kvl.eval("max(4, 2) + 5")
+        )
+
+        assertEquals(
+            5.0,
+            kvl.eval("neg(5) + 10")
+        )
+
+        assertEquals(
+            8.85663593,
+            (kvl.eval("((3;4)-1.2);8") * 10.0.pow(8)).toInt() / 10.0.pow(8)
+        )
+
+        assertEquals(
+            2.6179240000000004,
+            kvl.eval("PHI^2")
+        )
+    }
 }

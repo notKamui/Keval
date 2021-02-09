@@ -83,7 +83,7 @@ properly, with a DSL (Domain Specific Language):
 Keval will use the built-in operators, function and constants if you choose not to define any new resource ; but if you
 choose to do so, you need to include them manually. You may also choose to use Keval as an extension function.
 
-You can use it in four ways:
+You can use it in several ways:
 
 ```Kotlin
 
@@ -138,6 +138,31 @@ Keval { // DSL instance
 
 The advantage of using `Keval {}` is that you may keep an instance of it in a variable so that you can call as
 many `eval` as you need.
+
+In concordance with creating a Keval instance, you can also add resources like this:
+
+```Kotlin
+val kvl = Keval()
+    .withDefault() // includes default resources // it is unnecessary here since Keval() with no DSL already does it
+    .withOperator( // includes a new binary operator
+        ';', // symbol
+        3, // precedence
+        true // isLeftAssociative
+    ) { a, b -> a.pow(2) + b.pow(2) } // implementation
+    .withFunction( // includes a new function
+        "max", // name
+        2 // arity
+    ) { max(it[0], it[1]) } // implementation
+    .withConstant( // includes a new constant
+        "PHI", // name
+        1.618 // value
+    )
+
+kvl.eval("2*max(2, 3) ; 4 + PHI^2")
+```
+
+This can be combined with creating an instance with a DSL (i.e. `Keval {}`).
+***This is an especially useful syntax for Java users, since DSLs generally don't translate well over it.***
 
 Creating a resource with a name that already exists will overwrite the previous one.
 
