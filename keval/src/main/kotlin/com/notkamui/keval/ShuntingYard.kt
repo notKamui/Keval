@@ -121,9 +121,13 @@ private fun String.isConstant(operators: Map<String, KevalOperator>) =
  * @receiver the string to convert
  * @return the abstract syntax tree
  * @throws KevalInvalidSymbolException if the expression contains an invalid symbol
- * @throws KevalInvalidExpressionException if the expression is invalid (i.e. mismatched parenthesis or missing operand)
+ * @throws KevalInvalidExpressionException if the expression is invalid (i.e. mismatched parenthesis, missing operand, or empty expression)
  */
 internal fun String.toAbstractSyntaxTree(operators: Map<String, KevalOperator>): Node {
+    // Check if empty expression
+    if (this.replace("""[()]""".toRegex(), "").isBlank())
+        throw KevalInvalidExpressionException("", -1)
+
     val outputQueue = mutableListOf<Node>()
     val operatorStack = mutableListOf<String>()
     val tokens = this.tokenize(operators.keys)

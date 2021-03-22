@@ -32,4 +32,17 @@ class ShuntingYardTest {
             "(3+1) / 0".keval()
         }
     }
+
+    /**
+     * Tests Keval on empty expression
+     */
+    @Test
+    fun emptyFailTest() {
+        assertFailsWith<KevalInvalidExpressionException> {
+            "".keval()
+        }
+        assertFailsWith<KevalInvalidExpressionException> {
+            "()".keval()
+        }
+    }
 }
