@@ -7,10 +7,10 @@
 import java.net.URL
 
 group = "com.notkamui.libs"
-version = "0.7.3"
+version = "0.7.4"
 
 plugins {
-    kotlin("jvm") version "1.4.30"
+    kotlin("jvm") version "1.4.31"
     id("org.jetbrains.dokka") version "1.4.20"
     java
     `maven-publish`
