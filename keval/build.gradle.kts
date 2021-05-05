@@ -4,13 +4,14 @@
  * Gradle build file for Keval
  */
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
 group = "com.notkamui.libs"
-version = "0.7.4"
+version = "0.7.5"
 
 plugins {
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
     id("org.jetbrains.dokka") version "1.4.20"
     java
     `maven-publish`
@@ -26,23 +27,12 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }
 
-val compileKotlin by tasks.getting(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+val compileKotlin by tasks.getting(KotlinCompile::class) {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-val compileTestKotlin by tasks.getting(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
+val compileTestKotlin by tasks.getting(KotlinCompile::class) {
     kotlinOptions.jvmTarget = "1.8"
-}
-
-tasks.jar {
-    manifest {
-        attributes(
-            mapOf(
-                "Implementation-Title" to project.name,
-                "Implementation-Version" to project.version
-            )
-        )
-    }
 }
 
 java {
@@ -51,26 +41,42 @@ java {
 }
 
 tasks {
+    jar {
+        manifest {
+            attributes(
+                mapOf(
+                    "Implementation-Title" to project.name,
+                    "Implementation-Version" to project.version
+                )
+            )
+        }
+    }
+
     withType<Wrapper> {
         distributionType = Wrapper.DistributionType.ALL
     }
-}
+    withType<KotlinCompile>().configureEach {
+        kotlinOptions {
+            useIR = true
+        }
+    }
 
-tasks.dokkaHtml.configure {
-    outputDirectory.set(rootDir.resolve("docs"))
-    moduleName.set("Keval")
-    dokkaSourceSets {
-        configureEach {
-            sourceLink {
-                localDirectory.set(file("src/main/kotlin"))
-                remoteUrl.set(
-                    URL(
-                        "https://github.com/notKamui/Keval/tree/main/keval/src/main/kotlin"
+    dokkaHtml.configure {
+        outputDirectory.set(rootDir.resolve("docs"))
+        moduleName.set("Keval")
+        dokkaSourceSets {
+            configureEach {
+                sourceLink {
+                    localDirectory.set(file("src/main/kotlin"))
+                    remoteUrl.set(
+                        URL(
+                            "https://github.com/notKamui/Keval/tree/main/keval/src/main/kotlin"
+                        )
                     )
-                )
-                remoteLineSuffix.set("#L")
+                    remoteLineSuffix.set("#L")
+                }
+                jdkVersion.set(8)
             }
-            jdkVersion.set(8)
         }
     }
 }
