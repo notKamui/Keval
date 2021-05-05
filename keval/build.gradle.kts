@@ -4,15 +4,14 @@
  * Gradle build file for Keval
  */
 
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URL
 
 group = "com.notkamui.libs"
 version = "0.7.5"
 
 plugins {
-    kotlin("jvm") version "1.4.32"
-    id("org.jetbrains.dokka") version "1.4.20"
+    kotlin("jvm") version "1.5.0"
+    id("org.jetbrains.dokka") version "1.4.32"
     java
     `maven-publish`
     signing
@@ -25,14 +24,6 @@ repositories {
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-}
-
-val compileKotlin by tasks.getting(KotlinCompile::class) {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-val compileTestKotlin by tasks.getting(KotlinCompile::class) {
-    kotlinOptions.jvmTarget = "1.8"
 }
 
 java {
@@ -54,11 +45,6 @@ tasks {
 
     withType<Wrapper> {
         distributionType = Wrapper.DistributionType.ALL
-    }
-    withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            useIR = true
-        }
     }
 
     dokkaHtml.configure {

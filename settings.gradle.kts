@@ -4,6 +4,6 @@ include("keval")
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        jcenter()
+        mavenCentral()
     }
 }
