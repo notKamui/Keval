@@ -10,7 +10,7 @@ group = "com.notkamui.libs"
 version = "0.7.5"
 
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.10"
     id("org.jetbrains.dokka") version "1.4.32"
     java
     `maven-publish`
@@ -61,7 +61,7 @@ tasks {
                     )
                     remoteLineSuffix.set("#L")
                 }
-                jdkVersion.set(8)
+                jdkVersion.set(16)
             }
         }
     }

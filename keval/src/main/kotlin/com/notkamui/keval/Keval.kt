@@ -1,7 +1,7 @@
 package com.notkamui.keval
 
 /**
- * Wrapper class for Keval,
+ * Wrapper class for [Keval],
  * Contains a companion object with the evaluation method
  */
 class Keval
@@ -76,9 +76,7 @@ constructor(
     }
 
     /**
-     * Composes the default resources to Keval
-     *
-     * @return the Keval instance
+     * Composes the default resources to this [Keval] instance.
      */
     fun withDefault(): Keval {
         kevalDSL.includeDefault()
