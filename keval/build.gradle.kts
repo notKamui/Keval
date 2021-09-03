@@ -4,14 +4,13 @@
  * Gradle build file for Keval
  */
 
-import java.net.URL
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.notkamui.libs"
-version = "0.7.4"
+version = "0.7.5"
 
 plugins {
-    kotlin("jvm") version "1.4.31"
-    id("org.jetbrains.dokka") version "1.4.20"
+    kotlin("jvm") version "1.5.30"
     java
     `maven-publish`
     signing
@@ -26,52 +25,34 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }
 
-val compileKotlin by tasks.getting(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-val compileTestKotlin by tasks.getting(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class) {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-tasks.jar {
-    manifest {
-        attributes(
-            mapOf(
-                "Implementation-Title" to project.name,
-                "Implementation-Version" to project.version
-            )
-        )
-    }
-}
-
 java {
     withJavadocJar()
     withSourcesJar()
 }
 
 tasks {
+    jar {
+        manifest {
+            attributes(
+                mapOf(
+                    "Implementation-Title" to project.name,
+                    "Implementation-Version" to project.version
+                )
+            )
+        }
+    }
+
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+
+    withType<JavaCompile> {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+    }
+
     withType<Wrapper> {
         distributionType = Wrapper.DistributionType.ALL
-    }
-}
-
-tasks.dokkaHtml.configure {
-    outputDirectory.set(rootDir.resolve("docs"))
-    moduleName.set("Keval")
-    dokkaSourceSets {
-        configureEach {
-            sourceLink {
-                localDirectory.set(file("src/main/kotlin"))
-                remoteUrl.set(
-                    URL(
-                        "https://github.com/notKamui/Keval/tree/main/keval/src/main/kotlin"
-                    )
-                )
-                remoteLineSuffix.set("#L")
-            }
-            jdkVersion.set(8)
-        }
     }
 }
 
