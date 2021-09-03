@@ -2,7 +2,7 @@
 
 ***A Kotlin/JVM mini library for string evaluation***
 
-[![Kotlin](https://img.shields.io/badge/Kotlin-1.5.0-7f52ff.svg)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.5.30-7f52ff.svg)](https://kotlinlang.org)
 [![Maven Central](https://img.shields.io/maven-central/v/com.notkamui.libs/keval.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.notkamui.libs%22%20AND%20a:%22keval%22)
 [![CodeFactor](https://www.codefactor.io/repository/github/notkamui/keval/badge)](https://www.codefactor.io/repository/github/notkamui/keval)
 (You may need to watch out using it:
