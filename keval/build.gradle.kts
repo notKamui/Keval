@@ -4,14 +4,13 @@
  * Gradle build file for Keval
  */
 
-import java.net.URL
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.notkamui.libs"
 version = "0.7.5"
 
 plugins {
-    kotlin("jvm") version "1.5.10"
-    id("org.jetbrains.dokka") version "1.4.32"
+    kotlin("jvm") version "1.5.30"
     java
     `maven-publish`
     signing
@@ -43,27 +42,17 @@ tasks {
         }
     }
 
-    withType<Wrapper> {
-        distributionType = Wrapper.DistributionType.ALL
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
     }
 
-    dokkaHtml.configure {
-        outputDirectory.set(rootDir.resolve("docs"))
-        moduleName.set("Keval")
-        dokkaSourceSets {
-            configureEach {
-                sourceLink {
-                    localDirectory.set(file("src/main/kotlin"))
-                    remoteUrl.set(
-                        URL(
-                            "https://github.com/notKamui/Keval/tree/main/keval/src/main/kotlin"
-                        )
-                    )
-                    remoteLineSuffix.set("#L")
-                }
-                jdkVersion.set(16)
-            }
-        }
+    withType<JavaCompile> {
+        sourceCompatibility = "1.8"
+        targetCompatibility = "1.8"
+    }
+
+    withType<Wrapper> {
+        distributionType = Wrapper.DistributionType.ALL
     }
 }
 
