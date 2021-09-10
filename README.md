@@ -182,8 +182,8 @@ In case of an error, Keval will throw one of several `KevalException`s:
 - `KevalInvalidExpressionException` if the expression is invalid, with the following properties:
   - `expression` contains the fully sanitized expression
   - `position` is an estimate of the position of the error
-- `KevalInvalidOperatorException` if the expression contains an invalid operator, with the following properties:
-  - `invalidOperator` contains the actual invalid operator
+- `KevalInvalidSymbolException` if the expression contains an invalid operator, with the following properties:
+  - `invalidSymbol` contains the actual invalid operator
   - `expression` contains the fully sanitized expression
   - `position` is an estimate of the position of the error
 - `KevalDSLException` if, in the DSL, one of the field is either not set, or doesn't follow its restrictions (defined
