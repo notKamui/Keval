@@ -12,23 +12,19 @@ private enum class TokenType {
 private fun shouldAssumeMul(tokenType: TokenType): Boolean =
     tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
 
-// This functions add product symbols where they should be assumed
+// This function add product symbols where they should be assumed
 private fun List<String>.assumeMul(symbolsSet: Set<String>, tokensToString: String): List<String> {
     var currentPos = 0
     var prevToken = TokenType.FIRST
     val ret = mutableListOf<String>()
     this.forEach { token ->
         prevToken = when {
-            token.isNumeric() -> {
-                if (shouldAssumeMul(prevToken))
-                    ret.add("*")
-                TokenType.OPERAND
+            token.isNumeric() -> TokenType.OPERAND.also {
+                if (shouldAssumeMul(prevToken)) ret.add("*")
             }
             token.isKevalOperator(symbolsSet) -> TokenType.OPERATOR
-            token == "(" -> {
-                if (shouldAssumeMul(prevToken))
-                    ret.add("*")
-                TokenType.LPAREN
+            token == "(" -> TokenType.LPAREN.also {
+                if (shouldAssumeMul(prevToken)) ret.add("*")
             }
             token == ")" -> TokenType.RPAREN
             token == "," -> TokenType.COMMA
