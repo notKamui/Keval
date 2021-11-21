@@ -31,20 +31,21 @@ class KevalDSL internal constructor() {
         op.definition()
 
         // checking if every field has been properly defined
-        op.symbol ?: throw KevalDSLException("symbol is not set")
-        if (op.symbol!!.isLetterOrDigit() ||
-            op.symbol!! == '_'
-        ) throw KevalDSLException("a symbol must NOT be a letter, nor a digit, nor an underscore: ${op.symbol}")
-        op.implementation ?: throw KevalDSLException("implementation is not set")
-        op.precedence ?: throw KevalDSLException("precedence is not set")
-        if (op.precedence!! < 0)
+        val symbol = op.symbol ?: throw KevalDSLException("symbol is not set")
+        if (symbol.isLetterOrDigit() || symbol == '_') {
+            throw KevalDSLException("a symbol must NOT be a letter, nor a digit, nor an underscore: $symbol")
+        }
+        val implementation = op.implementation ?: throw KevalDSLException("implementation is not set")
+        val precedence = op.precedence ?: throw KevalDSLException("precedence is not set")
+        if (precedence < 0) {
             throw KevalDSLException("operator's precedence must always be positive or 0")
-        op.isLeftAssociative ?: throw KevalDSLException("isLeftAssociative is not set")
+        }
+        val isLeftAssociative = op.isLeftAssociative ?: throw KevalDSLException("isLeftAssociative is not set")
 
-        _resources += op.symbol!!.toString() to KevalBinaryOperator(
-            op.precedence!!,
-            op.isLeftAssociative!!,
-            op.implementation!!
+        _resources[symbol.toString()] = KevalBinaryOperator(
+            precedence,
+            isLeftAssociative,
+            implementation
         )
     }
 
@@ -60,17 +61,20 @@ class KevalDSL internal constructor() {
         fn.definition()
 
         // checking if every field has been properly defined
-        fn.name ?: throw KevalDSLException("name is not set")
-        if (fn.name!!.isEmpty() ||
-            fn.name!![0] in '0'..'9' ||
-            fn.name!!.contains("[^a-zA-Z0-9_]".toRegex())
-        ) throw KevalDSLException("a function's name cannot start with a digit and must contain only letters, digits or underscores: ${fn.name}")
-        fn.arity ?: throw KevalDSLException("arity is not set")
-        if (fn.arity!! < 0)
+        val name = fn.name ?: throw KevalDSLException("name is not set")
+        if (name.isEmpty() ||
+            name[0] in '0'..'9' ||
+            name.contains("[^a-zA-Z0-9_]".toRegex())
+        ) {
+            throw KevalDSLException("a function's name cannot start with a digit and must contain only letters, digits or underscores: ${fn.name}")
+        }
+        val arity = fn.arity ?: throw KevalDSLException("arity is not set")
+        if (arity < 0) {
             throw KevalDSLException("function's arity must always be positive or 0")
-        fn.implementation ?: throw KevalDSLException("implementation is not set")
+        }
+        val implementation = fn.implementation ?: throw KevalDSLException("implementation is not set")
 
-        _resources += fn.name!! to KevalFunction(fn.arity!!, fn.implementation!!)
+        _resources += name to KevalFunction(arity, implementation)
     }
 
     /**
@@ -85,14 +89,16 @@ class KevalDSL internal constructor() {
         const.definition()
 
         // checking if every field has been properly defined
-        const.name ?: throw KevalDSLException("name is not set")
-        if (const.name!!.isEmpty() ||
-            const.name!![0] in '0'..'9' ||
-            const.name!!.contains("[^a-zA-Z0-9_]".toRegex())
-        ) throw KevalDSLException("a constant's name cannot start with a digit and must contain only letters, digits or underscores: ${const.name}")
-        const.value ?: throw KevalDSLException("value is not set")
+        val name = const.name ?: throw KevalDSLException("name is not set")
+        if (name.isEmpty() ||
+            name[0] in '0'..'9' ||
+            name.contains("[^a-zA-Z0-9_]".toRegex())
+        ) {
+            throw KevalDSLException("a constant's name cannot start with a digit and must contain only letters, digits or underscores: ${const.name}")
+        }
+        val value = const.value ?: throw KevalDSLException("value is not set")
 
-        _resources += const.name!! to KevalConstant(const.value!!)
+        _resources += name to KevalConstant(value)
     }
 
     companion object {
