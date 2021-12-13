@@ -10,7 +10,7 @@ group = "com.notkamui.libs"
 version = "0.7.5"
 
 plugins {
-    kotlin("jvm") version "1.5.30"
+    kotlin("multiplatform") version "1.5.30"
     java
     `maven-publish`
     signing
@@ -20,14 +20,29 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-}
-
 java {
     withJavadocJar()
     withSourcesJar()
+}
+
+kotlin {
+    jvm()
+    js(BOTH){
+        nodejs()
+        browser()
+    }
+
+    @Suppress("UNUSED_VARIABLE")
+    sourceSets {
+        val commonMain by getting {
+        }
+        val commonTest by getting {
+            dependencies{
+                implementation("org.jetbrains.kotlin:kotlin-test")
+                implementation("org.jetbrains.kotlin:kotlin-test-junit")
+            }
+        }
+    }
 }
 
 tasks {
