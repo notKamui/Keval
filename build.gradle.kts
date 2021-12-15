@@ -78,8 +78,7 @@ else
 
 publishing {
     publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
+        withType<MavenPublication> {
             groupId = project.group.toString()
             artifactId = project.name.toLowerCase()
             version = project.version.toString()
