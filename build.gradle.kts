@@ -7,7 +7,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.notkamui.libs"
-version = "0.7.5"
+version = "0.7.5-SNAPSHOT"
 
 plugins {
     kotlin("multiplatform") version "1.5.30"
@@ -129,5 +129,5 @@ publishing {
 
 signing {
     useGpgCmd()
-    sign(publishing.publications["mavenJava"])
+    sign(publishing.publications)
 }
