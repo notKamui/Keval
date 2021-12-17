@@ -27,17 +27,19 @@ java {
 
 kotlin {
     jvm()
-    js(BOTH){
+    js(BOTH) {
         nodejs()
         browser()
     }
+    linuxX64()
+    mingwX64()
 
     @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val commonMain by getting {
         }
         val commonTest by getting {
-            dependencies{
+            dependencies {
                 implementation("org.jetbrains.kotlin:kotlin-test")
                 implementation("org.jetbrains.kotlin:kotlin-test-junit")
             }
@@ -71,7 +73,9 @@ tasks {
     }
 }
 
-val repositoryUrl = if (version.toString().endsWith("SNAPSHOT"))
+val isSnapshot = version.toString().endsWith("-SNAPSHOT")
+
+val repositoryUrl = if (isSnapshot)
     "https://oss.sonatype.org/content/repositories/snapshots/"
 else
     "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
@@ -116,12 +120,14 @@ publishing {
                 password = project.properties["ossrhPassword"] as String? ?: "Unknown user"
             }
         }
-        maven {
-            name = "GitHubPackages"
-            setUrl("https://maven.pkg.github.com/notKamui/${project.name}")
-            credentials {
-                username = project.properties["githubUsername"] as String? ?: "Unknown user"
-                password = project.properties["githubPassword"] as String? ?: "Unknown user"
+        if (!isSnapshot) {
+            maven {
+                name = "GitHubPackages"
+                setUrl("https://maven.pkg.github.com/notKamui/${project.name}")
+                credentials {
+                    username = project.properties["githubUsername"] as String? ?: "Unknown user"
+                    password = project.properties["githubPassword"] as String? ?: "Unknown user"
+                }
             }
         }
     }
