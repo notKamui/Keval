@@ -7,10 +7,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.notkamui.libs"
-version = "0.7.5-SNAPSHOT"
+version = "0.8.0-SNAPSHOT"
 
 plugins {
-    kotlin("multiplatform") version "1.5.30"
+    kotlin("multiplatform") version "1.6.0"
     java
     `maven-publish`
     signing
@@ -83,10 +83,6 @@ else
 publishing {
     publications {
         withType<MavenPublication> {
-            groupId = project.group.toString()
-            artifactId = project.name.toLowerCase()
-            version = project.version.toString()
-
             pom {
                 name.set("Keval")
                 description.set("A Kotlin mini library for mathematical expression string evaluation")
