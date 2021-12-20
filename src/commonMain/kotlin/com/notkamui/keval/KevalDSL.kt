@@ -74,7 +74,7 @@ class KevalDSL internal constructor() {
         }
         val implementation = fn.implementation ?: throw KevalDSLException("implementation is not set")
 
-        _resources += name to KevalFunction(arity, implementation)
+        _resources[name] = KevalFunction(arity, implementation)
     }
 
     /**
@@ -98,7 +98,7 @@ class KevalDSL internal constructor() {
         }
         val value = const.value ?: throw KevalDSLException("value is not set")
 
-        _resources += name to KevalConstant(value)
+        _resources[name] = KevalConstant(value)
     }
 
     companion object {
