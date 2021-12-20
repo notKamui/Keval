@@ -1,4 +1,4 @@
-rootProject.name = "Keval"
+rootProject.name = "keval"
 
 pluginManagement {
     repositories {
