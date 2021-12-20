@@ -3,7 +3,7 @@ package com.notkamui.keval
 /**
  * Represents an operator, may be either a binary operator, or a function
  */
-internal sealed class KevalOperator
+internal sealed interface KevalOperator
 
 /**
  * Represents a binary operator
@@ -16,7 +16,7 @@ internal data class KevalBinaryOperator(
     val precedence: Int,
     val isLeftAssociative: Boolean,
     val implementation: (Double, Double) -> Double
-) : KevalOperator()
+) : KevalOperator
 
 /**
  * Represents a function
@@ -27,7 +27,7 @@ internal data class KevalBinaryOperator(
 internal data class KevalFunction(
     val arity: Int,
     val implementation: (DoubleArray) -> Double
-) : KevalOperator()
+) : KevalOperator
 
 /**
  * Represents a constant
@@ -36,7 +36,7 @@ internal data class KevalFunction(
  */
 internal data class KevalConstant(
     val value: Double
-) : KevalOperator()
+) : KevalOperator
 
 /**
  * Represents a node in an AST and can evaluate its value
@@ -73,7 +73,7 @@ internal data class FunctionNode(
     private val func: (DoubleArray) -> Double,
     private val children: List<Node>
 ) : Node {
-    override fun eval(): Double = func(children.map { it.eval() }.toDoubleArray())
+    override fun eval(): Double = func(children.map(Node::eval).toDoubleArray())
 }
 
 /**
