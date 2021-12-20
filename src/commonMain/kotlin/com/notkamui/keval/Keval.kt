@@ -1,5 +1,8 @@
 package com.notkamui.keval
 
+import kotlin.jvm.JvmName
+import kotlin.jvm.JvmStatic
+
 /**
  * Wrapper class for [Keval],
  * Contains a companion object with the evaluation method

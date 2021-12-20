@@ -7,10 +7,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.notkamui.libs"
-version = "0.7.5"
+version = "0.8.0-SNAPSHOT"
 
 plugins {
-    kotlin("jvm") version "1.5.30"
+    kotlin("multiplatform") version "1.6.0"
     java
     `maven-publish`
     signing
@@ -20,14 +20,31 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
-}
-
 java {
     withJavadocJar()
     withSourcesJar()
+}
+
+kotlin {
+    jvm()
+    js(BOTH) {
+        nodejs()
+        browser()
+    }
+    linuxX64()
+    mingwX64()
+
+    @Suppress("UNUSED_VARIABLE")
+    sourceSets {
+        val commonMain by getting {
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlin:kotlin-test")
+                implementation("org.jetbrains.kotlin:kotlin-test-junit")
+            }
+        }
+    }
 }
 
 tasks {
@@ -56,19 +73,17 @@ tasks {
     }
 }
 
-val repositoryUrl = if (version.toString().endsWith("SNAPSHOT"))
+val isSnapshot = version.toString().endsWith("-SNAPSHOT")
+
+val repositoryUrl = if (isSnapshot)
     "https://oss.sonatype.org/content/repositories/snapshots/"
 else
     "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 
 publishing {
     publications {
-        create<MavenPublication>("mavenJava") {
-            from(components["java"])
-            groupId = project.group.toString()
-            artifactId = project.name.toLowerCase()
-            version = project.version.toString()
-
+        withType<MavenPublication> {
+            artifactId = artifactId.toLowerCase()
             pom {
                 name.set("Keval")
                 description.set("A Kotlin mini library for mathematical expression string evaluation")
@@ -102,12 +117,14 @@ publishing {
                 password = project.properties["ossrhPassword"] as String? ?: "Unknown user"
             }
         }
-        maven {
-            name = "GitHubPackages"
-            setUrl("https://maven.pkg.github.com/notKamui/${project.name}")
-            credentials {
-                username = project.properties["githubUsername"] as String? ?: "Unknown user"
-                password = project.properties["githubPassword"] as String? ?: "Unknown user"
+        if (!isSnapshot) {
+            maven {
+                name = "GitHubPackages"
+                setUrl("https://maven.pkg.github.com/notKamui/${project.name}")
+                credentials {
+                    username = project.properties["githubUsername"] as String? ?: "Unknown user"
+                    password = project.properties["githubPassword"] as String? ?: "Unknown user"
+                }
             }
         }
     }
@@ -115,5 +132,5 @@ publishing {
 
 signing {
     useGpgCmd()
-    sign(publishing.publications["mavenJava"])
+    sign(publishing.publications)
 }
