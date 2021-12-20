@@ -84,7 +84,7 @@ publishing {
     publications {
         withType<MavenPublication> {
             artifactId = artifactId.toLowerCase()
-
+            artifact(tasks["javadocJar"])
             pom {
                 name.set("Keval")
                 description.set("A Kotlin mini library for mathematical expression string evaluation")
