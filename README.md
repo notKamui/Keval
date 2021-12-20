@@ -4,7 +4,6 @@
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.6.0-7f52ff.svg)](https://kotlinlang.org)
 [![Maven Central](https://img.shields.io/maven-central/v/com.notkamui.libs/keval.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.notkamui.libs%22%20AND%20a:%22keval%22)
-[![CodeFactor](https://www.codefactor.io/repository/github/notkamui/keval/badge)](https://www.codefactor.io/repository/github/notkamui/keval)
 
 (You may need to watch out using it:
 having to evaluate a string into a number is more often than not a code smell)
@@ -21,7 +20,7 @@ Maven
   <dependency>
     <groupId>com.notkamui.libs</groupId>
     <artifactId>keval</artifactId>
-    <version>0.7.4</version>
+    <version>0.7.5</version>
   </dependency>
 </dependencies>
 ```
@@ -34,7 +33,7 @@ repositories {
 }
 
 dependencies {
-  implementation("com.notkamui.libs:keval:0.7.4")
+  implementation("com.notkamui.libs:keval:0.7.5")
 }
 ```
 
