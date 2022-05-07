@@ -10,7 +10,7 @@ group = "com.notkamui.libs"
 version = "0.8.0"
 
 plugins {
-    kotlin("multiplatform") version "1.6.0"
+    kotlin("multiplatform") version "1.6.21"
     java
     `maven-publish`
     signing
