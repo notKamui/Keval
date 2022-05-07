@@ -141,4 +141,25 @@ class DLSTest {
             kvl.eval("PHI^2")
         )
     }
+
+    @Test
+    fun checkOrder() {
+        var first = 1.0;
+        val second = 2.0;
+        val third = 3.0;
+        val k = Keval {
+            includeDefault()
+            function {
+                name = "test"
+                arity = 3
+                implementation = { args ->
+                    assertEquals(args[0], first)
+                    assertEquals(args[1], second)
+                    assertEquals(args[2], third)
+                    .0;
+                }
+            }
+        }
+        k.eval("test(1, 2, 3)")
+    }
 }

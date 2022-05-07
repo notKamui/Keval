@@ -14,7 +14,7 @@ private fun MutableList<Node>.addFunction(arity: Int, func: (DoubleArray) -> Dou
     repeat(arity) {
         children += removeLastOrNull() ?: return false
     }
-    add(FunctionNode(func, children))
+    add(FunctionNode(func, children.reversed()))
     return true
 }
 
