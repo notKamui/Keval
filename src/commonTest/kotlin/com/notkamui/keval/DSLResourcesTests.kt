@@ -7,7 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-fun hypotenuse(x: Double, y: Double): Double = sqrt(x.pow(2) + y.pow(2))
+fun hypotenuse(x: Double, y: Double): Double = sqrt(x*x + y*y)
 
 class DLSTest {
     @Test
@@ -144,9 +144,9 @@ class DLSTest {
 
     @Test
     fun checkOrder() {
-        var first = 1.0;
-        val second = 2.0;
-        val third = 3.0;
+        val first = 1.0
+        val second = 2.0
+        val third = 3.0
         val k = Keval {
             includeDefault()
             function {
@@ -156,10 +156,24 @@ class DLSTest {
                     assertEquals(args[0], first)
                     assertEquals(args[1], second)
                     assertEquals(args[2], third)
-                    .0;
+                    .0
                 }
             }
         }
         k.eval("test(1, 2, 3)")
+    }
+
+    @Test
+    fun checkCoherence() {
+        val k = Keval {
+            includeDefault()
+            function {
+                name = "if"
+                arity = 3
+                implementation = { args -> if (args[0] != .0) args[1] else args[2] }
+            }
+        }
+        assertEquals(4.0, k.eval("if((1*1), 4, 5)"))
+        assertEquals(4.0, k.eval("if(1*1, 4, 5)"))
     }
 }
