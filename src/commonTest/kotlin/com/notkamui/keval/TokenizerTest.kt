@@ -91,7 +91,7 @@ class TokenizerTest {
             }
         }
 
-        val nodes = "f(1,)".tokenize(k.resourcesView())
+        val nodes = "f(((1)))".tokenize(k.resourcesView())
         assertEquals("f((((1))))", nodes.joinToString(separator = ""))
     }
 }
