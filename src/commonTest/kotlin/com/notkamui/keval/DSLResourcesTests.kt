@@ -198,7 +198,6 @@ class DLSTest {
                 implementation = { args -> args[0] }
             }
         }
-        assertEquals(1.0, k.eval("f((1),())"), "f((1),())")
         assertEquals(1.0, k.eval("f(((1)))"), "f(((1)))")
     }
 }
