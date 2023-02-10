@@ -15,8 +15,13 @@ sealed class KevalException(message: String) : Exception(message)
  */
 open class KevalInvalidExpressionException internal constructor(
     val expression: String,
-    val position: Int
-) : KevalException("Invalid expression at $position in $expression")
+    val position: Int,
+    extraMessage: String = ""
+) : KevalException(
+    "Invalid expression at position $position in $expression${
+        if (extraMessage.isNotBlank()) ", $extraMessage" else ""
+    }"
+)
 
 /**
  * Invalid Operator Exception, is thrown when an invalid/unknown operator is found
@@ -28,8 +33,9 @@ open class KevalInvalidExpressionException internal constructor(
 class KevalInvalidSymbolException internal constructor(
     val invalidSymbol: String,
     expression: String,
-    position: Int
-) : KevalInvalidExpressionException(expression, position)
+    position: Int,
+    message: String = ""
+) : KevalInvalidExpressionException(expression, position, message)
 
 /**
  * Zero Division Exception, is thrown when a zero division occurs (i.e. x/0, x%0)

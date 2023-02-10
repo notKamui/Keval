@@ -109,6 +109,9 @@ constructor(
         return mathExpression.toAbstractSyntaxTree(operators).eval()
     }
 
+    fun resourcesView(): Map<String, KevalOperator> = kevalDSL.resources
+        .plus("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
+
     companion object {
         /**
          * Evaluates [mathExpression] from a [String] and returns a [Double] value with the default resources.

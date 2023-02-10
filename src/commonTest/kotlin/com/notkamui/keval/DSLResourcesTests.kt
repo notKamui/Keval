@@ -144,23 +144,33 @@ class DLSTest {
 
     @Test
     fun checkOrder() {
-        val first = 1.0
-        val second = 2.0
-        val third = 3.0
         val k = Keval {
             includeDefault()
             function {
-                name = "test"
+                name = "first"
                 arity = 3
                 implementation = { args ->
-                    assertEquals(args[0], first)
-                    assertEquals(args[1], second)
-                    assertEquals(args[2], third)
-                    .0
+                    args[0]
+                }
+            }
+            function {
+                name = "second"
+                arity = 3
+                implementation = { args ->
+                    args[1]
+                }
+            }
+            function {
+                name = "third"
+                arity = 3
+                implementation = { args ->
+                    args[2]
                 }
             }
         }
-        k.eval("test(1, 2, 3)")
+        assertEquals(1.0, k.eval("first(1, 2, 3)"), "first(1, 2, 3)")
+        assertEquals(2.0, k.eval("second(1, 2, 3)"), "second(1, 2, 3)")
+        assertEquals(3.0, k.eval("third(1, 2, 3)"), "third(1, 2, 3)")
     }
 
     @Test
@@ -173,7 +183,22 @@ class DLSTest {
                 implementation = { args -> if (args[0] != .0) args[1] else args[2] }
             }
         }
-        assertEquals(4.0, k.eval("if((1*1), 4, 5)"))
-        assertEquals(4.0, k.eval("if(1*1, 4, 5)"))
+
+        assertEquals(4.0, k.eval("if((1*1), 4, 5)"), "if((1*1), 4, 5)")
+        assertEquals(4.0, k.eval("if(1*1, 4, 5)"), "if(1*1, 4, 5)")
+    }
+
+    @Test
+    fun checkRepeatingParentheses() {
+        val k = Keval {
+            includeDefault()
+            function {
+                name = "f"
+                arity = 1
+                implementation = { args -> args[0] }
+            }
+        }
+        assertEquals(1.0, k.eval("f((1),())"), "f((1),())")
+        assertEquals(1.0, k.eval("f(((1)))"), "f(((1)))")
     }
 }
