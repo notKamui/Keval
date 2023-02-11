@@ -3,7 +3,7 @@ package com.notkamui.keval
 /**
  * Represents an operator, may be either a binary operator, or a function
  */
-internal sealed interface KevalOperator
+sealed interface KevalOperator
 
 /**
  * Represents a binary operator

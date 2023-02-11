@@ -32,8 +32,11 @@ class KevalDSL internal constructor() {
 
         // checking if every field has been properly defined
         val symbol = op.symbol ?: throw KevalDSLException("symbol is not set")
-        if (symbol.isLetterOrDigit() || symbol == '_') {
-            throw KevalDSLException("a symbol must NOT be a letter, nor a digit, nor an underscore: $symbol")
+        if (symbol.isLetterOrDigit() || symbol in listOf('_', '(', ')', ',')) {
+            throw KevalDSLException("a symbol must NOT be a letter, a digit, an underscore, parentheses nor a comma but was: $symbol")
+        }
+        if (symbol == '*') {
+            throw KevalDSLException("* cannot be overwritten")
         }
         val implementation = op.implementation ?: throw KevalDSLException("implementation is not set")
         val precedence = op.precedence ?: throw KevalDSLException("precedence is not set")

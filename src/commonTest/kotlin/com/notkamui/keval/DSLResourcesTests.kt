@@ -7,7 +7,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-fun hypotenuse(x: Double, y: Double): Double = sqrt(x.pow(2) + y.pow(2))
+fun hypotenuse(x: Double, y: Double): Double = sqrt(x*x + y*y)
 
 class DLSTest {
     @Test
@@ -140,5 +140,64 @@ class DLSTest {
             2.6179240000000004,
             kvl.eval("PHI^2")
         )
+    }
+
+    @Test
+    fun checkOrder() {
+        val k = Keval {
+            includeDefault()
+            function {
+                name = "first"
+                arity = 3
+                implementation = { args ->
+                    args[0]
+                }
+            }
+            function {
+                name = "second"
+                arity = 3
+                implementation = { args ->
+                    args[1]
+                }
+            }
+            function {
+                name = "third"
+                arity = 3
+                implementation = { args ->
+                    args[2]
+                }
+            }
+        }
+        assertEquals(1.0, k.eval("first(1, 2, 3)"), "first(1, 2, 3)")
+        assertEquals(2.0, k.eval("second(1, 2, 3)"), "second(1, 2, 3)")
+        assertEquals(3.0, k.eval("third(1, 2, 3)"), "third(1, 2, 3)")
+    }
+
+    @Test
+    fun checkCoherence() {
+        val k = Keval {
+            includeDefault()
+            function {
+                name = "if"
+                arity = 3
+                implementation = { args -> if (args[0] != .0) args[1] else args[2] }
+            }
+        }
+
+        assertEquals(4.0, k.eval("if((1*1), 4, 5)"), "if((1*1), 4, 5)")
+        assertEquals(4.0, k.eval("if(1*1, 4, 5)"), "if(1*1, 4, 5)")
+    }
+
+    @Test
+    fun checkRepeatingParentheses() {
+        val k = Keval {
+            includeDefault()
+            function {
+                name = "f"
+                arity = 1
+                implementation = { args -> args[0] }
+            }
+        }
+        assertEquals(1.0, k.eval("f(((1)))"), "f(((1)))")
     }
 }

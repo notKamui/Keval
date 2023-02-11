@@ -12,25 +12,62 @@ private enum class TokenType {
 private fun shouldAssumeMul(tokenType: TokenType): Boolean =
     tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
 
-// This function add product symbols where they should be assumed
-private fun List<String>.assumeMul(symbolsSet: Set<String>, tokensToString: String): List<String> {
+// normalize tokens to be of specific form (add product symbols where they should be assumed and enclose every parameter of a function in parentheses)
+private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>, tokensToString: String): List<String> {
     var currentPos = 0
     var prevToken = TokenType.FIRST
+    var parenthesesCount = 0
+    val functionAtCount = mutableListOf(-1)
     val ret = mutableListOf<String>()
     this.forEach { token ->
         prevToken = when {
             token.isNumeric() -> TokenType.OPERAND.also {
                 if (shouldAssumeMul(prevToken)) ret.add("*")
+                ret.add(token)
             }
-            token.isKevalOperator(symbolsSet) -> TokenType.OPERATOR
-            token == "(" -> TokenType.LPAREN.also {
-                if (shouldAssumeMul(prevToken)) ret.add("*")
-            }
+
+            token.isKevalOperator(symbols.keys) -> TokenType.OPERATOR
+                .also {
+                    ret.add(token)
+                    if (symbols[token] is KevalFunction) {
+                        functionAtCount.add(parenthesesCount + 1)
+                    }
+                }
+
+            token == "(" -> TokenType.LPAREN
+                .also {
+                    parenthesesCount += 1
+                    // add `(` whenever the parentheses are opening a function call
+                    if (functionAtCount.last() == parenthesesCount) ret.add("(")
+                    if (shouldAssumeMul(prevToken)) ret.add("*")
+                    ret.add(token)
+                }
+
             token == ")" -> TokenType.RPAREN
+                .also {
+                    // add `)` whenever the parentheses are closing a function call
+                    if (functionAtCount.last() == parenthesesCount) {
+                        ret.add(")")
+                        functionAtCount.removeLast()
+                    }
+                    parenthesesCount -= 1
+                    ret.add(token)
+                }
+
             token == "," -> TokenType.COMMA
+                .also {
+                    // transform `,` into `),(` whenever `,` is a separator or parameters in functions
+                    if (functionAtCount.last() == parenthesesCount) {
+                        ret.add(")")
+                        ret.add(token)
+                        ret.add("(")
+                    } else {
+                        throw KevalInvalidSymbolException(token, tokensToString, currentPos, "comma can only be used in the context of a function")
+                    }
+                }
+
             else -> throw KevalInvalidSymbolException(token, tokensToString, currentPos)
         }
-        ret.add(token)
         currentPos += token.length
     }
     return ret
@@ -62,7 +99,7 @@ internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in 
  * @return the list of tokens
  * @throws KevalInvalidSymbolException if the expression contains an invalid symbol
  */
-internal fun String.tokenize(symbolsSet: Set<String>): List<String> {
+internal fun String.tokenize(symbolsSet: Map<String, KevalOperator>): List<String> {
     val limits = """ |[^a-zA-Z0-9._]|,|\(|\)"""
     val tokens = this
         .split("""(?<=($limits))|(?=($limits))""".toRegex()) // tokenizing
@@ -71,5 +108,5 @@ internal fun String.tokenize(symbolsSet: Set<String>): List<String> {
 
     val tokensToString = tokens.joinToString("")
 
-    return tokens.assumeMul(symbolsSet, tokensToString)
+    return tokens.normalizeTokens(symbolsSet, tokensToString)
 }

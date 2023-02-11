@@ -14,7 +14,7 @@ private fun MutableList<Node>.addFunction(arity: Int, func: (DoubleArray) -> Dou
     repeat(arity) {
         children += removeLastOrNull() ?: return false
     }
-    add(FunctionNode(func, children))
+    add(FunctionNode(func, children.reversed()))
     return true
 }
 
@@ -130,7 +130,7 @@ internal fun String.toAbstractSyntaxTree(operators: Map<String, KevalOperator>):
 
     val outputQueue = mutableListOf<Node>()
     val operatorStack = mutableListOf<String>()
-    val tokens = this.tokenize(operators.keys)
+    val tokens = this.tokenize(operators)
     val tokensToString = tokens.joinToString("")
     var currentPos = 0
 
