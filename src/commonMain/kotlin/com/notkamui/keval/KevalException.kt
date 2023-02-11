@@ -5,7 +5,7 @@ package com.notkamui.keval
  *
  * @param message is the message to display in the stacktrace
  */
-sealed class KevalException(message: String) : Exception(message)
+sealed class KevalException(message: String) : RuntimeException(message)
 
 /**
  * Invalid Expression Exception, is thrown when the expression is considered invalid (i.e. Mismatched parenthesis or missing operands)

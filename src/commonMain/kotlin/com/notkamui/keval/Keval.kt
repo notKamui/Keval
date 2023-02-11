@@ -8,7 +8,6 @@ import kotlin.jvm.JvmStatic
  * Contains a companion object with the evaluation method
  */
 class Keval
-@Throws(KevalDSLException::class)
 /**
  * Constructor for a [Keval] instance with [generator] being the DSL generator of Keval (defaults to the default resources)
  */
@@ -26,7 +25,6 @@ constructor(
      *
      * [KevalDSLException] is thrown in case one of the field isn't set properly.
      */
-    @Throws(KevalDSLException::class)
     fun withOperator(
         symbol: Char,
         precedence: Int,
@@ -47,7 +45,6 @@ constructor(
      *
      * [KevalDSLException] is thrown in case one of the field isn't set properly.
      */
-    @Throws(KevalDSLException::class)
     fun withFunction(
         name: String,
         arity: Int,
@@ -66,7 +63,6 @@ constructor(
      *
      * [KevalDSLException] is thrown in case one of the field isn't set properly.
      */
-    @Throws(KevalDSLException::class)
     fun withConstant(
         name: String,
         value: Double
@@ -94,11 +90,6 @@ constructor(
      * - [KevalInvalidExpressionException] in case the expression is invalid (i.e. mismatched parenthesis)
      * - [KevalZeroDivisionException] in case of a zero division
      */
-    @Throws(
-        KevalInvalidSymbolException::class,
-        KevalInvalidSymbolException::class,
-        KevalZeroDivisionException::class
-    )
     fun eval(
         mathExpression: String,
     ): Double {
@@ -121,11 +112,6 @@ constructor(
          * - [KevalZeroDivisionException] in case of a zero division
          */
         @JvmName("evaluate")
-        @Throws(
-            KevalInvalidSymbolException::class,
-            KevalInvalidSymbolException::class,
-            KevalZeroDivisionException::class
-        )
         @JvmStatic
         fun eval(
             mathExpression: String,
@@ -144,12 +130,6 @@ constructor(
  * - [KevalZeroDivisionException] in case of a zero division
  * - [KevalDSLException] in case one of the field isn't set properly
  */
-@Throws(
-    KevalInvalidSymbolException::class,
-    KevalInvalidSymbolException::class,
-    KevalZeroDivisionException::class,
-    KevalDSLException::class
-)
 fun String.keval(
     generator: KevalDSL.() -> Unit
 ): Double {
@@ -164,11 +144,6 @@ fun String.keval(
  * - [KevalInvalidExpressionException] in case the expression is invalid (i.e. mismatched parenthesis)
  * - [KevalZeroDivisionException] in case of a zero division
  */
-@Throws(
-    KevalInvalidSymbolException::class,
-    KevalInvalidSymbolException::class,
-    KevalZeroDivisionException::class
-)
 fun String.keval(): Double {
     return Keval.eval(this)
 }
