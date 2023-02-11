@@ -173,6 +173,8 @@ operator to
 "(2+3)(6+4)".keval() == "(2+3)*(6+4)".keval()
 ```
 
+In addition the symbols `(`,`)`,`,` are reserved and trying to create operator using one of those symbols will result with an exception.
+
 ## Error Handling
 
 In case of an error, Keval will throw one of several `KevalException`s:
