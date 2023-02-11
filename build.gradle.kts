@@ -7,7 +7,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.notkamui.libs"
-version = "0.8.0"
+version = "0.9.0"
 
 plugins {
     kotlin("multiplatform") version "1.8.0"
