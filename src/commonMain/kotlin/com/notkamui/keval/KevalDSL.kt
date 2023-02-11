@@ -36,7 +36,7 @@ class KevalDSL internal constructor() {
             throw KevalDSLException("a symbol must NOT be a letter, a digit, an underscore, parentheses nor a comma but was: $symbol")
         }
         if (symbol == '*') {
-            throw KevalDSLException("* cannot be overwrite")
+            throw KevalDSLException("* cannot be overwritten")
         }
         val implementation = op.implementation ?: throw KevalDSLException("implementation is not set")
         val precedence = op.precedence ?: throw KevalDSLException("precedence is not set")

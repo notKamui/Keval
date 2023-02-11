@@ -102,13 +102,12 @@ constructor(
     fun eval(
         mathExpression: String,
     ): Double {
-        // The tokenizer assumes multiplication, hence disallowing overriding `*` operator
-        val operators = kevalDSL.resources
-            .plus("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
 
+        val operators = resourcesView()
         return mathExpression.toAbstractSyntaxTree(operators).eval()
     }
 
+    // The tokenizer assumes multiplication, hence disallowing overriding `*` operator
     fun resourcesView(): Map<String, KevalOperator> = kevalDSL.resources
         .plus("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
 

@@ -37,7 +37,7 @@ private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>, to
             token == "(" -> TokenType.LPAREN
                 .also {
                     parenthesesCount += 1
-                    // add `(` whenever the parentheses are closing a function call
+                    // add `(` whenever the parentheses are opening a function call
                     if (functionAtCount.last() == parenthesesCount) ret.add("(")
                     if (shouldAssumeMul(prevToken)) ret.add("*")
                     ret.add(token)
