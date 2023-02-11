@@ -1,0 +1,9 @@
+signing.keyId=
+signing.password=
+signing.secretKeyRingFile=
+
+ossrhUsername=
+ossrhPassword=
+
+githubUsername=
+githubPassword=
