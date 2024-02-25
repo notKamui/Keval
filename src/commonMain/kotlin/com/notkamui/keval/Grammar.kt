@@ -77,6 +77,10 @@ internal class Parser(private val tokens: Iterator<String>, private val operator
                     throw KevalInvalidExpressionException(currentToken ?: "", -1)
                 }
                 return FunctionNode(op.implementation, args)
+            } else if (op is KevalConstant) {
+                val constantValue = op.value
+                consume(currentToken!!)
+                return ValueNode(constantValue)
             }
         }
         val node = ValueNode(currentToken!!.toDouble())
