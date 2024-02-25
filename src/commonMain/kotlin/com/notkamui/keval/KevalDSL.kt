@@ -2,6 +2,7 @@ package com.notkamui.keval
 
 import kotlin.math.E
 import kotlin.math.PI
+import kotlin.math.absoluteValue
 import kotlin.math.pow
 
 /**
@@ -129,6 +130,22 @@ class KevalDSL internal constructor() {
 
             // functions
             "neg" to KevalFunction(1) { -it[0] },
+            "abs" to KevalFunction(1) { it[0].absoluteValue },
+            "sqrt" to KevalFunction(1) { kotlin.math.sqrt(it[0]) },
+            "cbrt" to KevalFunction(1) { kotlin.math.cbrt(it[0]) },
+            "exp" to KevalFunction(1) { kotlin.math.exp(it[0]) },
+            "ln" to KevalFunction(1) { kotlin.math.ln(it[0]) },
+            "log10" to KevalFunction(1) { kotlin.math.log10(it[0]) },
+            "log2" to KevalFunction(1) { kotlin.math.log2(it[0]) },
+            "sin" to KevalFunction(1) { kotlin.math.sin(it[0]) },
+            "cos" to KevalFunction(1) { kotlin.math.cos(it[0]) },
+            "tan" to KevalFunction(1) { kotlin.math.tan(it[0]) },
+            "asin" to KevalFunction(1) { kotlin.math.asin(it[0]) },
+            "acos" to KevalFunction(1) { kotlin.math.acos(it[0]) },
+            "atan" to KevalFunction(1) { kotlin.math.atan(it[0]) },
+            "ceil" to KevalFunction(1) { kotlin.math.ceil(it[0]) },
+            "floor" to KevalFunction(1) { kotlin.math.floor(it[0]) },
+            "round" to KevalFunction(1) { kotlin.math.round(it[0]) },
 
             // constants
             "PI" to KevalConstant(PI),

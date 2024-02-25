@@ -1,5 +1,27 @@
 package com.notkamui.keval
 
+private fun isUnaryOrBothPrefix(token: String, operators: Map<String, KevalOperator>): Boolean =
+    operators[token] is KevalUnaryOperator && (operators[token] as KevalUnaryOperator).isPrefix
+    || operators[token] is KevalBothOperator && (operators[token] as KevalBothOperator).unary.isPrefix
+
+private fun isUnaryOrBothPostfix(token: String, operators: Map<String, KevalOperator>): Boolean =
+    operators[token] is KevalUnaryOperator && !(operators[token] as KevalUnaryOperator).isPrefix
+    || operators[token] is KevalBothOperator && !(operators[token] as KevalBothOperator).unary.isPrefix
+
+private fun getBinaryOperator(token: String, operators: Map<String, KevalOperator>): KevalBinaryOperator =
+    if (operators[token] is KevalBothOperator) {
+        (operators[token] as KevalBothOperator).binary
+    } else {
+        operators[token] as KevalBinaryOperator
+    }
+
+private fun getUnaryOperator(token: String, operators: Map<String, KevalOperator>): KevalUnaryOperator =
+    if (operators[token] is KevalBothOperator) {
+        (operators[token] as KevalBothOperator).unary
+    } else {
+        operators[token] as KevalUnaryOperator
+    }
+
 internal class Parser(private val tokens: Iterator<String>, private val operators: Map<String, KevalOperator>) {
     private var currentToken: String? = tokens.next()
 
@@ -12,15 +34,15 @@ internal class Parser(private val tokens: Iterator<String>, private val operator
 
     private fun expression(minPrecedence: Int = 0): Node {
         var node = primary()
-        while (currentToken != null && operators[currentToken!!] is KevalBinaryOperator) {
-            val op = operators[currentToken!!] as KevalBinaryOperator
+        while (currentToken != null && (operators[currentToken!!] is KevalBinaryOperator || operators[currentToken!!] is KevalBothOperator)) {
+            val op = getBinaryOperator(currentToken!!, operators)
             if (op.precedence < minPrecedence) break
             consume(currentToken!!)
             val rightAssociativity = if (op.isLeftAssociative) 1 else 0
             node = BinaryOperatorNode(node, op.implementation, expression(op.precedence + rightAssociativity))
         }
-        if (currentToken != null && operators[currentToken!!] is KevalUnaryOperator && !(operators[currentToken!!] as KevalUnaryOperator).isPrefix) {
-            val op = operators[currentToken!!] as KevalUnaryOperator
+        if (currentToken != null && isUnaryOrBothPostfix(currentToken!!, operators)) {
+            val op = getUnaryOperator(currentToken!!, operators)
             consume(currentToken!!)
             node = UnaryOperatorNode(op.implementation, node)
         }
@@ -28,8 +50,8 @@ internal class Parser(private val tokens: Iterator<String>, private val operator
     }
 
     private fun primary(): Node {
-        if (currentToken != null && operators[currentToken!!] is KevalUnaryOperator && (operators[currentToken!!] as KevalUnaryOperator).isPrefix) {
-            val op = operators[currentToken!!] as KevalUnaryOperator
+        if (currentToken != null && isUnaryOrBothPrefix(currentToken!!, operators)) {
+            val op = getUnaryOperator(currentToken!!, operators)
             consume(currentToken!!)
             return UnaryOperatorNode(op.implementation, primary())
         } else if (currentToken == "(") {
