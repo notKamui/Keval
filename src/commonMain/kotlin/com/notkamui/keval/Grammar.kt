@@ -17,7 +17,7 @@ internal class Parser(private val tokens: Iterator<String>, private val operator
             if (op.precedence < minPrecedence) break
             consume(currentToken!!)
             val rightAssociativity = if (op.isLeftAssociative) 1 else 0
-            node = OperatorNode(node, op.implementation, expression(op.precedence + rightAssociativity))
+            node = BinaryOperatorNode(node, op.implementation, expression(op.precedence + rightAssociativity))
         }
         return node
     }

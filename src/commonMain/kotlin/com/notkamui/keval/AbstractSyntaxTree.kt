@@ -18,6 +18,11 @@ internal data class KevalBinaryOperator(
     val implementation: (Double, Double) -> Double
 ) : KevalOperator
 
+internal data class KevalUnaryOperator(
+    val implementation: (Double) -> Double,
+    val isPrefix: Boolean
+) : KevalOperator
+
 /**
  * Represents a function
  *
@@ -61,12 +66,19 @@ internal interface Node {
  * @property right is its right child
  * @constructor Creates an operator node
  */
-internal data class OperatorNode(
+internal data class BinaryOperatorNode(
     private val left: Node,
     private val op: (Double, Double) -> Double,
     private val right: Node
 ) : Node {
     override fun eval(): Double = op(left.eval(), right.eval())
+}
+
+internal data class UnaryOperatorNode(
+    private val op: (Double) -> Double,
+    private val child: Node
+) : Node {
+    override fun eval(): Double = op(child.eval())
 }
 
 internal data class FunctionNode(

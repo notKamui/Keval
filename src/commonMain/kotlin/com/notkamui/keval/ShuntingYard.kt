@@ -4,7 +4,7 @@ package com.notkamui.keval
 private fun MutableList<Node>.addOperator(operator: (Double, Double) -> Double): Boolean {
     val right = removeLastOrNull() ?: return false
     val left = removeLastOrNull() ?: return false
-    add(OperatorNode(left, operator, right))
+    add(BinaryOperatorNode(left, operator, right))
     return true
 }
 
