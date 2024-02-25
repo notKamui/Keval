@@ -19,8 +19,13 @@ internal data class KevalBinaryOperator(
 ) : KevalOperator
 
 internal data class KevalUnaryOperator(
+    val isPrefix: Boolean,
     val implementation: (Double) -> Double,
-    val isPrefix: Boolean
+) : KevalOperator
+
+internal data class KevalBothOperator(
+    val binary: KevalBinaryOperator,
+    val unary: KevalUnaryOperator,
 ) : KevalOperator
 
 /**

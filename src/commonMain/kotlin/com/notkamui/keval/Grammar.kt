@@ -19,11 +19,20 @@ internal class Parser(private val tokens: Iterator<String>, private val operator
             val rightAssociativity = if (op.isLeftAssociative) 1 else 0
             node = BinaryOperatorNode(node, op.implementation, expression(op.precedence + rightAssociativity))
         }
+        if (currentToken != null && operators[currentToken!!] is KevalUnaryOperator && !(operators[currentToken!!] as KevalUnaryOperator).isPrefix) {
+            val op = operators[currentToken!!] as KevalUnaryOperator
+            consume(currentToken!!)
+            node = UnaryOperatorNode(op.implementation, node)
+        }
         return node
     }
 
     private fun primary(): Node {
-        if (currentToken == "(") {
+        if (currentToken != null && operators[currentToken!!] is KevalUnaryOperator && (operators[currentToken!!] as KevalUnaryOperator).isPrefix) {
+            val op = operators[currentToken!!] as KevalUnaryOperator
+            consume(currentToken!!)
+            return UnaryOperatorNode(op.implementation, primary())
+        } else if (currentToken == "(") {
             consume("(")
             val node = expression()
             consume(")")

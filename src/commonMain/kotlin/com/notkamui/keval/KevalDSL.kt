@@ -107,8 +107,15 @@ class KevalDSL internal constructor() {
     companion object {
         internal val DEFAULT_RESOURCES: Map<String, KevalOperator> = mapOf(
             // binary operators
-            "+" to KevalBinaryOperator(2, true) { a, b -> a + b },
-            "-" to KevalBinaryOperator(2, true) { a, b -> a - b },
+            "+" to KevalBothOperator(
+                KevalBinaryOperator(2, true) { a, b -> a + b },
+                KevalUnaryOperator(true) { it }
+            ),
+            "-" to KevalBothOperator(
+                KevalBinaryOperator(2, true) { a, b -> a - b },
+                KevalUnaryOperator(true) { -it }
+            ),
+
             "/" to KevalBinaryOperator(3, true) { a, b ->
                 if (b == 0.0) throw KevalZeroDivisionException()
                 a / b

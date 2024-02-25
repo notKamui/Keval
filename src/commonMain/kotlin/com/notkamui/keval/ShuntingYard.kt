@@ -42,6 +42,7 @@ private fun MutableList<Node>.offerOperator(
         is KevalBinaryOperator -> addOperator(op.implementation)
         is KevalFunction -> addFunction(op.arity, op.implementation)
         is KevalConstant -> addConstant(op.value)
+        is KevalUnaryOperator -> TODO()
     }.throwIfInvalid(tokensToString, currentPos)
 }
 
