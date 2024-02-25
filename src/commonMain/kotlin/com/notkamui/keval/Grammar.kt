@@ -95,15 +95,6 @@ internal class Parser(private val tokens: Iterator<String>, private val operator
  * Converts an infix mathematical expression into an abstract syntax tree,
  * The operators that are supported are defined in the operators map, which each have a precedence and associativity.
  *
- * Here is the following simplified dynamic grammar:
- *
- * expression = term | expression "+" term | expression "-" term
- * term = factor | term "*" factor | term "/" factor | term "%" factor
- * factor = unary | factor "^" unary
- * unary = primary | "-" unary | "+" unary
- * primary = number | "(" expression ")"
- *
- *
  * @receiver the string to convert
  * @return the abstract syntax tree
  * @throws KevalInvalidSymbolException if the expression contains an invalid symbol
