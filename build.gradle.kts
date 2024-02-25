@@ -34,7 +34,6 @@ kotlin {
     linuxX64()
     mingwX64()
 
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val commonMain by getting {
         }
