@@ -1,90 +1,115 @@
 package com.notkamui.keval
 
-private fun isUnaryOrBothPrefix(token: String, operators: Map<String, KevalOperator>): Boolean =
-    operators[token] is KevalUnaryOperator && (operators[token] as KevalUnaryOperator).isPrefix
-    || operators[token] is KevalBothOperator && (operators[token] as KevalBothOperator).unary.isPrefix
-
-private fun isUnaryOrBothPostfix(token: String, operators: Map<String, KevalOperator>): Boolean =
-    operators[token] is KevalUnaryOperator && !(operators[token] as KevalUnaryOperator).isPrefix
-    || operators[token] is KevalBothOperator && !(operators[token] as KevalBothOperator).unary.isPrefix
-
-private fun getBinaryOperator(token: String, operators: Map<String, KevalOperator>): KevalBinaryOperator =
-    if (operators[token] is KevalBothOperator) {
-        (operators[token] as KevalBothOperator).binary
-    } else {
-        operators[token] as KevalBinaryOperator
-    }
-
-private fun getUnaryOperator(token: String, operators: Map<String, KevalOperator>): KevalUnaryOperator =
-    if (operators[token] is KevalBothOperator) {
-        (operators[token] as KevalBothOperator).unary
-    } else {
-        operators[token] as KevalUnaryOperator
-    }
-
 internal class Parser(private val tokens: Iterator<String>, private val operators: Map<String, KevalOperator>) {
-    private var currentToken: String? = tokens.next()
+    private var currentTokenOrNull: String? = tokens.next()
+    private val currentToken: String
+        get() = currentTokenOrNull ?: throw KevalInvalidExpressionException("", -1)
 
     private fun consume(expected: String) {
-        if (currentToken != expected) {
-            throw KevalInvalidExpressionException(currentToken ?: "", -1)
+        if (currentTokenOrNull != expected) {
+            throw KevalInvalidExpressionException(currentTokenOrNull ?: "", -1)
         }
-        currentToken = if (tokens.hasNext()) tokens.next() else null
+        currentTokenOrNull = if (tokens.hasNext()) tokens.next() else null
+    }
+
+    private fun isBinaryOrBoth(token: String): Boolean = operators[token].let {
+        it is KevalBinaryOperator || it is KevalBothOperator
+    }
+
+    private fun isUnaryOrBothPrefix(token: String): Boolean = operators[token].let {
+        (it is KevalUnaryOperator && it.isPrefix) || (it is KevalBothOperator && it.unary.isPrefix)
+    }
+
+    private fun isUnaryOrBothPostfix(token: String): Boolean = operators[token].let {
+        (it is KevalUnaryOperator && !it.isPrefix) || (it is KevalBothOperator && !it.unary.isPrefix)
+    }
+
+    private fun getBinaryOperator(token: String): KevalBinaryOperator = operators[token].let {
+        if (it is KevalBothOperator) {
+            it.binary
+        } else {
+            it as KevalBinaryOperator
+        }
+    }
+
+    private fun getUnaryOperator(token: String): KevalUnaryOperator = operators[token].let {
+        if (it is KevalBothOperator) {
+            it.unary
+        } else {
+            it as KevalUnaryOperator
+        }
+    }
+
+    private fun handleBinaryOperator(node: Node, minPrecedence: Int): Node {
+        var result = node
+        while (currentTokenOrNull != null && isBinaryOrBoth(currentToken)) {
+            val op = getBinaryOperator(currentToken)
+            if (op.precedence < minPrecedence) break
+            consume(currentToken)
+            val rightAssociativity = if (op.isLeftAssociative) 1 else 0
+            result = BinaryOperatorNode(result, op.implementation, expression(op.precedence + rightAssociativity))
+        }
+        return result
+    }
+
+    private fun handleUnaryOperator(node: Node? = null): Node {
+        val op = getUnaryOperator(currentToken)
+        consume(currentToken)
+        return UnaryOperatorNode(op.implementation, node ?: primary())
+    }
+
+    private fun handleFunction(): Node {
+        val functionName = currentToken
+        consume(functionName)
+        consume("(")
+        val args = mutableListOf<Node>()
+        while (currentTokenOrNull != ")") {
+            args.add(expression())
+            if (currentTokenOrNull == ",") {
+                consume(",")
+            }
+        }
+        consume(")")
+        val op = operators[functionName] as KevalFunction
+        if (args.size != op.arity) {
+            throw KevalInvalidExpressionException(currentTokenOrNull ?: "", -1)
+        }
+        return FunctionNode(op.implementation, args)
+    }
+
+    private fun handleConstant(): Node {
+        val op = operators[currentToken] as KevalConstant
+        consume(currentToken)
+        return ValueNode(op.value)
     }
 
     private fun expression(minPrecedence: Int = 0): Node {
         var node = primary()
-        while (currentToken != null && (operators[currentToken!!] is KevalBinaryOperator || operators[currentToken!!] is KevalBothOperator)) {
-            val op = getBinaryOperator(currentToken!!, operators)
-            if (op.precedence < minPrecedence) break
-            consume(currentToken!!)
-            val rightAssociativity = if (op.isLeftAssociative) 1 else 0
-            node = BinaryOperatorNode(node, op.implementation, expression(op.precedence + rightAssociativity))
-        }
-        if (currentToken != null && isUnaryOrBothPostfix(currentToken!!, operators)) {
-            val op = getUnaryOperator(currentToken!!, operators)
-            consume(currentToken!!)
-            node = UnaryOperatorNode(op.implementation, node)
+        node = handleBinaryOperator(node, minPrecedence)
+        if (currentTokenOrNull != null && isUnaryOrBothPostfix(currentToken)) {
+            node = handleUnaryOperator(node)
         }
         return node
     }
 
     private fun primary(): Node {
-        if (currentToken != null && isUnaryOrBothPrefix(currentToken!!, operators)) {
-            val op = getUnaryOperator(currentToken!!, operators)
-            consume(currentToken!!)
-            return UnaryOperatorNode(op.implementation, primary())
-        } else if (currentToken == "(") {
+        if (currentTokenOrNull != null && isUnaryOrBothPrefix(currentToken)) {
+            return handleUnaryOperator()
+        } else if (currentTokenOrNull == "(") {
             consume("(")
             val node = expression()
             consume(")")
             return node
-        } else if (operators.containsKey(currentToken)) {
-            val op = operators[currentToken!!]
+        } else if (operators.containsKey(currentTokenOrNull)) {
+            val op = operators[currentToken]
             if (op is KevalFunction) {
-                val functionName = currentToken!!
-                consume(functionName)
-                consume("(")
-                val args = mutableListOf<Node>()
-                while (currentToken != ")") {
-                    args.add(expression())
-                    if (currentToken == ",") {
-                        consume(",")
-                    }
-                }
-                consume(")")
-                if (args.size != op.arity) {
-                    throw KevalInvalidExpressionException(currentToken ?: "", -1)
-                }
-                return FunctionNode(op.implementation, args)
+                return handleFunction()
             } else if (op is KevalConstant) {
-                val constantValue = op.value
-                consume(currentToken!!)
-                return ValueNode(constantValue)
+                return handleConstant()
             }
         }
-        val node = ValueNode(currentToken!!.toDouble())
-        consume(currentToken!!)
+        val node = ValueNode(currentToken.toDouble())
+        consume(currentToken)
         return node
     }
 
