@@ -37,30 +37,20 @@ private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>, to
             token == "(" -> TokenType.LPAREN
                 .also {
                     parenthesesCount += 1
-                    // add `(` whenever the parentheses are opening a function call
-                    if (functionAtCount.last() == parenthesesCount) ret.add("(")
                     if (shouldAssumeMul(prevToken)) ret.add("*")
                     ret.add(token)
                 }
 
             token == ")" -> TokenType.RPAREN
                 .also {
-                    // add `)` whenever the parentheses are closing a function call
-                    if (functionAtCount.last() == parenthesesCount) {
-                        ret.add(")")
-                        functionAtCount.removeLast()
-                    }
                     parenthesesCount -= 1
                     ret.add(token)
                 }
 
             token == "," -> TokenType.COMMA
                 .also {
-                    // transform `,` into `),(` whenever `,` is a separator or parameters in functions
                     if (functionAtCount.last() == parenthesesCount) {
-                        ret.add(")")
                         ret.add(token)
-                        ret.add("(")
                     } else {
                         throw KevalInvalidSymbolException(token, tokensToString, currentPos, "comma can only be used in the context of a function")
                     }

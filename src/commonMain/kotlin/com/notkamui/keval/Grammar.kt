@@ -1,6 +1,7 @@
 package com.notkamui.keval
 
 private fun String.isDouble(): Boolean = this.toDoubleOrNull() != null
+private fun String.pluralize(count: Int): String = if (count == 1) this else "${this}s"
 
 internal class Parser(
     private val tokens: Iterator<String>,
@@ -83,7 +84,7 @@ internal class Parser(
                 throw KevalInvalidExpressionException(
                     tokensToString,
                     currentPos,
-                    "expected ${op.arity} arguments but found ${args.size}",
+                    "expected ${op.arity} ${"argument".pluralize(op.arity)} but found ${args.size}",
                 ).also { println(tokensToString[14]) }
             }
             if (currentTokenOrNull == ",") {
@@ -95,7 +96,7 @@ internal class Parser(
             throw KevalInvalidExpressionException(
                 tokensToString,
                 currentPos,
-                "expected ${op.arity} arguments but found ${args.size}",
+                "expected ${op.arity} ${"argument".pluralize(op.arity)} but found ${args.size}",
             )
         }
         return FunctionNode(op.implementation, args)
