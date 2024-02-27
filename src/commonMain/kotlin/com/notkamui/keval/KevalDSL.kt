@@ -127,8 +127,8 @@ class KevalDSL internal constructor() {
 
             // unary operators
             "!" to KevalUnaryOperator(false) {
-                if (it < 0) throw KevalInvalidExpressionException("factorial of a negative number", -1)
-                if (floor(it) != it) throw KevalInvalidExpressionException("factorial of a non-integer", -1)
+                if (it < 0) throw KevalInvalidFactorialException("factorial of a negative number")
+                if (floor(it) != it) throw KevalInvalidFactorialException("factorial of a non-integer")
                 var result = 1.0
                 for (i in 2..it.toInt()) {
                     result *= i

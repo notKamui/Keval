@@ -43,6 +43,13 @@ class KevalInvalidSymbolException internal constructor(
 class KevalZeroDivisionException : KevalException("Division by zero")
 
 /**
+ * Invalid Factorial Exception, is thrown when a negative number or a non-integer number is given to the factorial function
+ *
+ * @param message is the message to display in the stacktrace
+ */
+class KevalInvalidFactorialException internal constructor(message: String) : KevalException(message)
+
+/**
  * DSL Exception, is thrown when a required field isn't defined
  *
  * @param what is the name of the undefined field

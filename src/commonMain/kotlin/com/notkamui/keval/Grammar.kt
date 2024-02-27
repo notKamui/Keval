@@ -98,10 +98,10 @@ internal class Parser(
 
     private fun expression(minPrecedence: Int = 0): Node {
         var node = primary()
-        node = handleBinaryOperator(node, minPrecedence)
-        if (currentTokenOrNull != null && isUnaryOrBothPostfix(currentToken)) {
+        while (currentTokenOrNull != null && isUnaryOrBothPostfix(currentToken)) {
             node = handleUnaryOperator(node)
         }
+        node = handleBinaryOperator(node, minPrecedence)
         return node
     }
 
