@@ -53,9 +53,7 @@ class DLSTest {
             function {
                 name = "max"
                 arity = 2
-                implementation = { args ->
-                    max(args[0], args[1])
-                }
+                implementation = { it.max() }
             }
             constant {
                 name = "PHI"

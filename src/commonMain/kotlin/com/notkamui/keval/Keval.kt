@@ -95,7 +95,7 @@ constructor(
     ): Double {
 
         val operators = resourcesView()
-        return mathExpression.toAbstractSyntaxTree(operators).eval()
+        return mathExpression.toAST(operators).eval()
     }
 
     // The tokenizer assumes multiplication, hence disallowing overriding `*` operator
@@ -116,7 +116,7 @@ constructor(
         fun eval(
             mathExpression: String,
         ): Double {
-            return mathExpression.toAbstractSyntaxTree(KevalDSL.DEFAULT_RESOURCES).eval()
+            return mathExpression.toAST(KevalDSL.DEFAULT_RESOURCES).eval()
         }
     }
 }

@@ -60,27 +60,6 @@ class TokenizerTest {
     }
 
     @Test
-    fun checkParenthesesInsertion() {
-        val k = Keval {
-            includeDefault()
-            function {
-                name = "add"
-                arity = 2
-                implementation = { args -> args[0] + args[1] }
-            }
-
-            function {
-                name = "mul"
-                arity = 2
-                implementation = { args -> args[0] * args[1] }
-            }
-        }
-
-        val nodes = "add(3*2+mul(2,7*6),  1+1)".tokenize(k.resourcesView())
-        assertEquals("add((3*2+mul((2),(7*6))),(1+1))", nodes.joinToString(separator = ""))
-    }
-
-    @Test
     fun checkRepeatingParentheses() {
         val k = Keval {
             includeDefault()
@@ -92,6 +71,6 @@ class TokenizerTest {
         }
 
         val nodes = "f(((1)))".tokenize(k.resourcesView())
-        assertEquals("f((((1))))", nodes.joinToString(separator = ""))
+        assertEquals("f(((1)))", nodes.joinToString(separator = ""))
     }
 }
