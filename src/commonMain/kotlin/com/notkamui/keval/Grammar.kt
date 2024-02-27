@@ -74,18 +74,29 @@ internal class Parser(
     private fun handleFunction(): Node {
         val functionName = currentToken
         consume(functionName)
+        val op = operators[functionName] as KevalFunction
         consume("(")
         val args = mutableListOf<Node>()
         while (currentTokenOrNull != ")") {
             args.add(expression())
+            if (args.size > op.arity) {
+                throw KevalInvalidExpressionException(
+                    tokensToString,
+                    currentPos,
+                    "expected ${op.arity} arguments but found ${args.size}",
+                ).also { println(tokensToString[14]) }
+            }
             if (currentTokenOrNull == ",") {
                 consume(",")
             }
         }
         consume(")")
-        val op = operators[functionName] as KevalFunction
-        if (args.size != op.arity) {
-            throw KevalInvalidExpressionException(currentTokenOrNull ?: "", -1)
+        if (args.size < op.arity) {
+            throw KevalInvalidExpressionException(
+                tokensToString,
+                currentPos,
+                "expected ${op.arity} arguments but found ${args.size}",
+            )
         }
         return FunctionNode(op.implementation, args)
     }
