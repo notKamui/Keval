@@ -1,12 +1,7 @@
 package com.notkamui.keval
 
 private enum class TokenType {
-    FIRST,
-    OPERAND,
-    OPERATOR,
-    LPAREN,
-    RPAREN,
-    COMMA,
+    FIRST, OPERAND, OPERATOR, LPAREN, RPAREN, COMMA,
 }
 
 private fun shouldAssumeMul(tokenType: TokenType): Boolean =
@@ -21,43 +16,41 @@ private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>, to
     val ret = mutableListOf<String>()
     this.forEach { token ->
         prevToken = when {
-            token.isNumeric() -> TokenType.OPERAND.also {
+            token.isNumeric() || symbols[token] is KevalConstant -> TokenType.OPERAND.also {
                 if (shouldAssumeMul(prevToken)) ret.add("*")
                 ret.add(token)
             }
 
-            token.isKevalOperator(symbols.keys) -> TokenType.OPERATOR
-                .also {
-                    if (shouldAssumeMul(prevToken) && (symbols[token] is KevalConstant || symbols[token] is KevalFunction)) {
-                        ret.add("*")
-                    }
-                    ret.add(token)
-                    if (symbols[token] is KevalFunction) {
-                        functionAtCount.add(parenthesesCount + 1)
-                    }
+            token.isKevalOperator(symbols.keys) -> TokenType.OPERATOR.also {
+                if (shouldAssumeMul(prevToken) && (symbols[token] is KevalConstant || symbols[token] is KevalFunction)) {
+                    ret.add("*")
                 }
+                ret.add(token)
+                if (symbols[token] is KevalFunction) {
+                    functionAtCount.add(parenthesesCount + 1)
+                }
+            }
 
-            token == "(" -> TokenType.LPAREN
-                .also {
-                    parenthesesCount += 1
-                    if (shouldAssumeMul(prevToken)) ret.add("*")
-                    ret.add(token)
-                }
+            token == "(" -> TokenType.LPAREN.also {
+                parenthesesCount += 1
+                if (shouldAssumeMul(prevToken)) ret.add("*")
+                ret.add(token)
+            }
 
-            token == ")" -> TokenType.RPAREN
-                .also {
-                    parenthesesCount -= 1
-                    ret.add(token)
-                }
+            token == ")" -> TokenType.RPAREN.also {
+                parenthesesCount -= 1
+                ret.add(token)
+            }
 
-            token == "," -> TokenType.COMMA
-                .also {
-                    if (functionAtCount.last() == parenthesesCount) {
-                        ret.add(token)
-                    } else {
-                        throw KevalInvalidSymbolException(token, tokensToString, currentPos, "comma can only be used in the context of a function")
-                    }
+            token == "," -> TokenType.COMMA.also {
+                if (functionAtCount.last() == parenthesesCount) {
+                    ret.add(token)
+                } else {
+                    throw KevalInvalidSymbolException(
+                        token, tokensToString, currentPos, "comma can only be used in the context of a function"
+                    )
                 }
+            }
 
             else -> throw KevalInvalidSymbolException(token, tokensToString, currentPos)
         }
@@ -94,10 +87,10 @@ internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in 
  */
 internal fun String.tokenize(symbolsSet: Map<String, KevalOperator>): List<String> {
     val limits = """ |[^a-zA-Z0-9._]|,|\(|\)"""
-    val tokens = this
-        .split("""(?<=($limits))|(?=($limits))|(?<=\d)(?=[^\d.])|(?<=[^\d.])(?=\d)""".toRegex()) // tokenizing
-        .filter { it.isNotBlank() } // removing possible empty tokens
-        .map { it.replace("\\s".toRegex(), "") } // sanitizing
+    val tokens =
+        this.split("""(?<=($limits))|(?=($limits))|(?<=\d)(?=[^\d.])|(?<=[^\d.])(?=\d)""".toRegex()) // tokenizing
+            .filter { it.isNotBlank() } // removing possible empty tokens
+            .map { it.replace("\\s".toRegex(), "") } // sanitizing
 
     val tokensToString = tokens.joinToString("")
 
