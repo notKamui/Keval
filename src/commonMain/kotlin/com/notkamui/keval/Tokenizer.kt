@@ -28,6 +28,9 @@ private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>, to
 
             token.isKevalOperator(symbols.keys) -> TokenType.OPERATOR
                 .also {
+                    if (shouldAssumeMul(prevToken) && (symbols[token] is KevalConstant || symbols[token] is KevalFunction)) {
+                        ret.add("*")
+                    }
                     ret.add(token)
                     if (symbols[token] is KevalFunction) {
                         functionAtCount.add(parenthesesCount + 1)
