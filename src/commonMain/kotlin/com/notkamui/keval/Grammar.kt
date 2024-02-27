@@ -10,7 +10,7 @@ internal class Parser(
 ) {
     private var currentTokenOrNull: String? = tokens.next()
     private val currentToken: String
-        get() = currentTokenOrNull ?: throw KevalInvalidExpressionException("", -1)
+        get() = currentTokenOrNull ?: throw KevalInvalidExpressionException(tokensToString, -1)
 
     private var currentPos = 0
 

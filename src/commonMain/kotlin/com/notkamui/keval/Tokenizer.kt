@@ -95,7 +95,7 @@ internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in 
 internal fun String.tokenize(symbolsSet: Map<String, KevalOperator>): List<String> {
     val limits = """ |[^a-zA-Z0-9._]|,|\(|\)"""
     val tokens = this
-        .split("""(?<=($limits))|(?=($limits))""".toRegex()) // tokenizing
+        .split("""(?<=($limits))|(?=($limits))|(?<=\d)(?=[^\d.])|(?<=[^\d.])(?=\d)""".toRegex()) // tokenizing
         .filter { it.isNotBlank() } // removing possible empty tokens
         .map { it.replace("\\s".toRegex(), "") } // sanitizing
 
