@@ -85,7 +85,7 @@ internal class Parser(
                     tokensToString,
                     currentPos,
                     "expected ${op.arity} ${"argument".pluralize(op.arity)} but found ${args.size}",
-                ).also { println(tokensToString[14]) }
+                )
             }
             if (currentTokenOrNull == ",") {
                 consume(",")
