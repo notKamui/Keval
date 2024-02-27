@@ -165,8 +165,6 @@ internal fun String.toAST(operators: Map<String, KevalOperator>): Node {
     val tokens = this.tokenize(operators)
     val tokensToString = tokens.joinToString("")
 
-    println(tokens)
-
     val parser = Parser(tokens.iterator(), tokensToString, operators)
     return parser.parse()
 }
