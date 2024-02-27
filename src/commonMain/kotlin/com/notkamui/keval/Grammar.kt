@@ -1,14 +1,27 @@
 package com.notkamui.keval
 
-internal class Parser(private val tokens: Iterator<String>, private val operators: Map<String, KevalOperator>) {
+private fun String.isDouble(): Boolean = this.toDoubleOrNull() != null
+
+internal class Parser(
+    private val tokens: Iterator<String>,
+    private val tokensToString: String,
+    private val operators: Map<String, KevalOperator>
+) {
     private var currentTokenOrNull: String? = tokens.next()
     private val currentToken: String
         get() = currentTokenOrNull ?: throw KevalInvalidExpressionException("", -1)
 
+    private var currentPos = 0
+
     private fun consume(expected: String) {
         if (currentTokenOrNull != expected) {
-            throw KevalInvalidExpressionException(currentTokenOrNull ?: "", -1)
+            throw KevalInvalidExpressionException(
+                tokensToString,
+                currentPos,
+                "expected $expected but found ${currentTokenOrNull ?: "end of expression"}",
+            )
         }
+        currentPos += currentTokenOrNull?.length ?: 0 // Update the current position
         currentTokenOrNull = if (tokens.hasNext()) tokens.next() else null
     }
 
@@ -108,8 +121,16 @@ internal class Parser(private val tokens: Iterator<String>, private val operator
                 return handleConstant()
             }
         }
-        val node = ValueNode(currentToken.toDouble())
+        val token = currentToken
+        if (!token.isDouble()) {
+            throw KevalInvalidExpressionException(
+                tokensToString,
+                currentPos,
+                "expected number or symbol but found $token",
+            )
+        }
         consume(currentToken)
+        val node = ValueNode(token.toDouble())
         return node
     }
 
@@ -132,6 +153,6 @@ internal fun String.toAST(operators: Map<String, KevalOperator>): Node {
     val tokens = this.tokenize(operators)
     val tokensToString = tokens.joinToString("")
 
-    val parser = Parser(tokens.iterator(), operators)
+    val parser = Parser(tokens.iterator(), tokensToString, operators)
     return parser.parse()
 }
