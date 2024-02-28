@@ -20,7 +20,7 @@ Maven
   <dependency>
     <groupId>com.notkamui.libs</groupId>
     <artifactId>keval</artifactId>
-    <version>0.9.0</version>
+    <version>1.0.0</version>
   </dependency>
 </dependencies>
 ```
@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-  implementation("com.notkamui.libs:keval:0.9.0")
+  implementation("com.notkamui.libs:keval:1.0.0")
 }
 ```
 
@@ -41,9 +41,12 @@ dependencies {
 
 ## Usage
 
-Keval can evaluate a mathematical expression as a `String` into a `Double` value.
+Keval can evaluate a mathematical expression as a `String` into a `Double` value. It is customizable in the sense that
+one can add new binary and unary operators, functions and constants.
 
-Keval has full support for all classic binary operators:
+The base settings of Keval already include sensible defaults for the most common mathematical operations.
+
+Keval has support for all classic binary operators:
 
 - Subtraction `-`
 - Addition `+`
@@ -52,9 +55,30 @@ Keval has full support for all classic binary operators:
 - Exponent `^`
 - Remainder (mod) `%`
 
-Keval has support for functions of variable arity, it has one built-in function:
+Keval has support for all classic unary operators:
+- Negation/Opposition `-` (prefix)
+- Identity `+` (prefix) (basically does nothing)
+- Factorial `!` (postfix)
+
+Keval has support for functions of variable arity:
 
 - Negate/Oppose `neg(expr)` (where 'expr' is an expression)
+- Absolute `abs(expr)` (where 'expr' is an expression)
+- Square root `sqrt(expr)` (where 'expr' is an expression)
+- Cube root `cbrt(expr)` (where 'expr' is an expression)
+- Exponential `exp(expr)` (where 'expr' is an expression)
+- Natural logarithm `ln(expr)` (where 'expr' is an expression)
+- Base 10 logarithm `log(expr)` (where 'expr' is an expression)
+- Base 2 logarithm `log2(expr)` (where 'expr' is an expression)
+- Sine `sin(expr)` (where 'expr' is an expression)
+- Cosine `cos(expr)` (where 'expr' is an expression)
+- Tangent `tan(expr)` (where 'expr' is an expression)
+- Arcsine `asin(expr)` (where 'expr' is an expression)
+- Arccosine `acos(expr)` (where 'expr' is an expression)
+- Arctangent `atan(expr)` (where 'expr' is an expression)
+- Ceiling `ceil(expr)` (where 'expr' is an expression)
+- Floor `floor(expr)` (where 'expr' is an expression)
+- Round `round(expr)` (where 'expr' is an expression)
 
 Keval has support for constants, it has two built-in constant:
 
@@ -69,6 +93,10 @@ properly, with a DSL (Domain Specific Language):
   - its **precedence**/priority level (a positive `Int`)
   - its **associativity** (a `Boolean` true if left associative, false otherwise)
   - its **implementation** (a function `(Double, Double) -> Double`)
+- A **unary operator** is defined by:
+  - its **symbol** (a `Char` that is NOT a digit, nor a letter, nor an underscore)
+  - whether it is **prefix** (a `Boolean`)
+  - its **implementation** (a function `(Double) -> Double`)
 - A **function** is defined by:
   - its **name** (a non-empty `String` identifier, that doesn't start with a digit, and only contains letters, digits or
     underscores)
@@ -82,6 +110,10 @@ properly, with a DSL (Domain Specific Language):
 Keval will use the built-in operators, function and constants if you choose not to define any new resource ; but if you
 choose to do so, you need to include them manually. You may also choose to use Keval as an extension function.
 
+> Please note that adding a new resource with a name that already exists will overwrite the previous one, except in the
+> case of operators, where one symbol can represent both a binary and a unary operator. For example, it is possible to
+> define a binary operator `-` and a unary operator `-` at the same time.
+
 You can use it in several ways:
 
 ```Kotlin
@@ -90,36 +122,48 @@ Keval.eval("(3+4)(2/8 * 5) % PI") // uses default resources
 
 "(3+4)(2/8 * 5) % PI".keval() // extension ; uses default resources
 
-Keval { // DSL instance
+Keval.create { // builder instance
     includeDefault() // this function includes the built-in resources
     
-    operator { // this DSL adds a binary operator ; you can call it several times
+    binaryOperator { // this function adds a binary operator ; you can call it several times
         symbol = ';'
         precedence = 3
         isLeftAssociative = true
         implementation = { a, b -> a.pow(2) + b.pow(2) }
     }
+    
+    unaryOperator { // this function adds a unary operator ; you can call it several times
+        symbol = '#'
+        isPrefix = false
+        implementation = { arg -> (1..arg.toInt()).fold(0.0) { acc, i -> acc + i } }
+    }
   
-    function { // this DSL adds a function ; you can call it several times
+    function { // this function adds a function ; you can call it several times
         name = "max"
         arity = 2
         implementation = { args -> max(args[0], args[1]) }
     }
   
-    constant { // this DSL adds a constant ; you can call it several times
+    constant { // this function adds a constant ; you can call it several times
         name = "PHI"
         value = 1.618
     }
-}.eval("2*max(2, 3) ; 4 + PHI^2")
+}.eval("2*max(2, 3) ; 4# + PHI^2")
 
-"2*max(2, 3) ; 4 + PHI^2".keval { // DSL instance + extension
+"2*max(2, 3) ; 4$ + PHI^2".keval { // builder instance + extension
     includeDefault()
   
-    operator {
+    binaryOperator {
         symbol = ';'
         precedence = 3
         isLeftAssociative = true
         implementation = { a, b -> a.pow(2) + b.pow(2) }
+    }
+    
+    unaryOperator {
+        symbol = '#'
+        isPrefix = false
+        implementation = { arg -> (1..arg.toInt()).fold(0.0) { acc, i -> acc + i } }
     }
   
     function {
@@ -135,13 +179,13 @@ Keval { // DSL instance
 }
 ```
 
-The advantage of using `Keval {}` is that you may keep an instance of it in a variable so that you can call as
+The advantage of using `Keval.create` is that you may keep an instance of it in a variable so that you can call as
 many `eval` as you need.
 
 In concordance with creating a Keval instance, you can also add resources like this:
 
 ```Kotlin
-val kvl = Keval()
+val kvl = Keval().create {}
     .withDefault() // includes default resources // it is unnecessary here since Keval() with no DSL already does it
     .withOperator( // includes a new binary operator
         ';', // symbol
@@ -160,7 +204,7 @@ val kvl = Keval()
 kvl.eval("2*max(2, 3) ; 4 + PHI^2")
 ```
 
-This can be combined with creating an instance with a DSL (i.e. `Keval {}`).
+This can be combined with creating an instance with a DSL (i.e. `Keval.create`).
 ***This is an especially useful syntax for Java users, since DSLs generally don't translate well over it.***
 
 Creating a resource with a name that already exists will overwrite the previous one.
@@ -180,6 +224,8 @@ In addition, the symbols `(`,`)`,`,` are reserved and trying to create operator 
 In case of an error, Keval will throw one of several `KevalException`s:
 
 - `KevalZeroDivisionException` in the case a zero division occurs
+- `KevalInvalidArgumentException` in the case a operator or function is called with an invalid argument (i.e. a negative number
+  for a factorial)
 - `KevalInvalidExpressionException` if the expression is invalid, with the following properties:
   - `expression` contains the fully sanitized expression
   - `position` is an estimate of the position of the error
@@ -190,7 +236,8 @@ In case of an error, Keval will throw one of several `KevalException`s:
 - `KevalDSLException` if, in the DSL, one of the field is either not set, or doesn't follow its restrictions (defined
   above)
 
-`KevalZeroDivisionException` is instantiable so that you can throw it when implementing a custom operator/function.
+`KevalZeroDivisionException` and `KevalInvalidArgumentException` are instantiable so that you can throw them when
+implementing a custom operator/function.
 
 ## Future Plans
 

@@ -7,15 +7,15 @@ import kotlin.test.assertFailsWith
 /**
  * Tests on the Shunting-yard algorithm
  */
-class ShuntingYardTest {
+class GrammarTest {
 
     /**
      * Tests SYA
      */
     @Test
-    fun syTest() {
-        val operators = KevalDSL.DEFAULT_RESOURCES
-        assertEquals(8.0, "3 + 5 * (2-1)".toAbstractSyntaxTree(operators).eval())
+    fun grammarTest() {
+        val operators = KevalBuilder.DEFAULT_RESOURCES
+        assertEquals(8.0, "3 + 5 * (2-1)".toAST(operators).eval())
     }
 
     /**
