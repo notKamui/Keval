@@ -13,6 +13,7 @@ internal class Parser(
         get() = currentTokenOrNull ?: throw KevalInvalidExpressionException(tokensToString, -1)
 
     private var currentPos = 0
+    private var openParenthesesCount = 0
 
     private fun consume(expected: String) {
         if (currentTokenOrNull != expected) {
@@ -21,6 +22,19 @@ internal class Parser(
                 currentPos,
                 "expected $expected but found ${currentTokenOrNull ?: "end of expression"}",
             )
+        }
+
+        if (currentToken == "(") {
+            openParenthesesCount++
+        } else if (currentToken == ")") {
+            if (openParenthesesCount == 0) {
+                throw KevalInvalidExpressionException(
+                    tokensToString,
+                    currentPos,
+                    "unexpected closing parenthesis"
+                )
+            }
+            openParenthesesCount--
         }
         currentPos += currentTokenOrNull?.length ?: 0 // Update the current position
         currentTokenOrNull = if (tokens.hasNext()) tokens.next() else null
@@ -146,7 +160,17 @@ internal class Parser(
         return node
     }
 
-    fun parse(): Node = expression()
+    fun parse(): Node {
+        val node = expression()
+        if (currentTokenOrNull != null) {
+            throw KevalInvalidExpressionException(
+                tokensToString,
+                currentPos,
+                "unexpected token $currentTokenOrNull"
+            )
+        }
+        return node
+    }
 }
 
 /**
