@@ -12,8 +12,8 @@ fun hypotenuse(x: Double, y: Double): Double = sqrt(x*x + y*y)
 class DLSTest {
     @Test
     fun checkSimpleDLS() {
-        val kvl = Keval {
-            operator {
+        val kvl = Keval.create {
+            binaryOperator {
                 symbol = ';'
                 implementation = ::hypotenuse
                 precedence = 3
@@ -42,9 +42,9 @@ class DLSTest {
 
     @Test
     fun checkCombinedDSL() {
-        val kvl = Keval {
+        val kvl = Keval.create {
             includeDefault()
-            operator {
+            binaryOperator {
                 symbol = ';'
                 implementation = ::hypotenuse
                 precedence = 3
@@ -53,9 +53,7 @@ class DLSTest {
             function {
                 name = "max"
                 arity = 2
-                implementation = { args ->
-                    max(args[0], args[1])
-                }
+                implementation = { it.max() }
             }
             constant {
                 name = "PHI"
@@ -86,7 +84,7 @@ class DLSTest {
 
     @Test
     fun conflictTests() {
-        val kvl = Keval {
+        val kvl = Keval.create {
             function {
                 name = "a"
                 arity = 1
@@ -108,14 +106,19 @@ class DLSTest {
 
     @Test
     fun checkWith() {
-        val kvl = Keval()
+        val kvl = Keval.create()
             .withDefault()
-            .withOperator(
+            .withBinaryOperator(
                 ';',
                 3,
                 isLeftAssociative = true,
                 ::hypotenuse
-            ).withFunction(
+            )
+            .withUnaryOperator(
+                '&',
+                true
+            ) { -it }
+            .withFunction(
                 "max",
                 2
             ) { max(it[0], it[1]) }
@@ -132,6 +135,11 @@ class DLSTest {
         )
 
         assertEquals(
+            -5.0,
+            kvl.eval("&5")
+        )
+
+        assertEquals(
             8.85663593,
             (kvl.eval("((3;4)-1.2);8") * 10.0.pow(8)).toInt() / 10.0.pow(8)
         )
@@ -144,7 +152,7 @@ class DLSTest {
 
     @Test
     fun checkOrder() {
-        val k = Keval {
+        val k = Keval.create {
             includeDefault()
             function {
                 name = "first"
@@ -175,7 +183,7 @@ class DLSTest {
 
     @Test
     fun checkCoherence() {
-        val k = Keval {
+        val k = Keval.create {
             includeDefault()
             function {
                 name = "if"
@@ -190,7 +198,7 @@ class DLSTest {
 
     @Test
     fun checkRepeatingParentheses() {
-        val k = Keval {
+        val k = Keval.create {
             includeDefault()
             function {
                 name = "f"

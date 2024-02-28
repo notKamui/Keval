@@ -1,7 +1,7 @@
 package com.notkamui.keval
 
 /**
- * Represents an operator, may be either a binary operator, or a function
+ * Represents an operator, may be either a binary operator, a unary operator, a function, or a constant
  */
 sealed interface KevalOperator
 
@@ -16,6 +16,16 @@ internal data class KevalBinaryOperator(
     val precedence: Int,
     val isLeftAssociative: Boolean,
     val implementation: (Double, Double) -> Double
+) : KevalOperator
+
+internal data class KevalUnaryOperator(
+    val isPrefix: Boolean,
+    val implementation: (Double) -> Double,
+) : KevalOperator
+
+internal data class KevalBothOperator(
+    val binary: KevalBinaryOperator,
+    val unary: KevalUnaryOperator,
 ) : KevalOperator
 
 /**
@@ -61,12 +71,19 @@ internal interface Node {
  * @property right is its right child
  * @constructor Creates an operator node
  */
-internal data class OperatorNode(
+internal data class BinaryOperatorNode(
     private val left: Node,
     private val op: (Double, Double) -> Double,
     private val right: Node
 ) : Node {
     override fun eval(): Double = op(left.eval(), right.eval())
+}
+
+internal data class UnaryOperatorNode(
+    private val op: (Double) -> Double,
+    private val child: Node
+) : Node {
+    override fun eval(): Double = op(child.eval())
 }
 
 internal data class FunctionNode(

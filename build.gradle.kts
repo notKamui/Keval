@@ -7,10 +7,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "com.notkamui.libs"
-version = "0.9.0"
+version = "1.0.0"
 
 plugins {
-    kotlin("multiplatform") version "1.8.0"
+    kotlin("multiplatform") version "1.9.22"
     java
     `maven-publish`
     signing
@@ -27,14 +27,13 @@ java {
 
 kotlin {
     jvm()
-    js(BOTH) {
+    js(IR) {
         nodejs()
         browser()
     }
     linuxX64()
     mingwX64()
 
-    @Suppress("UNUSED_VARIABLE")
     sourceSets {
         val commonMain by getting {
         }
@@ -84,7 +83,9 @@ publishing {
     publications {
         withType<MavenPublication> {
             artifactId = artifactId.toLowerCase()
-            artifact(tasks["javadocJar"])
+
+            artifact(tasks.getByName("javadocJar"))
+
             pom {
                 name.set("Keval")
                 description.set("A Kotlin mini library for mathematical expression string evaluation")
