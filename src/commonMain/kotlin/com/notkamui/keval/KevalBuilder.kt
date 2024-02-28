@@ -5,16 +5,16 @@ import kotlin.math.*
 /**
  * This class is used to build a Keval instance with custom operators, functions, and constants.
  */
-class KevalBuilder internal constructor() {
-    private val _resources: MutableMap<String, KevalOperator> = mutableMapOf()
-    internal val resources: Map<String, KevalOperator>
-        get() = _resources.toMap()
+class KevalBuilder internal constructor(
+    baseResources: Map<String, KevalOperator> = mapOf()
+) {
+    private val resources: MutableMap<String, KevalOperator> = baseResources.toMutableMap()
 
     /**
      * Includes the default resources (operators, functions, constants) to the current Keval instance.
      */
-    fun includeDefault() {
-        _resources += DEFAULT_RESOURCES
+    fun includeDefault(): KevalBuilder = apply {
+        resources += DEFAULT_RESOURCES
     }
 
     /**
@@ -22,7 +22,7 @@ class KevalBuilder internal constructor() {
      *
      * @param definition A lambda function that configures a BinaryOperatorBuilder instance.
      */
-    fun binaryOperator(definition: BinaryOperatorBuilder.() -> Unit) {
+    fun binaryOperator(definition: BinaryOperatorBuilder.() -> Unit): KevalBuilder = apply {
         val op = BinaryOperatorBuilder().apply(definition)
         validateOperator(op.symbol, op.precedence, op.implementation)
         addOperator(op.symbol!!, KevalBinaryOperator(op.precedence!!, op.isLeftAssociative!!, op.implementation!!), isUnary = false)
@@ -33,7 +33,7 @@ class KevalBuilder internal constructor() {
      *
      * @param definition A lambda function that configures a UnaryOperatorBuilder instance.
      */
-    fun unaryOperator(definition: UnaryOperatorBuilder.() -> Unit) {
+    fun unaryOperator(definition: UnaryOperatorBuilder.() -> Unit): KevalBuilder = apply {
         val op = UnaryOperatorBuilder().apply(definition)
         validateUnaryOperator(op.symbol, op.isPrefix, op.implementation)
         addOperator(op.symbol!!, KevalUnaryOperator(op.isPrefix!!, op.implementation!!), isUnary = true)
@@ -44,10 +44,10 @@ class KevalBuilder internal constructor() {
      *
      * @param definition A lambda function that configures a FunctionBuilder instance.
      */
-    fun function(definition: FunctionBuilder.() -> Unit) {
+    fun function(definition: FunctionBuilder.() -> Unit): KevalBuilder = apply {
         val fn = FunctionBuilder().apply(definition)
         validateFunction(fn.name, fn.arity, fn.implementation)
-        _resources[fn.name!!] = KevalFunction(fn.arity!!, fn.implementation!!)
+        resources[fn.name!!] = KevalFunction(fn.arity!!, fn.implementation!!)
     }
 
     /**
@@ -55,11 +55,18 @@ class KevalBuilder internal constructor() {
      *
      * @param definition A lambda function that configures a ConstantBuilder instance.
      */
-    fun constant(definition: ConstantBuilder.() -> Unit) {
+    fun constant(definition: ConstantBuilder.() -> Unit): KevalBuilder = apply {
         val const = ConstantBuilder().apply(definition)
         validateConstant(const.name, const.value)
-        _resources[const.name!!] = KevalConstant(const.value!!)
+        resources[const.name!!] = KevalConstant(const.value!!)
     }
+
+    /**
+     * Builds the Keval instance with the defined resources.
+     *
+     * @return A Keval instance.
+     */
+    fun build(): Keval = Keval(resources)
 
     private fun validateOperator(symbol: Char?, precedence: Int?, implementation: ((Double, Double) -> Double)?) {
         requireNotNull(symbol) { "symbol is not set" }
@@ -96,23 +103,24 @@ class KevalBuilder internal constructor() {
         isNotEmpty() && this[0] !in '0'..'9' && !contains("[^a-zA-Z0-9_]".toRegex())
 
     private fun addOperator(symbol: Char, operator: KevalOperator, isUnary: Boolean) {
-        when (val resource = _resources[symbol.toString()]) {
-            is KevalUnaryOperator -> _resources[symbol.toString()] =
+        when (val resource = resources[symbol.toString()]) {
+            is KevalUnaryOperator -> resources[symbol.toString()] =
                 KevalBothOperator(operator as KevalBinaryOperator, resource)
 
-            is KevalBinaryOperator -> _resources[symbol.toString()] =
+            is KevalBinaryOperator -> resources[symbol.toString()] =
                 KevalBothOperator(resource, operator as KevalUnaryOperator)
 
-            is KevalBothOperator -> _resources[symbol.toString()] =
+            is KevalBothOperator -> resources[symbol.toString()] =
                 if (isUnary) KevalBothOperator(operator as KevalBinaryOperator, resource.unary)
                 else KevalBothOperator(resource.binary, operator as KevalUnaryOperator)
 
-            else -> _resources[symbol.toString()] = operator
+            else -> resources[symbol.toString()] = operator
         }
     }
 
     companion object {
-        internal val DEFAULT_RESOURCES: Map<String, KevalOperator> = mapOf(
+
+        val DEFAULT_RESOURCES: Map<String, KevalOperator> = mapOf(
             // binary operators
             "+" to KevalBothOperator(
                 KevalBinaryOperator(2, true) { a, b -> a + b },

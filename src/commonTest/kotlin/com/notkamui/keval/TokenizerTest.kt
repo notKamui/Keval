@@ -61,7 +61,7 @@ class TokenizerTest {
 
     @Test
     fun checkRepeatingParentheses() {
-        val k = Keval {
+        val k = Keval.create {
             includeDefault()
             function {
                 name = "f"

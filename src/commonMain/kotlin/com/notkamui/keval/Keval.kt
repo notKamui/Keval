@@ -6,38 +6,33 @@ import kotlin.jvm.JvmStatic
 /**
  * Main class for evaluating mathematical expressions.
  * It can be customized with additional operators, functions, and constants.
- *
- * @param generator A lambda function that configures this Keval instance using the KevalBuilder DSL.
  */
-class Keval(generator: KevalBuilder.() -> Unit = { includeDefault() }) {
-    private val kevalBuilder = KevalBuilder()
-
-    init {
-        kevalBuilder.generator()
-    }
+class Keval internal constructor(private val resources: Map<String, KevalOperator>) {
 
     /**
-     * Adds a binary operator to this Keval instance.
+     * Creates a new instance which contains a binary operator.
      *
      * @param symbol The symbol representing the operator.
      * @param precedence The precedence of the operator.
      * @param isLeftAssociative Whether the operator is left associative.
      * @param implementation The implementation of the operator.
      * @return This Keval instance.
+     * @throws KevalDSLException If one of the fields isn't set properly.
      */
     fun withBinaryOperator(
         symbol: Char,
         precedence: Int,
         isLeftAssociative: Boolean,
         implementation: (Double, Double) -> Double
-    ): Keval = apply {
-        kevalBuilder.binaryOperator {
+    ): Keval = KevalBuilder(resources)
+        .binaryOperator {
             this.symbol = symbol
             this.precedence = precedence
             this.isLeftAssociative = isLeftAssociative
             this.implementation = implementation
         }
-    }
+        .build()
+
 
     /**
      * Adds a unary operator to this Keval instance.
@@ -46,18 +41,19 @@ class Keval(generator: KevalBuilder.() -> Unit = { includeDefault() }) {
      * @param isPrefix Whether the operator is prefix.
      * @param implementation The implementation of the operator.
      * @return This Keval instance.
+     * @throws KevalDSLException If one of the fields isn't set properly.
      */
     fun withUnaryOperator(
         symbol: Char,
         isPrefix: Boolean,
         implementation: (Double) -> Double
-    ): Keval = apply {
-        kevalBuilder.unaryOperator {
+    ): Keval = KevalBuilder(resources)
+        .unaryOperator {
             this.symbol = symbol
             this.isPrefix = isPrefix
             this.implementation = implementation
         }
-    }
+        .build()
 
     /**
      * Adds a function to this Keval instance.
@@ -66,18 +62,19 @@ class Keval(generator: KevalBuilder.() -> Unit = { includeDefault() }) {
      * @param arity The number of arguments the function takes.
      * @param implementation The implementation of the function.
      * @return This Keval instance.
+     * @throws KevalDSLException If one of the fields isn't set properly.
      */
     fun withFunction(
         name: String,
         arity: Int,
         implementation: (DoubleArray) -> Double
-    ): Keval = apply {
-        kevalBuilder.function {
+    ): Keval = KevalBuilder(resources)
+        .function {
             this.name = name
             this.arity = arity
             this.implementation = implementation
         }
-    }
+        .build()
 
     /**
      * Adds a constant to this Keval instance.
@@ -85,25 +82,24 @@ class Keval(generator: KevalBuilder.() -> Unit = { includeDefault() }) {
      * @param name The name of the constant.
      * @param value The value of the constant.
      * @return This Keval instance.
+     * @throws KevalDSLException If one of the fields isn't set properly.
      */
     fun withConstant(
         name: String,
         value: Double
-    ): Keval = apply {
-        kevalBuilder.constant {
+    ): Keval = KevalBuilder(resources)
+        .constant {
             this.name = name
             this.value = value
         }
-    }
+        .build()
 
     /**
      * Adds the default resources to this Keval instance.
      *
      * @return This Keval instance.
      */
-    fun withDefault(): Keval = apply {
-        kevalBuilder.includeDefault()
-    }
+    fun withDefault(): Keval = KevalBuilder(resources).includeDefault().build()
 
     /**
      * Evaluates a mathematical expression.
@@ -126,9 +122,20 @@ class Keval(generator: KevalBuilder.() -> Unit = { includeDefault() }) {
      * The tokenizer assumes multiplication, hence disallowing overriding `*` operator
      */
     fun resourcesView(): Map<String, KevalOperator> =
-        kevalBuilder.resources + ("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
+        resources + ("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
 
     companion object {
+
+        /**
+         * Creates a new instance of [Keval] with the provided resources.
+         *
+         * @param generator A lambda function that configures a KevalBuilder instance.
+         * @return The new instance of Keval.
+         * @throws KevalDSLException If one of the fields isn't set properly.
+         */
+        @JvmStatic
+        fun create(generator: KevalBuilder.() -> Unit = { includeDefault() }): Keval =
+            KevalBuilder().apply(generator).build()
 
         /**
          * Evaluates a mathematical expression using the default resources.
@@ -160,7 +167,7 @@ class Keval(generator: KevalBuilder.() -> Unit = { includeDefault() }) {
  */
 fun String.keval(
     generator: KevalBuilder.() -> Unit
-): Double = Keval(generator).eval(this)
+): Double = KevalBuilder().apply(generator).build().eval(this)
 
 /**
  * Evaluates a mathematical expression using the default resources.

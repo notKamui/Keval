@@ -12,7 +12,7 @@ fun hypotenuse(x: Double, y: Double): Double = sqrt(x*x + y*y)
 class DLSTest {
     @Test
     fun checkSimpleDLS() {
-        val kvl = Keval {
+        val kvl = Keval.create {
             binaryOperator {
                 symbol = ';'
                 implementation = ::hypotenuse
@@ -42,7 +42,7 @@ class DLSTest {
 
     @Test
     fun checkCombinedDSL() {
-        val kvl = Keval {
+        val kvl = Keval.create {
             includeDefault()
             binaryOperator {
                 symbol = ';'
@@ -84,7 +84,7 @@ class DLSTest {
 
     @Test
     fun conflictTests() {
-        val kvl = Keval {
+        val kvl = Keval.create {
             function {
                 name = "a"
                 arity = 1
@@ -106,7 +106,7 @@ class DLSTest {
 
     @Test
     fun checkWith() {
-        val kvl = Keval()
+        val kvl = Keval.create()
             .withDefault()
             .withBinaryOperator(
                 ';',
@@ -152,7 +152,7 @@ class DLSTest {
 
     @Test
     fun checkOrder() {
-        val k = Keval {
+        val k = Keval.create {
             includeDefault()
             function {
                 name = "first"
@@ -183,7 +183,7 @@ class DLSTest {
 
     @Test
     fun checkCoherence() {
-        val k = Keval {
+        val k = Keval.create {
             includeDefault()
             function {
                 name = "if"
@@ -198,7 +198,7 @@ class DLSTest {
 
     @Test
     fun checkRepeatingParentheses() {
-        val k = Keval {
+        val k = Keval.create {
             includeDefault()
             function {
                 name = "f"
