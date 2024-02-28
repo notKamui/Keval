@@ -18,7 +18,7 @@ class KevalDSL internal constructor() {
     }
 
     /**
-     * Adds a new operator to Keval instance,
+     * Adds a new binary operator to Keval instance,
      * every field MUST be defined: symbol, precedence, isLeftAssociative, implementation
      *
      * @param definition is the definition of the above fields
@@ -43,11 +43,35 @@ class KevalDSL internal constructor() {
         }
         val isLeftAssociative = op.isLeftAssociative ?: throw KevalDSLException("isLeftAssociative is not set")
 
-        _resources[symbol.toString()] = KevalBinaryOperator(
-            precedence,
-            isLeftAssociative,
-            implementation
-        )
+        val newOperator = KevalBinaryOperator(precedence, isLeftAssociative, implementation)
+        when (val resource = _resources[symbol.toString()]) {
+            is KevalUnaryOperator -> _resources[symbol.toString()] = KevalBothOperator(newOperator, resource)
+            is KevalBothOperator -> _resources[symbol.toString()] = KevalBothOperator(newOperator, resource.unary)
+            else -> _resources[symbol.toString()] = newOperator
+        }
+    }
+
+    fun unaryOperator(definition: UnaryOperatorDSL.() -> Unit) {
+        val op = UnaryOperatorDSL()
+        op.definition()
+
+        // checking if every field has been properly defined
+        val symbol = op.symbol ?: throw KevalDSLException("symbol is not set")
+        if (symbol.isLetterOrDigit() || symbol in listOf('_', '(', ')', ',')) {
+            throw KevalDSLException("a symbol must NOT be a letter, a digit, an underscore, parentheses nor a comma but was: $symbol")
+        }
+        if (symbol == '*') {
+            throw KevalDSLException("* cannot be overwritten")
+        }
+        val implementation = op.implementation ?: throw KevalDSLException("implementation is not set")
+        val isPrefix = op.isPrefix ?: throw KevalDSLException("isPrefix is not set")
+
+        val newOperator = KevalUnaryOperator(isPrefix, implementation)
+        when (val resource = _resources[symbol.toString()]) {
+            is KevalBinaryOperator -> _resources[symbol.toString()] = KevalBothOperator(resource, newOperator)
+            is KevalBothOperator -> _resources[symbol.toString()] = KevalBothOperator(resource.binary, newOperator)
+            else -> _resources[symbol.toString()] = newOperator
+        }
     }
 
     /**
@@ -161,7 +185,7 @@ class KevalDSL internal constructor() {
         )
 
         /**
-         * DSL representation of a binary operator
+         * Builder representation of a binary operator
          *
          * @property symbol is the symbol which represents the operator
          * @property precedence is the precedence of the operator
@@ -176,7 +200,20 @@ class KevalDSL internal constructor() {
         )
 
         /**
-         * DSL representation of a function
+         * Builder representation of a unary operator
+         *
+         * @property symbol is the symbol which represents the operator
+         * @property isPrefix is true when the operator is prefix, false otherwise
+         * @property implementation is the actual implementation of the operator
+         */
+        data class UnaryOperatorDSL(
+            var symbol: Char? = null,
+            var isPrefix: Boolean? = null,
+            var implementation: ((Double) -> Double)? = null
+        )
+
+        /**
+         * Builder representation of a function
          *
          * @property name is the identifier which represents the function
          * @property arity is the arity of the function (how many arguments it takes)
@@ -189,7 +226,7 @@ class KevalDSL internal constructor() {
         )
 
         /**
-         * DSL representation of a constant
+         * Builder representation of a constant
          *
          * @property name is the identifier which represents the constant
          * @property value is the value of the constant

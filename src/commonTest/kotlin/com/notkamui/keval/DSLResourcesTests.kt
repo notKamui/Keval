@@ -113,7 +113,12 @@ class DLSTest {
                 3,
                 isLeftAssociative = true,
                 ::hypotenuse
-            ).withFunction(
+            )
+            .withUnaryOperator(
+                '&',
+                true
+            ) { -it }
+            .withFunction(
                 "max",
                 2
             ) { max(it[0], it[1]) }
@@ -127,6 +132,11 @@ class DLSTest {
         assertEquals(
             5.0,
             kvl.eval("neg(5) + 10")
+        )
+
+        assertEquals(
+            -5.0,
+            kvl.eval("&5")
         )
 
         assertEquals(
