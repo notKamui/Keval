@@ -144,8 +144,8 @@ class KevalBuilder internal constructor(
 
             // unary operators
             "!" to KevalUnaryOperator(false) {
-                if (it < 0) throw KevalInvalidFactorialException("factorial of a negative number")
-                if (floor(it) != it) throw KevalInvalidFactorialException("factorial of a non-integer")
+                if (it < 0) throw KevalInvalidArgumentException("factorial of a negative number")
+                if (floor(it) != it) throw KevalInvalidArgumentException("factorial of a non-integer")
                 var result = 1.0
                 for (i in 2..it.toInt()) {
                     result *= i
