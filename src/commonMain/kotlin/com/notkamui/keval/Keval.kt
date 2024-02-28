@@ -12,12 +12,12 @@ class Keval
  * Constructor for a [Keval] instance with [generator] being the DSL generator of Keval (defaults to the default resources)
  */
 constructor(
-    generator: KevalDSL.() -> Unit = { includeDefault() }
+    generator: KevalBuilder.() -> Unit = { includeDefault() }
 ) {
-    private val kevalDSL = KevalDSL()
+    private val kevalBuilder = KevalBuilder()
 
     init {
-        kevalDSL.generator()
+        kevalBuilder.generator()
     }
 
     /**
@@ -31,7 +31,7 @@ constructor(
         isLeftAssociative: Boolean,
         implementation: (Double, Double) -> Double
     ): Keval = apply {
-        kevalDSL.operator {
+        kevalBuilder.operator {
             this.symbol = symbol
             this.precedence = precedence
             this.isLeftAssociative = isLeftAssociative
@@ -49,7 +49,7 @@ constructor(
         isPrefix: Boolean,
         implementation: (Double) -> Double
     ): Keval = apply {
-        kevalDSL.unaryOperator {
+        kevalBuilder.unaryOperator {
             this.symbol = symbol
             this.isPrefix = isPrefix
             this.implementation = implementation
@@ -66,7 +66,7 @@ constructor(
         arity: Int,
         implementation: (DoubleArray) -> Double
     ): Keval = apply {
-        kevalDSL.function {
+        kevalBuilder.function {
             this.name = name
             this.arity = arity
             this.implementation = implementation
@@ -82,7 +82,7 @@ constructor(
         name: String,
         value: Double
     ): Keval = apply {
-        kevalDSL.constant {
+        kevalBuilder.constant {
             this.name = name
             this.value = value
         }
@@ -92,7 +92,7 @@ constructor(
      * Composes the default resources to this [Keval] instance.
      */
     fun withDefault(): Keval = apply {
-        kevalDSL.includeDefault()
+        kevalBuilder.includeDefault()
     }
 
     /**
@@ -115,7 +115,7 @@ constructor(
      * The tokenizer assumes multiplication, hence disallowing overriding `*` operator
      */
     fun resourcesView(): Map<String, KevalOperator> =
-        kevalDSL.resources + ("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
+        kevalBuilder.resources + ("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
 
     companion object {
         /**
@@ -130,7 +130,7 @@ constructor(
         @JvmStatic
         fun eval(
             mathExpression: String,
-        ): Double = mathExpression.toAST(KevalDSL.DEFAULT_RESOURCES).eval()
+        ): Double = mathExpression.toAST(KevalBuilder.DEFAULT_RESOURCES).eval()
     }
 }
 
@@ -144,7 +144,7 @@ constructor(
  * - [KevalDSLException] in case one of the field isn't set properly
  */
 fun String.keval(
-    generator: KevalDSL.() -> Unit
+    generator: KevalBuilder.() -> Unit
 ): Double = Keval(generator).eval(this)
 
 /**

@@ -1,7 +1,7 @@
 package com.notkamui.keval
 
 /**
- * Represents an operator, may be either a binary operator, or a function
+ * Represents an operator, may be either a binary operator, a unary operator, a function, or a constant
  */
 sealed interface KevalOperator
 
