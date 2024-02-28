@@ -2,33 +2,59 @@ package com.notkamui.keval
 
 import kotlin.math.*
 
+/**
+ * This class is used to build a Keval instance with custom operators, functions, and constants.
+ */
 class KevalBuilder internal constructor() {
     private val _resources: MutableMap<String, KevalOperator> = mutableMapOf()
     internal val resources: Map<String, KevalOperator>
         get() = _resources.toMap()
 
+    /**
+     * Includes the default resources (operators, functions, constants) to the current Keval instance.
+     */
     fun includeDefault() {
         _resources += DEFAULT_RESOURCES
     }
 
-    fun operator(definition: BinaryOperatorBuilder.() -> Unit) {
+    /**
+     * Defines a binary operator for the current Keval instance.
+     *
+     * @param definition A lambda function that configures a BinaryOperatorBuilder instance.
+     */
+    fun binaryOperator(definition: BinaryOperatorBuilder.() -> Unit) {
         val op = BinaryOperatorBuilder().apply(definition)
         validateOperator(op.symbol, op.precedence, op.implementation)
         addOperator(op.symbol!!, KevalBinaryOperator(op.precedence!!, op.isLeftAssociative!!, op.implementation!!), isUnary = false)
     }
 
+    /**
+     * Defines a unary operator for the current Keval instance.
+     *
+     * @param definition A lambda function that configures a UnaryOperatorBuilder instance.
+     */
     fun unaryOperator(definition: UnaryOperatorBuilder.() -> Unit) {
         val op = UnaryOperatorBuilder().apply(definition)
         validateUnaryOperator(op.symbol, op.isPrefix, op.implementation)
         addOperator(op.symbol!!, KevalUnaryOperator(op.isPrefix!!, op.implementation!!), isUnary = true)
     }
 
+    /**
+     * Defines a function for the current Keval instance.
+     *
+     * @param definition A lambda function that configures a FunctionBuilder instance.
+     */
     fun function(definition: FunctionBuilder.() -> Unit) {
         val fn = FunctionBuilder().apply(definition)
         validateFunction(fn.name, fn.arity, fn.implementation)
         _resources[fn.name!!] = KevalFunction(fn.arity!!, fn.implementation!!)
     }
 
+    /**
+     * Defines a constant for the current Keval instance.
+     *
+     * @param definition A lambda function that configures a ConstantBuilder instance.
+     */
     fun constant(definition: ConstantBuilder.() -> Unit) {
         val const = ConstantBuilder().apply(definition)
         validateConstant(const.name, const.value)
@@ -144,12 +170,12 @@ class KevalBuilder internal constructor() {
         )
 
         /**
-         * Builder representation of a binary operator
+         * Builder representation of a binary operator.
          *
-         * @property symbol is the symbol which represents the operator
-         * @property precedence is the precedence of the operator
-         * @property isLeftAssociative is true when the operator is left associative, false otherwise
-         * @property implementation is the actual implementation of the operator
+         * @property symbol The symbol which represents the operator.
+         * @property precedence The precedence of the operator.
+         * @property isLeftAssociative True when the operator is left associative, false otherwise.
+         * @property implementation The actual implementation of the operator.
          */
         data class BinaryOperatorBuilder(
             var symbol: Char? = null,
@@ -159,11 +185,11 @@ class KevalBuilder internal constructor() {
         )
 
         /**
-         * Builder representation of a unary operator
+         * Builder representation of a unary operator.
          *
-         * @property symbol is the symbol which represents the operator
-         * @property isPrefix is true when the operator is prefix, false otherwise
-         * @property implementation is the actual implementation of the operator
+         * @property symbol The symbol which represents the operator.
+         * @property isPrefix True when the operator is prefix, false otherwise.
+         * @property implementation The actual implementation of the operator.
          */
         data class UnaryOperatorBuilder(
             var symbol: Char? = null,
@@ -172,11 +198,11 @@ class KevalBuilder internal constructor() {
         )
 
         /**
-         * Builder representation of a function
+         * Builder representation of a function.
          *
-         * @property name is the identifier which represents the function
-         * @property arity is the arity of the function (how many arguments it takes)
-         * @property implementation is the actual implementation of the function
+         * @property name The identifier which represents the function.
+         * @property arity The arity of the function (how many arguments it takes).
+         * @property implementation The actual implementation of the function.
          */
         data class FunctionBuilder(
             var name: String? = null,
@@ -185,10 +211,10 @@ class KevalBuilder internal constructor() {
         )
 
         /**
-         * Builder representation of a constant
+         * Builder representation of a constant.
          *
-         * @property name is the identifier which represents the constant
-         * @property value is the value of the constant
+         * @property name The identifier which represents the constant.
+         * @property value The value of the constant.
          */
         data class ConstantBuilder(
             var name: String? = null,

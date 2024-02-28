@@ -13,7 +13,7 @@ class DLSTest {
     @Test
     fun checkSimpleDLS() {
         val kvl = Keval {
-            operator {
+            binaryOperator {
                 symbol = ';'
                 implementation = ::hypotenuse
                 precedence = 3
@@ -44,7 +44,7 @@ class DLSTest {
     fun checkCombinedDSL() {
         val kvl = Keval {
             includeDefault()
-            operator {
+            binaryOperator {
                 symbol = ';'
                 implementation = ::hypotenuse
                 precedence = 3
@@ -108,7 +108,7 @@ class DLSTest {
     fun checkWith() {
         val kvl = Keval()
             .withDefault()
-            .withOperator(
+            .withBinaryOperator(
                 ';',
                 3,
                 isLeftAssociative = true,

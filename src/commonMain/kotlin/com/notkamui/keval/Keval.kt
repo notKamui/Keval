@@ -25,13 +25,13 @@ class Keval(generator: KevalBuilder.() -> Unit = { includeDefault() }) {
      * @param implementation The implementation of the operator.
      * @return This Keval instance.
      */
-    fun withOperator(
+    fun withBinaryOperator(
         symbol: Char,
         precedence: Int,
         isLeftAssociative: Boolean,
         implementation: (Double, Double) -> Double
     ): Keval = apply {
-        kevalBuilder.operator {
+        kevalBuilder.binaryOperator {
             this.symbol = symbol
             this.precedence = precedence
             this.isLeftAssociative = isLeftAssociative
