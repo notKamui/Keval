@@ -4,16 +4,12 @@ import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 /**
- * Wrapper class for [Keval],
- * Contains a companion object with the evaluation method
+ * Main class for evaluating mathematical expressions.
+ * It can be customized with additional operators, functions, and constants.
+ *
+ * @param generator A lambda function that configures this Keval instance using the KevalBuilder DSL.
  */
-class Keval
-/**
- * Constructor for a [Keval] instance with [generator] being the DSL generator of Keval (defaults to the default resources)
- */
-constructor(
-    generator: KevalBuilder.() -> Unit = { includeDefault() }
-) {
+class Keval(generator: KevalBuilder.() -> Unit = { includeDefault() }) {
     private val kevalBuilder = KevalBuilder()
 
     init {
@@ -21,9 +17,13 @@ constructor(
     }
 
     /**
-     * Composes a binary operator to this [Keval] instance with a [symbol], [precedence], if it [isLeftAssociative] and an [implementation].
+     * Adds a binary operator to this Keval instance.
      *
-     * [KevalDSLException] is thrown in case one of the field isn't set properly.
+     * @param symbol The symbol representing the operator.
+     * @param precedence The precedence of the operator.
+     * @param isLeftAssociative Whether the operator is left associative.
+     * @param implementation The implementation of the operator.
+     * @return This Keval instance.
      */
     fun withOperator(
         symbol: Char,
@@ -40,9 +40,12 @@ constructor(
     }
 
     /**
-     * Composes a unary operator to this [Keval] instance with a [symbol] and an [implementation].
+     * Adds a unary operator to this Keval instance.
      *
-     * [KevalDSLException] is thrown in case one of the field isn't set properly.
+     * @param symbol The symbol representing the operator.
+     * @param isPrefix Whether the operator is prefix.
+     * @param implementation The implementation of the operator.
+     * @return This Keval instance.
      */
     fun withUnaryOperator(
         symbol: Char,
@@ -57,9 +60,12 @@ constructor(
     }
 
     /**
-     * Composes a function to this [Keval] instance with a [name], [arity] and [implementation].
+     * Adds a function to this Keval instance.
      *
-     * [KevalDSLException] is thrown in case one of the field isn't set properly.
+     * @param name The name of the function.
+     * @param arity The number of arguments the function takes.
+     * @param implementation The implementation of the function.
+     * @return This Keval instance.
      */
     fun withFunction(
         name: String,
@@ -74,9 +80,11 @@ constructor(
     }
 
     /**
-     * Composes a constant to this [Keval] instance with a [name] and a [value].
+     * Adds a constant to this Keval instance.
      *
-     * [KevalDSLException] is thrown in case one of the field isn't set properly.
+     * @param name The name of the constant.
+     * @param value The value of the constant.
+     * @return This Keval instance.
      */
     fun withConstant(
         name: String,
@@ -89,19 +97,22 @@ constructor(
     }
 
     /**
-     * Composes the default resources to this [Keval] instance.
+     * Adds the default resources to this Keval instance.
+     *
+     * @return This Keval instance.
      */
     fun withDefault(): Keval = apply {
         kevalBuilder.includeDefault()
     }
 
     /**
-     * Evaluates [mathExpression] from a [String] and returns a [Double] value using the resources of this [Keval] instance.
+     * Evaluates a mathematical expression.
      *
-     * May throw several exceptions:
-     * - [KevalInvalidSymbolException] in case there's an invalid operator in the expression
-     * - [KevalInvalidExpressionException] in case the expression is invalid (i.e. mismatched parenthesis)
-     * - [KevalZeroDivisionException] in case of a zero division
+     * @param mathExpression The mathematical expression to evaluate.
+     * @return The result of the evaluation.
+     * @throws KevalInvalidSymbolException If there's an invalid operator in the expression.
+     * @throws KevalInvalidExpressionException If the expression is invalid (i.e., mismatched parentheses).
+     * @throws KevalZeroDivisionException If a division by zero occurs.
      */
     fun eval(
         mathExpression: String,
@@ -118,13 +129,15 @@ constructor(
         kevalBuilder.resources + ("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
 
     companion object {
+
         /**
-         * Evaluates [mathExpression] from a [String] and returns a [Double] value with the default resources.
+         * Evaluates a mathematical expression using the default resources.
          *
-         * May throw several exceptions:
-         * - [KevalInvalidSymbolException] in case there's an invalid operator in the expression
-         * - [KevalInvalidExpressionException] in case the expression is invalid (i.e. mismatched parenthesis)
-         * - [KevalZeroDivisionException] in case of a zero division
+         * @param mathExpression The mathematical expression to evaluate.
+         * @return The result of the evaluation.
+         * @throws KevalInvalidSymbolException If there's an invalid operator in the expression.
+         * @throws KevalInvalidExpressionException If the expression is invalid (i.e., mismatched parentheses).
+         * @throws KevalZeroDivisionException If a division by zero occurs.
          */
         @JvmName("evaluate")
         @JvmStatic
@@ -135,24 +148,27 @@ constructor(
 }
 
 /**
- * Evaluates [this] mathematical expression from a [String] and returns a [Double] value with given resources as [generator].
+ * Evaluates a mathematical expression using the provided resources.
  *
- * May throw several exceptions:
- * - [KevalInvalidSymbolException] in case there's an invalid operator in the expression
- * - [KevalInvalidExpressionException] in case the expression is invalid (i.e. mismatched parenthesis)
- * - [KevalZeroDivisionException] in case of a zero division
- * - [KevalDSLException] in case one of the field isn't set properly
+ * @receiver The mathematical expression to evaluate.
+ * @param generator A lambda function that configures a KevalBuilder instance.
+ * @return The result of the evaluation.
+ * @throws KevalInvalidSymbolException If there's an invalid operator in the expression.
+ * @throws KevalInvalidExpressionException If the expression is invalid (i.e., mismatched parentheses).
+ * @throws KevalZeroDivisionException If a division by zero occurs.
+ * @throws KevalDSLException If one of the fields isn't set properly.
  */
 fun String.keval(
     generator: KevalBuilder.() -> Unit
 ): Double = Keval(generator).eval(this)
 
 /**
- * Evaluates [this] mathematical expression from a [String] and returns a [Double] value with the default resources.
+ * Evaluates a mathematical expression using the default resources.
  *
- * May throw several exceptions:
- * - [KevalInvalidSymbolException] in case there's an invalid operator in the expression
- * - [KevalInvalidExpressionException] in case the expression is invalid (i.e. mismatched parenthesis)
- * - [KevalZeroDivisionException] in case of a zero division
+ * @receiver The mathematical expression to evaluate.
+ * @return The result of the evaluation.
+ * @throws KevalInvalidSymbolException If there's an invalid operator in the expression.
+ * @throws KevalInvalidExpressionException If the expression is invalid (i.e., mismatched parentheses).
+ * @throws KevalZeroDivisionException If a division by zero occurs.
  */
 fun String.keval(): Double = Keval.eval(this)
