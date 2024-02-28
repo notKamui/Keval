@@ -3,7 +3,7 @@
 ***A Kotlin Multiplatform mini library for string evaluation***
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.22-7f52ff.svg)](https://kotlinlang.org)
-[![Maven Central](https://img.shields.io/maven-central/v/com.notkamui.libs/keval.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.notkamui.libs%22%20AND%20a:%22keval%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.notkamui.libs/keval.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/com.notkamui.libs/keval)
 
 (You may need to watch out using it:
 having to evaluate a string into a number is more often than not a code smell)
