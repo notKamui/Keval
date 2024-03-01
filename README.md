@@ -150,7 +150,7 @@ Keval.create { // builder instance
     }
 }.eval("2*max(2, 3) ; 4# + PHI^2")
 
-"2*max(2, 3) ; 4$ + PHI^2".keval { // builder instance + extension
+"2*max(2, 3) ; 4# + PHI^2".keval { // builder instance + extension
     includeDefault()
   
     binaryOperator {
