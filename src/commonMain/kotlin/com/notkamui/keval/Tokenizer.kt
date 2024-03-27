@@ -8,7 +8,7 @@ private fun shouldAssumeMul(tokenType: TokenType): Boolean =
     tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
 
 // normalize tokens to be of specific form (add product symbols where they should be assumed and enclose every parameter of a function in parentheses)
-private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>, tokensToString: String): List<String> {
+private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>): List<String> {
     var currentPos = 0
     var prevToken = TokenType.FIRST
     var parenthesesCount = 0
@@ -47,12 +47,12 @@ private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>, to
                     ret.add(token)
                 } else {
                     throw KevalInvalidSymbolException(
-                        token, tokensToString, currentPos, "comma can only be used in the context of a function"
+                        token, this.joinToString("") { it }, currentPos, "comma can only be used in the context of a function"
                     )
                 }
             }
 
-            else -> throw KevalInvalidSymbolException(token, tokensToString, currentPos)
+            else -> throw KevalInvalidSymbolException(token, this.joinToString("") { it }, currentPos)
         }
         currentPos += token.length
     }
@@ -85,17 +85,15 @@ internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in 
  * @return the list of tokens
  * @throws KevalInvalidSymbolException if the expression contains an invalid symbol
  */
-internal fun String.tokenize(symbolsSet: Map<String, KevalOperator>): List<String> {
-    val tokens = TOKENIZE_REGEX.splitToSequence(this)
+internal fun String.tokenize(symbolsSet: Map<String, KevalOperator>): List<String> =
+    TOKENIZER_REGEX.splitToSequence(this)
         .filter { it.isNotBlank() }
-        .map { it.replace("\\s".toRegex(), "") }
+        .map { SANITIZE_REGEX.replace(it, "") }
         .toList()
+        .normalizeTokens(symbolsSet)
 
-    val tokensToString = tokens.joinToString("")
+private const val LIMITS = """[^\w.]|[ ,()]"""
 
-    return tokens.normalizeTokens(symbolsSet, tokensToString)
-}
+private val SANITIZE_REGEX = """\s+""".toRegex()
 
-private const val LIMITS = """ |[^a-zA-Z0-9._]|,|\(|\)"""
-
-private val TOKENIZE_REGEX = """(?<=($LIMITS))|(?=($LIMITS))|(?<=\d)(?=[^\d.])|(?<=[^\d.])(?=\d)""".toRegex()
+private val TOKENIZER_REGEX = """(?<=($LIMITS))|(?=($LIMITS))|(?<=\d)(?=[^\d.])|(?<=[^.\w])(?=\d)""".toRegex()
