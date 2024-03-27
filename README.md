@@ -3,7 +3,7 @@
 ***A Kotlin Multiplatform mini library for string evaluation***
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.22-7f52ff.svg)](https://kotlinlang.org)
-[![Maven Central](https://img.shields.io/maven-central/v/com.notkamui.libs/keval.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.notkamui.libs%22%20AND%20a:%22keval%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.notkamui.libs/keval.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/com.notkamui.libs/keval)
 
 (You may need to watch out using it:
 having to evaluate a string into a number is more often than not a code smell)
@@ -85,7 +85,7 @@ Keval has support for constants, it has two built-in constant:
 - π `PI`
 - *e* `e` (Euler's number)
 
-You can optionally add as many binary operators, functions or constants to Keval, as long as you define every field
+You can optionally add as many operators, functions or constants to Keval, as long as you define every field
 properly, with a DSL (Domain Specific Language):
 
 - A **binary operator** is defined by:
@@ -150,7 +150,7 @@ Keval.create { // builder instance
     }
 }.eval("2*max(2, 3) ; 4# + PHI^2")
 
-"2*max(2, 3) ; 4$ + PHI^2".keval { // builder instance + extension
+"2*max(2, 3) ; 4# + PHI^2".keval { // builder instance + extension
     includeDefault()
   
     binaryOperator {
@@ -187,11 +187,15 @@ In concordance with creating a Keval instance, you can also add resources like t
 ```Kotlin
 val kvl = Keval().create {}
     .withDefault() // includes default resources // it is unnecessary here since Keval() with no DSL already does it
-    .withOperator( // includes a new binary operator
+    .withBinaryOperator( // includes a new binary operator
         ';', // symbol
         3, // precedence
         true // isLeftAssociative
     ) { a, b -> a.pow(2) + b.pow(2) } // implementation
+    .withUnaryOperator( // includes a new unary operator
+        '#', // symbol
+        false, // isPrefix
+    ) { arg -> (1..arg.toInt()).fold(0.0) { acc, i -> acc + i } } // implementation 
     .withFunction( // includes a new function
         "max", // name
         2 // arity
@@ -201,7 +205,7 @@ val kvl = Keval().create {}
         1.618 // value
     )
 
-kvl.eval("2*max(2, 3) ; 4 + PHI^2")
+kvl.eval("2*max(2, 3) ; 4# + PHI^2")
 ```
 
 This can be combined with creating an instance with a DSL (i.e. `Keval.create`).
