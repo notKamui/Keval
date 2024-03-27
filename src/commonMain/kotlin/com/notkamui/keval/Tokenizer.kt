@@ -87,7 +87,7 @@ internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in 
  */
 internal fun String.tokenize(symbolsSet: Map<String, KevalOperator>): List<String> =
     TOKENIZER_REGEX.splitToSequence(this)
-        .filter { it.isNotBlank() }
+        .filter(String::isNotBlank)
         .map { SANITIZE_REGEX.replace(it, "") }
         .toList()
         .normalizeTokens(symbolsSet)
