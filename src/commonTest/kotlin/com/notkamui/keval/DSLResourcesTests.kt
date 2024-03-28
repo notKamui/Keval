@@ -208,4 +208,18 @@ class DLSTest {
         }
         assertEquals(1.0, k.eval("f(((1)))"), "f(((1)))")
     }
+
+    @Test
+    fun checkOverrideAnOperatorShouldNotFail() {
+        val k = Keval.create {
+            includeDefault()
+            binaryOperator {
+                symbol = '+'
+                implementation = { a, b -> a + b }
+                precedence = 1
+                isLeftAssociative = true
+            }
+        }
+        assertEquals(3.0, k.eval("1+2"), "1+2")
+    }
 }

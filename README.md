@@ -20,7 +20,7 @@ Maven
   <dependency>
     <groupId>com.notkamui.libs</groupId>
     <artifactId>keval</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
   </dependency>
 </dependencies>
 ```
@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-  implementation("com.notkamui.libs:keval:1.0.0")
+  implementation("com.notkamui.libs:keval:1.0.1")
 }
 ```
 
@@ -68,7 +68,7 @@ Keval has support for functions of variable arity:
 - Cube root `cbrt(expr)` (where 'expr' is an expression)
 - Exponential `exp(expr)` (where 'expr' is an expression)
 - Natural logarithm `ln(expr)` (where 'expr' is an expression)
-- Base 10 logarithm `log(expr)` (where 'expr' is an expression)
+- Base 10 logarithm `log10(expr)` (where 'expr' is an expression)
 - Base 2 logarithm `log2(expr)` (where 'expr' is an expression)
 - Sine `sin(expr)` (where 'expr' is an expression)
 - Cosine `cos(expr)` (where 'expr' is an expression)

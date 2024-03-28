@@ -105,14 +105,16 @@ class KevalBuilder internal constructor(
     private fun addOperator(symbol: Char, operator: KevalOperator, isUnary: Boolean) {
         when (val resource = resources[symbol.toString()]) {
             is KevalUnaryOperator -> resources[symbol.toString()] =
-                KevalBothOperator(operator as KevalBinaryOperator, resource)
+                if (isUnary) operator as KevalUnaryOperator
+                else KevalBothOperator(operator as KevalBinaryOperator, resource)
 
             is KevalBinaryOperator -> resources[symbol.toString()] =
-                KevalBothOperator(resource, operator as KevalUnaryOperator)
+                if (isUnary) KevalBothOperator(resource, operator as KevalUnaryOperator)
+                else operator as KevalBinaryOperator
 
             is KevalBothOperator -> resources[symbol.toString()] =
-                if (isUnary) KevalBothOperator(operator as KevalBinaryOperator, resource.unary)
-                else KevalBothOperator(resource.binary, operator as KevalUnaryOperator)
+                if (isUnary) KevalBothOperator(resource.binary, operator as KevalUnaryOperator)
+                else KevalBothOperator(operator as KevalBinaryOperator, resource.unary)
 
             else -> resources[symbol.toString()] = operator
         }
