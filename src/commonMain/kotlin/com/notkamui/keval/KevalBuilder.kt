@@ -47,7 +47,7 @@ class KevalBuilder internal constructor(
     fun function(definition: FunctionBuilder.() -> Unit): KevalBuilder = apply {
         val fn = FunctionBuilder().apply(definition)
         validateFunction(fn.name, fn.arity, fn.implementation)
-        resources[fn.name!!] = KevalFunction(fn.arity!!, fn.implementation!!)
+        resources[fn.name!!] = KevalFunction(fn.arity, fn.implementation!!)
     }
 
     /**
@@ -87,8 +87,7 @@ class KevalBuilder internal constructor(
     private fun validateFunction(name: String?, arity: Int?, implementation: Any?) {
         requireNotNull(name) { "name is not set" }
         requireNotNull(implementation) { "implementation is not set" }
-        requireNotNull(arity) { "arity is not set" }
-        require(arity >= 0) { "function's arity must always be positive or 0" }
+        require(arity == null ||arity >= 0) { "function's arity must always be positive or 0" }
         require(name.isFunctionOrConstantName()) { "a function's name cannot start with a digit and must contain only letters, digits or underscores: $name" }
     }
 
@@ -211,7 +210,7 @@ class KevalBuilder internal constructor(
          * Builder representation of a function.
          *
          * @property name The identifier which represents the function.
-         * @property arity The arity of the function (how many arguments it takes).
+         * @property arity The arity of the function (how many arguments it takes), flexible if null.
          * @property implementation The actual implementation of the function.
          */
         data class FunctionBuilder(

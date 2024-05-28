@@ -20,7 +20,7 @@ Maven
   <dependency>
     <groupId>com.notkamui.libs</groupId>
     <artifactId>keval</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
   </dependency>
 </dependencies>
 ```
@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-  implementation("com.notkamui.libs:keval:1.0.1")
+  implementation("com.notkamui.libs:keval:1.0.2")
 }
 ```
 
