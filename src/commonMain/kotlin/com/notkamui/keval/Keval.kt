@@ -59,14 +59,14 @@ class Keval internal constructor(private val resources: Map<String, KevalOperato
      * Adds a function to this Keval instance.
      *
      * @param name The name of the function.
-     * @param arity The number of arguments the function takes.
+     * @param arity The number of arguments the function takes. `null` if the function should be variadic.
      * @param implementation The implementation of the function.
      * @return This Keval instance.
      * @throws KevalDSLException If one of the fields isn't set properly.
      */
     fun withFunction(
         name: String,
-        arity: Int,
+        arity: Int? = null,
         implementation: (DoubleArray) -> Double
     ): Keval = KevalBuilder(resources)
         .function {

@@ -31,11 +31,11 @@ internal data class KevalBothOperator(
 /**
  * Represents a function
  *
- * @property arity is the arity of the function (how many arguments it takes)
+ * @property arity is the arity of the function (how many arguments it takes). If null, the function is variadic
  * @property implementation is the actual implementation of the function
  */
 internal data class KevalFunction(
-    val arity: Int,
+    val arity: Int?,
     val implementation: (DoubleArray) -> Double
 ) : KevalOperator
 

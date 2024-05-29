@@ -210,6 +210,31 @@ class DLSTest {
     }
 
     @Test
+    fun checkFlexibleArity() {
+        val k = Keval.create {
+            includeDefault()
+            function {
+                name = "sum"
+                implementation = { args -> args.sum() }
+            }
+        }
+        assertEquals(181.5, k.eval("sum(1,100,80.5)"), "sum(1,100,80.5)")
+    }
+
+    @Test
+    fun checkFlexibleArityWithZeroArgs() {
+        val k = Keval.create {
+            includeDefault()
+            function {
+                name = "sum"
+                implementation = { args -> args.sum() }
+            }
+        }
+        assertEquals(0.0, k.eval("sum()"), "sum()")
+    }
+
+
+    @Test
     fun checkOverrideAnOperatorShouldNotFail() {
         val k = Keval.create {
             includeDefault()
