@@ -2,10 +2,14 @@
 
 ### Added
 
-- Introduced changelog
+- Introduced changelog file (for previous changelogs, check the [Releases page](https://github.com/notKamui/Keval/releases)
 
 ### Changed
 
-- Functions now supports flexible arity
+#### Non-breaking
+
+- Functions now supports flexible arity ([#46](https://github.com/notKamui/Keval/pull/46) by [@jindraregal](https://github.com/jindraregal))
+
+#### Breaking
 
 ### Fixed
