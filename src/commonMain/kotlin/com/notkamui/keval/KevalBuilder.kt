@@ -210,7 +210,7 @@ class KevalBuilder internal constructor(
          * Builder representation of a function.
          *
          * @property name The identifier which represents the function.
-         * @property arity The arity of the function (how many arguments it takes), flexible if null.
+         * @property arity The arity of the function (how many arguments it takes). If null, the function is variadic
          * @property implementation The actual implementation of the function.
          */
         data class FunctionBuilder(
