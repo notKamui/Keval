@@ -100,7 +100,7 @@ properly, with a DSL (Domain Specific Language):
 - A **function** is defined by:
   - its **name** (a non-empty `String` identifier, that doesn't start with a digit, and only contains letters, digits or
     underscores)
-  - its **arity**/number of arguments (a positive (or 0) `Int`)
+  - its **arity**/number of arguments (a positive (or 0) `Int` or null if the function can take any number of arguments)
   - its **implementation** (a function `(DoubleArray) -> Double`)
 - A **constant** is defined by:
   - its **name** (a non-empty `String` identifier, that doesn't start with a digit, and only contains letters, digits or
@@ -142,6 +142,11 @@ Keval.create { // builder instance
         name = "max"
         arity = 2
         implementation = { args -> max(args[0], args[1]) }
+    }
+  
+    function { // this function adds a function with flexible amount of arguments
+        name = "sum"
+        implementation = { args -> args.maxOrNull() ?: 0.0 }
     }
   
     constant { // this function adds a constant ; you can call it several times
