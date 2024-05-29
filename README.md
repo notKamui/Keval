@@ -177,6 +177,11 @@ Keval.create { // builder instance
         implementation = { args -> max(args[0], args[1]) }
     }
   
+    function { // this function adds a function with flexible amount of arguments
+        name = "sum"
+        implementation = { args -> args.maxOrNull() ?: 0.0 }
+    }
+  
     constant {
         name = "PHI"
         value = 1.618
