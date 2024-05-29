@@ -94,7 +94,7 @@ internal class Parser(
         val args = mutableListOf<Node>()
         while (currentTokenOrNull != ")") {
             args.add(expression())
-            if (args.size > op.arity) {
+            if (op.arity != null && args.size > op.arity) {
                 throw KevalInvalidExpressionException(
                     tokensToString,
                     currentPos,
@@ -106,7 +106,7 @@ internal class Parser(
             }
         }
         consume(")")
-        if (args.size < op.arity) {
+        if (op.arity != null && args.size < op.arity) {
             throw KevalInvalidExpressionException(
                 tokensToString,
                 currentPos,
