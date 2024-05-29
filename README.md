@@ -100,7 +100,8 @@ properly, with a DSL (Domain Specific Language):
 - A **function** is defined by:
   - its **name** (a non-empty `String` identifier, that doesn't start with a digit, and only contains letters, digits or
     underscores)
-  - its **arity**/number of arguments (a positive (or 0) `Int` or null if the function can take any number of arguments)
+  - its **arity**/number of arguments (a positive (or 0) `Int` or null if the function can take any number of arguments,
+    also called a *variadic function*)
   - its **implementation** (a function `(DoubleArray) -> Double`)
 - A **constant** is defined by:
   - its **name** (a non-empty `String` identifier, that doesn't start with a digit, and only contains letters, digits or
@@ -144,9 +145,9 @@ Keval.create { // builder instance
         implementation = { args -> max(args[0], args[1]) }
     }
   
-    function { // this function adds a function with flexible amount of arguments
+    function { // this function adds a variadic aggregation (no arity) ; you can call it several times
         name = "sum"
-        implementation = { args -> args.maxOrNull() ?: 0.0 }
+        implementation = { args -> args.sum() }
     }
   
     constant { // this function adds a constant ; you can call it several times
@@ -177,9 +178,9 @@ Keval.create { // builder instance
         implementation = { args -> max(args[0], args[1]) }
     }
   
-    function { // this function adds a function with flexible amount of arguments
+    function {
         name = "sum"
-        implementation = { args -> args.maxOrNull() ?: 0.0 }
+        implementation = { args -> args.sum() }
     }
   
     constant {
@@ -210,6 +211,9 @@ val kvl = Keval().create {}
         "max", // name
         2 // arity
     ) { max(it[0], it[1]) } // implementation
+    .withFunction( // includes a new variadic function
+        "sum", // name
+    ) { it.sum() } // implementation
     .withConstant( // includes a new constant
         "PHI", // name
         1.618 // value
