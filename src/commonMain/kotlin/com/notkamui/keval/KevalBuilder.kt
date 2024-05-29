@@ -87,7 +87,7 @@ class KevalBuilder internal constructor(
     private fun validateFunction(name: String?, arity: Int?, implementation: Any?) {
         requireNotNull(name) { "name is not set" }
         requireNotNull(implementation) { "implementation is not set" }
-        require(arity == null ||arity >= 0) { "function's arity must always be positive or 0" }
+        require(arity == null || arity >= 0) { "function's arity must always be positive or 0" }
         require(name.isFunctionOrConstantName()) { "a function's name cannot start with a digit and must contain only letters, digits or underscores: $name" }
     }
 
