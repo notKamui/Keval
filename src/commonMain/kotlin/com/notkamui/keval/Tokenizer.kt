@@ -86,14 +86,13 @@ internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in 
  * @throws KevalInvalidSymbolException if the expression contains an invalid symbol
  */
 internal fun String.tokenize(symbolsSet: Map<String, KevalOperator>): List<String> =
-    TOKENIZER_REGEX.splitToSequence(this)
+    TOKENIZER_REGEX.findAll(this)
+        .map { it.value }
         .filter(String::isNotBlank)
         .map { SANITIZE_REGEX.replace(it, "") }
         .toList()
         .normalizeTokens(symbolsSet)
 
-private const val LIMITS = """[^\w.]|[ ,()]"""
-
 private val SANITIZE_REGEX = """\s+""".toRegex()
 
-private val TOKENIZER_REGEX = """(?<=($LIMITS))|(?=($LIMITS))|(?<=\d)(?=[^\d.])|(?<=[^.\w])(?=\d)""".toRegex()
+private val TOKENIZER_REGEX = """(\d+\.\d+|\d+|[a-zA-Z_]\w*|[^\w\s])""".toRegex()
