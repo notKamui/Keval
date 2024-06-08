@@ -1,3 +1,17 @@
+## [1.1.1]
+
+### Added
+
+### Changed
+
+#### Non-breaking
+
+#### Breaking
+
+### Fixed
+
+- Constant name tokenization used to fail for names with multiple digits and underscores, doesn't anymore ([#49](https://github.com/notKamui/Keval/pull/49) by [@smelfungus](https://github.com/smelfungus))
+
 ## [1.1.0]
 
 ### Added
