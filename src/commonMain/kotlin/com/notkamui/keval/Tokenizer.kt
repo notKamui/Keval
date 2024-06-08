@@ -7,8 +7,8 @@ private enum class TokenType {
 private fun shouldAssumeMul(tokenType: TokenType): Boolean =
     tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
 
-// normalize tokens to be of specific form (add product symbols where they should be assumed and enclose every parameter of a function in parentheses)
-private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>): List<String> {
+// normalize tokens to be of specific form (add product symbols where they should be assumed)
+private fun Sequence<String>.normalizeTokens(symbols: Map<String, KevalOperator>): List<String> {
     var currentPos = 0
     var prevToken = TokenType.FIRST
     var parenthesesCount = 0
@@ -47,12 +47,12 @@ private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>): L
                     ret.add(token)
                 } else {
                     throw KevalInvalidSymbolException(
-                        token, this.joinToString("") { it }, currentPos, "comma can only be used in the context of a function"
+                        token, joinToString(""), currentPos, "comma can only be used in the context of a function"
                     )
                 }
             }
 
-            else -> throw KevalInvalidSymbolException(token, this.joinToString("") { it }, currentPos)
+            else -> throw KevalInvalidSymbolException(token, joinToString(""), currentPos)
         }
         currentPos += token.length
     }
@@ -66,7 +66,7 @@ private fun List<String>.normalizeTokens(symbols: Map<String, KevalOperator>): L
  * @return true if the string is numeric, false otherwise
  */
 internal fun String.isNumeric(): Boolean {
-    this.toDoubleOrNull() ?: return false
+    toDoubleOrNull() ?: return false
     return true
 }
 
@@ -87,10 +87,9 @@ internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in 
  */
 internal fun String.tokenize(symbolsSet: Map<String, KevalOperator>): List<String> =
     TOKENIZER_REGEX.findAll(this)
-        .map { it.value }
+        .map(MatchResult::value)
         .filter(String::isNotBlank)
         .map { SANITIZE_REGEX.replace(it, "") }
-        .toList()
         .normalizeTokens(symbolsSet)
 
 private val SANITIZE_REGEX = """\s+""".toRegex()
