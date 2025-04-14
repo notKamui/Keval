@@ -247,4 +247,27 @@ class DLSTest {
         }
         assertEquals(3.0, k.eval("1+2"), "1+2")
     }
+
+    @Test
+    fun checkLogicalOperations() {
+        val k = Keval.create {
+            includeDefault()
+            includeLogicalOperators()
+            function {
+                name = "isPositive"
+                arity = 1
+                implementation = { args -> if (args[0] > 0.0) 1.0 else 0.0 }
+            }
+            binaryOperator {
+                symbol = '#'
+                implementation = { a, b -> if (a > b) 1.0 else 0.0 }
+                precedence = 3
+                isLeftAssociative = true
+            }
+        }
+
+        val expr = "((2 > 1) & ne(4, 3)) | (isPositive(-5) = 1) | (10 # 5)"
+        println(expr.replace(" ", "")[10])
+        assertEquals(1.0, k.eval(expr), expr)
+    }
 }
