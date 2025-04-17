@@ -38,6 +38,9 @@ private fun Sequence<String>.normalizeTokens(symbols: Map<String, KevalOperator>
             }
 
             token == ")" -> TokenType.RPAREN.also {
+                if (functionAtCount.last() == parenthesesCount) {
+                    functionAtCount.removeLast()
+                }
                 parenthesesCount -= 1
                 ret.add(token)
             }

@@ -45,4 +45,12 @@ class ASTTest {
         val node = ValueNode(9.0)
         assertEquals(9.0, node.eval())
     }
+
+    @Test
+    fun testNestedFunctionNodes() {
+        val node1 = FunctionNode({ a -> a.sum() }, listOf(ValueNode(3.0), ValueNode(4.0)))
+        val node2 = FunctionNode({ a -> a.sum() }, listOf(node1, ValueNode(5.0)))
+        val mainNode = FunctionNode({ a -> a.sum() }, listOf(node2, node1))
+        assertEquals(19.0, mainNode.eval())
+    }
 }

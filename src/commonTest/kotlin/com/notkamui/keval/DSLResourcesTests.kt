@@ -266,7 +266,7 @@ class DLSTest {
             }
         }
 
-        /*val expr = """
+        val expr = """
             and(
                 not(lt(5, 3)),
                 or(
@@ -278,7 +278,7 @@ class DLSTest {
                 ),
                 nand(
                     ge(5, 5),
-                    le(3, 4)
+                    not(le(3, 4))
                 ),
                 nor(
                     imply(1, 0),
@@ -286,8 +286,7 @@ class DLSTest {
                 ),
                 xnor(1, 1)
             )
-        """.trimIndent()*/
-        val expr = "and(not(lt(1, 2)), 1)"
+        """.trimIndent()
         assertEquals(1.0, k.eval(expr), expr)
     }
 }
