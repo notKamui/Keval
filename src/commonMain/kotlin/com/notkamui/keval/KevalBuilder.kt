@@ -18,13 +18,6 @@ class KevalBuilder internal constructor(
     }
 
     /**
-     * Includes the logical operators to the current Keval instance.
-     */
-    fun includeLogicalOperators(): KevalBuilder = apply {
-        resources += LOGICAL_OPERATORS
-    }
-
-    /**
      * Defines a binary operator for the current Keval instance.
      *
      * @param definition A lambda function that configures a BinaryOperatorBuilder instance.
@@ -180,6 +173,23 @@ class KevalBuilder internal constructor(
             "floor" to KevalFunction(1) { floor(it[0]) },
             "round" to KevalFunction(1) { round(it[0]) },
 
+            // logical functions
+            "not" to KevalFunction(1) { booleanToDouble(!doubleToBoolean(it[0])) },
+            "and" to KevalFunction(null) { it.reduceBoolean { a, b -> a && b } },
+            "nand" to KevalFunction(null) { it.reduceBoolean(true) { a, b -> a && b } },
+            "or" to KevalFunction(null) { it.reduceBoolean { a, b -> a || b } },
+            "nor" to KevalFunction(null) { it.reduceBoolean(true) { a, b -> a || b } },
+            "xor" to KevalFunction(null) { it.reduceBoolean { a,  b -> a xor b } },
+            "xnor" to KevalFunction(null) { it.reduceBoolean(true) { a, b -> a xor b } },
+            "imply" to KevalFunction(2) { booleanOperation(it) { a, b -> !a || b } },
+            "nimply" to KevalFunction(2) { booleanOperation(it) { a, b -> a && !b } },
+            "eq" to KevalFunction(null) { booleanToDouble(it.all { e -> e == it[0] }) },
+            "ne" to KevalFunction(null) { booleanToDouble(it.distinct().size == it.size) },
+            "gt" to KevalFunction(2) { booleanToDouble(it[0] > it[1]) },
+            "lt" to KevalFunction(2) { booleanToDouble(it[0] < it[1]) },
+            "ge" to KevalFunction(2) { booleanToDouble(it[0] >= it[1]) },
+            "le" to KevalFunction(2) { booleanToDouble(it[0] <= it[1]) },
+
             // constants
             "PI" to KevalConstant(PI),
             "e" to KevalConstant(E)
@@ -187,70 +197,17 @@ class KevalBuilder internal constructor(
 
         private fun doubleToBoolean(value: Double) = value != 0.0
         private fun booleanToDouble(value: Boolean) = if (value) 1.0 else 0.0
-        private fun booleanOperation(a: Double, b: Double, operation: (Boolean, Boolean) -> Boolean) =
-            booleanToDouble(operation(doubleToBoolean(a), doubleToBoolean(b)))
-
-        val LOGICAL_OPERATORS: Map<String, KevalOperator> = mapOf(
-            // unary operators
-            "!" to KevalUnaryOperator(true) { booleanToDouble(!doubleToBoolean(it)) },
-
-            // binary operators
-            // we probably should increase the precedence of all operators in favor of & and |
-            "&" to KevalBinaryOperator(1, true) { a, b ->
-                booleanOperation(a, b) { x, y ->
-                    x && y
+        private fun booleanOperation(array: DoubleArray, operation: (Boolean, Boolean) -> Boolean) =
+            booleanToDouble(operation(doubleToBoolean(array[0]), doubleToBoolean(array[1])))
+        private fun DoubleArray.viaBoolean(operation: List<Boolean>.() -> Boolean) =
+            booleanToDouble(operation(map(::doubleToBoolean)))
+        private fun DoubleArray.reduceBoolean(invert: Boolean = false, operation: (Boolean, Boolean) -> Boolean) =
+            viaBoolean {
+                reduce(operation).let {
+                    if (invert) !it
+                    else it
                 }
-            },
-            "|" to KevalBinaryOperator(1, true) { a, b ->
-                booleanOperation(a, b) { x, y ->
-                    x || y
-                }
-            },
-            "=" to KevalBinaryOperator(0, true) { a, b ->
-                booleanOperation(a, b) { x, y ->
-                    x == y
-                }
-            },
-            ">" to KevalBinaryOperator(0, true) { a, b ->
-                booleanToDouble(a > b)
-            },
-            "<" to KevalBinaryOperator(0, true) { a, b ->
-                booleanToDouble(a < b)
-            },
-
-            // functions
-            "not" to KevalFunction(1) { booleanToDouble(!doubleToBoolean(it[0])) },
-            "and" to KevalFunction(2) {
-                booleanOperation(it[0], it[1]) { x, y -> x && y }
-            },
-            "or" to KevalFunction(2) {
-                booleanOperation(it[0], it[1]) { x, y -> x || y }
-            },
-            "nor" to KevalFunction(2) {
-                booleanOperation(it[0], it[1]) { x, y -> !(x || y) }
-            },
-            "xor" to KevalFunction(2) {
-                booleanOperation(it[0], it[1]) { x, y -> (x && !y) || (!x && y) }
-            },
-            "ne" to KevalFunction(2) {
-                booleanOperation(it[0], it[1]) { x, y -> x != y }
-            },
-            "eq" to KevalFunction(2) {
-                booleanOperation(it[0], it[1]) { x, y -> x == y }
-            },
-            "gt" to KevalFunction(2) {
-                booleanToDouble(it[0] > it[1])
-            },
-            "lt" to KevalFunction(2) {
-                booleanToDouble(it[0] < it[1])
-            },
-            "ge" to KevalFunction(2) {
-                booleanToDouble(it[0] >= it[1])
-            },
-            "le" to KevalFunction(2) {
-                booleanToDouble(it[0] <= it[1])
-            },
-        )
+            }
 
         /**
          * Builder representation of a binary operator.

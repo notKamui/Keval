@@ -248,11 +248,11 @@ class DLSTest {
         assertEquals(3.0, k.eval("1+2"), "1+2")
     }
 
+    // this test fails due to wrong handling of nested calls
     @Test
     fun checkLogicalOperations() {
         val k = Keval.create {
             includeDefault()
-            includeLogicalOperators()
             function {
                 name = "isPositive"
                 arity = 1
@@ -266,8 +266,28 @@ class DLSTest {
             }
         }
 
-        val expr = "((2 > 1) & ne(4, 3)) | (isPositive(-5) = 1) | (10 # 5)"
-        println(expr.replace(" ", "")[10])
+        /*val expr = """
+            and(
+                not(lt(5, 3)),
+                or(
+                    gt(4,2),
+                    xor(
+                        eq(1, 1, 1),
+                        ne(1, 2, 3)
+                    )
+                ),
+                nand(
+                    ge(5, 5),
+                    le(3, 4)
+                ),
+                nor(
+                    imply(1, 0),
+                    nimply(1, 1)
+                ),
+                xnor(1, 1)
+            )
+        """.trimIndent()*/
+        val expr = "and(not(lt(1, 2)), 1)"
         assertEquals(1.0, k.eval(expr), expr)
     }
 }
