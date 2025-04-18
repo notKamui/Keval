@@ -79,6 +79,22 @@ Keval has support for functions of variable arity:
 - Ceiling `ceil(expr)` (where 'expr' is an expression)
 - Floor `floor(expr)` (where 'expr' is an expression)
 - Round `round(expr)` (where 'expr' is an expression)
+- Built-in boolean operations (0.0 is equivalent to false, anything else is equivalent to true):
+  - Invert `not(bool)` (where 'bool' is a boolean)
+  - And `and(bool...)` (where 'bool...' is any number of booleans)
+  - Not And `nand(bool...)` (where 'bool...' is any number of booleans)
+  - Or `or(bool...)` (where 'bool...' is any number of booleans)
+  - Not Or `nor(bool...)` (where 'bool...' is any number of booleans)
+  - Exclusive Or `xor(bool...)` (where 'bool...' is any number of booleans)
+  - Exlusive Not Or `xnor(bool...)` (where 'bool...' is any number of booleans)
+  - Implies `imply(bool_a, bool_b)` (where 'bool_a' and 'bool_b' are booleans)
+  - Does Not Imply `nimply(bool_a, bool_b)` (where 'bool_a' and 'bool_b' are booleans)
+  - Equals `eq(expr...)` (where 'expr...' is any number of expressions; returns a boolean)
+  - Does Not Equal `ne(expr...)` (where 'expr...' is any number of expressions; returns a boolean)
+  - Greater Than `gt(expr_a, expr_b)` (where 'expr_a' and 'expr_b' are expressions; returns a boolean)
+  - Greater Or Equal To `ge(expr_a, expr_b)` (where 'expr_a' and 'expr_b' are expressions; returns a boolean)
+  - Less Than `lt(expr_a, expr_b)` (where 'expr_a' and 'expr_b' are expressions; returns a boolean)
+  - Less Or Equal To `le(expr_a, expr_b)` (where 'expr_a' and 'expr_b' are expressions; returns a boolean)
 
 Keval has support for constants, it has two built-in constant:
 
