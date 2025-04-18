@@ -173,10 +173,41 @@ class KevalBuilder internal constructor(
             "floor" to KevalFunction(1) { floor(it[0]) },
             "round" to KevalFunction(1) { round(it[0]) },
 
+            // logical functions
+            "not" to KevalFunction(1) { booleanToDouble(!doubleToBoolean(it[0])) },
+            "and" to KevalFunction(null) { it.reduceBoolean { a, b -> a && b } },
+            "nand" to KevalFunction(null) { it.reduceBoolean(true) { a, b -> a && b } },
+            "or" to KevalFunction(null) { it.reduceBoolean { a, b -> a || b } },
+            "nor" to KevalFunction(null) { it.reduceBoolean(true) { a, b -> a || b } },
+            "xor" to KevalFunction(null) { it.reduceBoolean { a,  b -> a xor b } },
+            "xnor" to KevalFunction(null) { it.reduceBoolean(true) { a, b -> a xor b } },
+            "imply" to KevalFunction(2) { booleanOperation(it) { a, b -> !a || b } },
+            "nimply" to KevalFunction(2) { booleanOperation(it) { a, b -> a && !b } },
+            "eq" to KevalFunction(null) { booleanToDouble(it.all { e -> e == it[0] }) },
+            "ne" to KevalFunction(null) { booleanToDouble(it.distinct().size == it.size) },
+            "gt" to KevalFunction(2) { booleanToDouble(it[0] > it[1]) },
+            "lt" to KevalFunction(2) { booleanToDouble(it[0] < it[1]) },
+            "ge" to KevalFunction(2) { booleanToDouble(it[0] >= it[1]) },
+            "le" to KevalFunction(2) { booleanToDouble(it[0] <= it[1]) },
+
             // constants
             "PI" to KevalConstant(PI),
             "e" to KevalConstant(E)
         )
+
+        private fun doubleToBoolean(value: Double) = value != 0.0
+        private fun booleanToDouble(value: Boolean) = if (value) 1.0 else 0.0
+        private fun booleanOperation(array: DoubleArray, operation: (Boolean, Boolean) -> Boolean) =
+            booleanToDouble(operation(doubleToBoolean(array[0]), doubleToBoolean(array[1])))
+        private fun DoubleArray.viaBoolean(operation: List<Boolean>.() -> Boolean) =
+            booleanToDouble(operation(map(::doubleToBoolean)))
+        private fun DoubleArray.reduceBoolean(invert: Boolean = false, operation: (Boolean, Boolean) -> Boolean) =
+            viaBoolean {
+                reduce(operation).let {
+                    if (invert) !it
+                    else it
+                }
+            }
 
         /**
          * Builder representation of a binary operator.
