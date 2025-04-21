@@ -1,6 +1,7 @@
 package com.notkamui.keval
 
 import kotlin.math.*
+import kotlin.random.Random
 
 /**
  * This class is used to build a Keval instance with custom operators, functions, and constants.
@@ -156,9 +157,11 @@ class KevalBuilder internal constructor(
 
             // functions
             "neg" to KevalFunction(1) { -it[0] },
+            "sign" to KevalFunction(1) { if (it[0] < 0) -1.0 else if (it[0] > 0) 1.0 else 0.0 },
             "abs" to KevalFunction(1) { it[0].absoluteValue },
             "sqrt" to KevalFunction(1) { sqrt(it[0]) },
             "cbrt" to KevalFunction(1) { cbrt(it[0]) },
+            "nthrt" to KevalFunction(2) { it[1].pow(1 / it[0]) },
             "exp" to KevalFunction(1) { exp(it[0]) },
             "ln" to KevalFunction(1) { ln(it[0]) },
             "log10" to KevalFunction(1) { log10(it[0]) },
@@ -172,8 +175,40 @@ class KevalBuilder internal constructor(
             "ceil" to KevalFunction(1) { ceil(it[0]) },
             "floor" to KevalFunction(1) { floor(it[0]) },
             "round" to KevalFunction(1) { round(it[0]) },
+            "trunc" to KevalFunction(1) { it[0].toInt().toDouble() },
+            "min" to KevalFunction(null) { it.min() },
+            "max" to KevalFunction(null) { it.max() },
+            "sum" to KevalFunction(null) { it.sum() },
+            "avg" to KevalFunction(null) { it.average() },
+            "median" to KevalFunction(null) { it.sorted()[it.size / 2] },
+            "percentile" to KevalFunction(null) {
+                if (it.size > 1) throw KevalInvalidArgumentException("percentile requires at least 2 values")
+                val perc = it[0]
+                if (perc in 0.0..100.0) throw KevalInvalidArgumentException("percentile must be between 0 and 100")
+                val sorted = it.sorted()
+                val index = (perc / 100 * (sorted.size - 1)).toInt()
+                sorted[index]
+            },
+            "rand" to KevalFunction(null) {
+                when (it.size) {
+                    0 -> Random.Default.nextDouble()
+                    1 -> (0..it[0].toInt()).random().toDouble()
+                    else -> it.random()
+                }
+            },
+            "randRange" to KevalFunction(3) {
+                val start = it[0]
+                val end = it[1]
+                val step = it[2]
+
+                if (step > 0) throw KevalInvalidArgumentException("step must be greater than 0")
+                val numberOfSteps = ((end - start) / step).toInt()
+                val randomStepIndex = Random.nextInt(0, numberOfSteps + 1)
+                start + randomStepIndex * step
+            },
 
             // logical functions
+            "bool" to KevalFunction(1) { booleanToDouble(it[0] != 0.0) },
             "not" to KevalFunction(1) { booleanToDouble(!doubleToBoolean(it[0])) },
             "and" to KevalFunction(null) { it.reduceBoolean { a, b -> a && b } },
             "nand" to KevalFunction(null) { it.reduceBoolean(true) { a, b -> a && b } },
