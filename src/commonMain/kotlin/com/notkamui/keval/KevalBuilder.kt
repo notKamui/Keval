@@ -182,11 +182,11 @@ class KevalBuilder internal constructor(
             "avg" to KevalFunction(null) { it.average() },
             "median" to KevalFunction(null) { it.sorted()[it.size / 2] },
             "percentile" to KevalFunction(null) {
-                if (it.size > 1) throw KevalInvalidArgumentException("percentile requires at least 2 values")
+                if (it.size <= 1) throw KevalInvalidArgumentException("percentile requires at least 2 values")
                 val perc = it[0]
-                if (perc in 0.0..100.0) throw KevalInvalidArgumentException("percentile must be between 0 and 100")
+                if (perc !in 0.0..100.0) throw KevalInvalidArgumentException("percentile must be between 0 and 100")
                 val sorted = it.sorted()
-                val index = (perc / 100 * (sorted.size - 1)).toInt()
+                val index = ((perc / 100) * sorted.size).toInt()
                 sorted[index]
             },
             "rand" to KevalFunction(null) {
