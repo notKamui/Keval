@@ -47,7 +47,10 @@ private fun Sequence<String>.normalizeTokens(symbols: Map<String, KevalOperator>
                     ret.add(token)
                 } else {
                     throw KevalInvalidSymbolException(
-                        token, joinToString(""), currentPos, "comma can only be used in the context of a function"
+                        token,
+                        joinToString(""),
+                        currentPos,
+                        "comma can only be used in the context of a function"
                     )
                 }
             }
@@ -85,13 +88,20 @@ internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in 
  * @return the list of tokens
  * @throws KevalInvalidSymbolException if the expression contains an invalid symbol
  */
-internal fun String.tokenize(symbolsSet: Map<String, KevalOperator>): List<String> =
-    TOKENIZER_REGEX.findAll(this)
+internal fun String.tokenize(symbolsSet: Map<String, KevalOperator>): List<String> {
+    val constantsSet = symbolsSet.filter { it.value is KevalConstant }
+
+    val tokenizerRegex = if (constantsSet.isNotEmpty()) {
+        val constantsRegexString = constantsSet.keys.joinToString(separator = "|")
+        """(\d+\.\d+|\d+|$constantsRegexString|[a-zA-Z_]\w*|[^\w\s])"""
+    } else {
+        """(\d+\.\d+|\d+|[a-zA-Z_]\w*|[^\w\s])"""
+    }.toRegex()
+
+    return tokenizerRegex.findAll(this)
         .map(MatchResult::value)
         .filter(String::isNotBlank)
         .map { SANITIZE_REGEX.replace(it, "") }
         .normalizeTokens(symbolsSet)
-
+}
 private val SANITIZE_REGEX = """\s+""".toRegex()
-
-private val TOKENIZER_REGEX = """(\d+\.\d+|\d+|[a-zA-Z_]\w*|[^\w\s])""".toRegex()

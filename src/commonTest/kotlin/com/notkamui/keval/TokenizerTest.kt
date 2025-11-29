@@ -103,4 +103,24 @@ class TokenizerTest {
         val nodes = "f(((1)))".tokenize(k.resourcesView())
         assertEquals("f(((1)))", nodes.joinToString(separator = ""))
     }
+
+    @Test
+    fun symbolsAndNumbers() {
+        listOf(
+            listOf("PI","9"),
+            listOf("9", "e"),
+            listOf("PI", "e"),
+            listOf("PI", "PI"),
+            listOf("PI", "e", "e", "PI")
+        ).forEach { tokenList ->
+            // Intersperses the assumed "*"
+            val expected = tokenList.dropLast(1).flatMap { listOf(it, "*") } + tokenList.last()
+            assertEquals(
+                expected,
+                tokenList
+                    .joinToString(separator = "")
+                    .tokenize(KevalBuilder.DEFAULT_RESOURCES)
+            )
+        }
+    }
 }
