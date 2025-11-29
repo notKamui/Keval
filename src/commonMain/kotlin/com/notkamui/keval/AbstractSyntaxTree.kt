@@ -64,7 +64,7 @@ internal interface Node {
 }
 
 /**
- * An binary operator node
+ * A binary operator node
  *
  * @property left is its left child
  * @property op is the actual operator
