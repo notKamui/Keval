@@ -103,4 +103,28 @@ class TokenizerTest {
         val nodes = "f(((1)))".tokenize(k.resourcesView())
         assertEquals("f(((1)))", nodes.joinToString(separator = ""))
     }
+
+    @Test
+    fun checkNestedFunctions() {
+        val k = Keval.create {
+            includeDefault()
+            function {
+                name = "f"
+                arity = 1
+                implementation = { args -> args[0] }
+            }
+            function {
+                name = "s"
+                implementation = { args -> args.sum() }
+            }
+            function {
+                name = "a"
+                arity = 2
+                implementation = { args -> args[0] + args[1] }
+            }
+        }
+
+        val nodes = "f(s(a(1,2),3))".tokenize(k.resourcesView())
+        assertEquals("f(s(a(1,2),3))", nodes.joinToString(separator = ""))
+    }
 }
