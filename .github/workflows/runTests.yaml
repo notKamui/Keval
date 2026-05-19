@@ -1,4 +1,4 @@
-#Run tests on every PR and push
+# Run tests on every PR and push
 
 name: Run Tests
 
@@ -18,4 +18,4 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/wrapper-validation-action@v1
       - name: Test with Gradle
-        run: ./gradlew test
+        run: ./gradlew jvmTest
