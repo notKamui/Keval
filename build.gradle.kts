@@ -4,25 +4,19 @@
  * Gradle build file for Keval
  */
 
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+    id("org.jetbrains.kotlin.multiplatform") version "2.1.20"
+    id("maven-publish")
+}
 
 group = "com.notkamui.libs"
 version = "1.1.1"
 
-plugins {
-    kotlin("multiplatform") version "1.9.22"
-    java
-    `maven-publish`
-    signing
-}
-
 repositories {
     mavenCentral()
-}
-
-java {
-    withJavadocJar()
-    withSourcesJar()
 }
 
 kotlin {
@@ -48,36 +42,19 @@ kotlin {
     tvosArm64()
 
     sourceSets {
-        val commonMain by getting {
-        }
         val commonTest by getting {
             dependencies {
-                implementation("org.jetbrains.kotlin:kotlin-test")
-                implementation("org.jetbrains.kotlin:kotlin-test-junit")
+                implementation(kotlin("test"))
             }
         }
     }
 }
 
 tasks {
-    jar {
-        manifest {
-            attributes(
-                mapOf(
-                    "Implementation-Title" to project.name,
-                    "Implementation-Version" to project.version
-                )
-            )
-        }
-    }
-
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
-    withType<JavaCompile> {
-        sourceCompatibility = "1.8"
-        targetCompatibility = "1.8"
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+        }
     }
 
     withType<Wrapper> {
@@ -85,20 +62,15 @@ tasks {
     }
 }
 
-val isSnapshot = version.toString().endsWith("-SNAPSHOT")
-
-val repositoryUrl = if (isSnapshot)
-    "https://oss.sonatype.org/content/repositories/snapshots/"
-else
-    "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+}
 
 publishing {
     publications {
         withType<MavenPublication> {
-            artifactId = artifactId.toLowerCase()
-
-            artifact(tasks.getByName("javadocJar"))
-
+            artifactId = artifactId.lowercase()
+            artifact(javadocJar)
             pom {
                 name.set("Keval")
                 description.set("A Kotlin mini library for mathematical expression string evaluation")
@@ -126,25 +98,8 @@ publishing {
     }
     repositories {
         maven {
-            setUrl(repositoryUrl)
-            credentials {
-                username = project.properties["ossrhUsername"] as String? ?: "Unknown user"
-                password = project.properties["ossrhPassword"] as String? ?: "Unknown user"
-            }
-        }
-        if (!isSnapshot) {
-            maven {
-                name = "GitHubPackages"
-                setUrl("https://maven.pkg.github.com/notKamui/${project.name}")
-                credentials {
-                    username = project.properties["githubUsername"] as String? ?: "Unknown user"
-                    password = project.properties["githubPassword"] as String? ?: "Unknown user"
-                }
-            }
+            name = "stagingDeploy"
+            url = uri(layout.buildDirectory.dir("staging-deploy"))
         }
     }
-}
-
-signing {
-    sign(publishing.publications)
 }
