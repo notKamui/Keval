@@ -65,7 +65,9 @@ mavenPublishing {
 
     publishToMavenCentral()
 
-    signAllPublications()
+    if (project.hasProperty("signingInMemoryKey")) {
+        signAllPublications()
+    }
 
     pom {
         name.set("Keval")
