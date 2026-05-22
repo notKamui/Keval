@@ -91,3 +91,18 @@ mavenPublishing {
         }
     }
 }
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+
+            url = uri("https://maven.pkg.github.com/notKamui/${rootProject.name}")
+
+            credentials {
+                username = project.findProperty("githubPackagesUser") as String? ?: System.getenv("GH_PACKAGES_USER")
+                password = project.findProperty("githubPackagesToken") as String? ?: System.getenv("GH_PACKAGES_TOKEN")
+            }
+        }
+    }
+}
