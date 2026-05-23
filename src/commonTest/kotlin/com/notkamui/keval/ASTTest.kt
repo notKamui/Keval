@@ -12,7 +12,7 @@ class ASTTest {
      */
     @Test
     fun simpleEvalTest() {
-        val operators = KevalNumbers.Double.defaultResources()
+        val operators = KevalNumbers.real.defaultResources()
         val plus = (operators["+"] as? KevalBothOperator<Double>)!!.binary.implementation
         val ast: Node<Double> = BinaryOperatorNode(ValueNode(3.0), plus, ValueNode(2.0))
         assertEquals(ast.eval(), 5.0)

@@ -14,8 +14,8 @@ class GrammarTest {
      */
     @Test
     fun grammarTest() {
-        val operators = KevalNumbers.Double.defaultResources()
-        assertEquals(8.0, "3 + 5 * (2-1)".toAST(KevalNumbers.Double, operators).eval())
+        val operators = KevalNumbers.real.defaultResources()
+        assertEquals(8.0, "3 + 5 * (2-1)".toAST(KevalNumbers.real, operators).eval())
     }
 
     /**

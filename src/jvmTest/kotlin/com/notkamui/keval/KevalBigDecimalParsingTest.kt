@@ -34,29 +34,29 @@ class KevalBigDecimalParsingTest {
 
     @Test
     fun isValidLiteralAcceptsNumericForms() {
-        assertTrue(KevalNumberBigDecimal.isValidLiteral("42"))
-        assertTrue(KevalNumberBigDecimal.isValidLiteral("3.14"))
-        assertTrue(KevalNumberBigDecimal.isValidLiteral("1e10"))
-        assertTrue(KevalNumberBigDecimal.isValidLiteral("-2.5"))
+        assertTrue(KevalNumbers.BigDecimal.isValidLiteral("42"))
+        assertTrue(KevalNumbers.BigDecimal.isValidLiteral("3.14"))
+        assertTrue(KevalNumbers.BigDecimal.isValidLiteral("1e10"))
+        assertTrue(KevalNumbers.BigDecimal.isValidLiteral("-2.5"))
     }
 
     @Test
     fun isValidLiteralRejectsNonNumeric() {
-        assertFalse(KevalNumberBigDecimal.isValidLiteral("abc"))
-        assertFalse(KevalNumberBigDecimal.isValidLiteral(""))
-        assertFalse(KevalNumberBigDecimal.isValidLiteral("1..2"))
+        assertFalse(KevalNumbers.BigDecimal.isValidLiteral("abc"))
+        assertFalse(KevalNumbers.BigDecimal.isValidLiteral(""))
+        assertFalse(KevalNumbers.BigDecimal.isValidLiteral("1..2"))
     }
 
     @Test
     fun parseLiteralMatchesBigDecimalConstructor() {
-        assertEquals(0, BigDecimal("-123.456").compareTo(KevalNumberBigDecimal.parseLiteral("-123.456")))
+        assertEquals(0, BigDecimal("-123.456").compareTo(KevalNumbers.BigDecimal.parseLiteral("-123.456")))
     }
 
     @Test
     fun tokenizePreservesScientificLiteral() {
         val tokens = "1e10 + 2e-3".tokenize(
-            KevalNumberBigDecimal,
-            KevalNumberBigDecimal.defaultResources()
+            KevalNumberBigDecimal.Default,
+            KevalNumberBigDecimal.Default.defaultResources()
         )
         assertEquals(listOf("1e10", "+", "2e-3"), tokens)
     }
@@ -64,8 +64,8 @@ class KevalBigDecimalParsingTest {
     @Test
     fun tokenizeImplicitMultiplication() {
         val tokens = "(2+3)(4+1)".tokenize(
-            KevalNumberBigDecimal,
-            KevalNumberBigDecimal.defaultResources()
+            KevalNumberBigDecimal.Default,
+            KevalNumberBigDecimal.Default.defaultResources()
         )
         assertEquals(listOf("(", "2", "+", "3", ")", "*", "(", "4", "+", "1", ")"), tokens)
     }

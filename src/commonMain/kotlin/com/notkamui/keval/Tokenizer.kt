@@ -4,10 +4,17 @@ private enum class TokenType {
     FIRST, OPERAND, OPERATOR, LPAREN, RPAREN, COMMA,
 }
 
+private val IDENTIFIER_REGEX = Regex("[a-zA-Z_][a-zA-Z0-9_]*")
+
+internal fun String.isIdentifierName(): Boolean =
+    isNotEmpty() && this[0] !in '0'..'9' && IDENTIFIER_REGEX.matches(this)
+
+private fun <N> String.isVariableOperand(symbols: Map<String, KevalOperator<N>>): Boolean =
+    isIdentifierName() && this !in symbols
+
 private fun shouldAssumeMul(tokenType: TokenType): Boolean =
     tokenType == TokenType.OPERAND || tokenType == TokenType.RPAREN
 
-// normalize tokens to be of specific form (add product symbols where they should be assumed)
 private fun <N> Sequence<String>.normalizeTokens(
     number: KevalNumber<N>,
     symbols: Map<String, KevalOperator<N>>,
@@ -19,10 +26,11 @@ private fun <N> Sequence<String>.normalizeTokens(
     val ret = mutableListOf<String>()
     this.forEach { token ->
         prevToken = when {
-            token.isNumeric(number) || symbols[token] is KevalConstant -> TokenType.OPERAND.also {
-                if (shouldAssumeMul(prevToken)) ret.add("*")
-                ret.add(token)
-            }
+            token.isNumeric(number) || symbols[token] is KevalConstant || token.isVariableOperand(symbols) ->
+                TokenType.OPERAND.also {
+                    if (shouldAssumeMul(prevToken)) ret.add("*")
+                    ret.add(token)
+                }
 
             token.isKevalOperator(symbols.keys) -> TokenType.OPERATOR.also {
                 if (shouldAssumeMul(prevToken) && (symbols[token] is KevalConstant || symbols[token] is KevalFunction)) {
@@ -65,30 +73,11 @@ private fun <N> Sequence<String>.normalizeTokens(
     return ret
 }
 
-/**
- * Checks if a string is numeric or not
- *
- * @receiver is the string to check
- * @return true if the string is numeric, false otherwise
- */
 internal fun <N> String.isNumeric(number: KevalNumber<N>): Boolean =
     number.isValidLiteral(this)
 
-/**
- * Checks if a string is a Keval Operator or not
- *
- * @receiver is the string to check
- * @return true if the string is a valid operator, false otherwise
- */
 internal fun String.isKevalOperator(symbolsSet: Set<String>): Boolean = this in symbolsSet
 
-/**
- * Tokenizes a mathematical expression
- *
- * @receiver is the string to tokenize
- * @return the list of tokens
- * @throws KevalInvalidSymbolException if the expression contains an invalid symbol
- */
 internal fun <N> String.tokenize(
     number: KevalNumber<N>,
     symbolsSet: Map<String, KevalOperator<N>>,

@@ -21,7 +21,7 @@ class KevalBigDecimalErrorsTest {
 
     @Test
     fun invalidSymbolThrows() {
-        assertFailsWith<KevalInvalidSymbolException> { "1 + a".kevalBigDecimal() }
+        assertFailsWith<KevalInvalidSymbolException> { "1 + @".kevalBigDecimal() }
     }
 
     @Test
@@ -32,7 +32,7 @@ class KevalBigDecimalErrorsTest {
 
     @Test
     fun unknownFunctionThrows() {
-        assertFailsWith<KevalInvalidSymbolException> { "sin(1)".kevalBigDecimal() }
+        assertFailsWith<KevalUnresolvedVariableException> { "sin(1)".kevalBigDecimal() }
     }
 
     @Test

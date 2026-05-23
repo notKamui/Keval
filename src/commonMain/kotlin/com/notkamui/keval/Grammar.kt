@@ -10,14 +10,14 @@ internal class Parser<N>(
 ) {
     private var currentTokenOrNull: String? = tokens.next()
     private val currentToken: String
-        get() = currentTokenOrNull ?: throw KevalInvalidExpressionException(tokensToString, -1)
+        get() = currentTokenOrNull ?: throw KevalMalformedExpressionException(tokensToString, -1)
 
     private var currentPos = 0
     private var openParenthesesCount = 0
 
     private fun consume(expected: String) {
         if (currentTokenOrNull != expected) {
-            throw KevalInvalidExpressionException(
+            throw KevalMalformedExpressionException(
                 tokensToString,
                 currentPos,
                 "expected $expected but found ${currentTokenOrNull ?: "end of expression"}",
@@ -28,7 +28,7 @@ internal class Parser<N>(
             openParenthesesCount++
         } else if (currentToken == ")") {
             if (openParenthesesCount == 0) {
-                throw KevalInvalidExpressionException(
+                throw KevalMalformedExpressionException(
                     tokensToString,
                     currentPos,
                     "unexpected closing parenthesis"
@@ -95,7 +95,7 @@ internal class Parser<N>(
         while (currentTokenOrNull != ")") {
             args.add(expression())
             if (op.arity != null && args.size > op.arity) {
-                throw KevalInvalidExpressionException(
+                throw KevalMalformedExpressionException(
                     tokensToString,
                     currentPos,
                     "expected ${op.arity} ${"argument".pluralize(op.arity)} but found ${args.size}",
@@ -107,13 +107,13 @@ internal class Parser<N>(
         }
         consume(")")
         if (op.arity != null && args.size < op.arity) {
-            throw KevalInvalidExpressionException(
+            throw KevalMalformedExpressionException(
                 tokensToString,
                 currentPos,
                 "expected ${op.arity} ${"argument".pluralize(op.arity)} but found ${args.size}",
             )
         }
-        return FunctionNode(op.implementation, args)
+        return createFunctionNode(op.implementation, args)
     }
 
     private fun handleConstant(): Node<N> {
@@ -148,21 +148,25 @@ internal class Parser<N>(
             }
         }
         val token = currentToken
-        if (!number.isValidLiteral(token)) {
-            throw KevalInvalidExpressionException(
-                tokensToString,
-                currentPos,
-                "expected number or symbol but found $token",
-            )
+        if (number.isValidLiteral(token)) {
+            consume(currentToken)
+            return ValueNode(number.parseLiteral(token))
         }
-        consume(currentToken)
-        return ValueNode(number.parseLiteral(token))
+        if (token.isIdentifierName()) {
+            consume(currentToken)
+            return VariableNode(token)
+        }
+        throw KevalMalformedExpressionException(
+            tokensToString,
+            currentPos,
+            "expected number or symbol but found $token",
+        )
     }
 
     fun parse(): Node<N> {
         val node = expression()
         if (currentTokenOrNull != null) {
-            throw KevalInvalidExpressionException(
+            throw KevalMalformedExpressionException(
                 tokensToString,
                 currentPos,
                 "unexpected token $currentTokenOrNull"
@@ -179,14 +183,14 @@ internal class Parser<N>(
  * @receiver the string to convert
  * @return the abstract syntax tree
  * @throws KevalInvalidSymbolException if the expression contains an invalid symbol
- * @throws KevalInvalidExpressionException if the expression is invalid (i.e. mismatched parenthesis, missing operand, or empty expression)
+ * @throws KevalMalformedExpressionException if the expression is invalid (i.e. mismatched parenthesis, missing operand, or empty expression)
  */
 internal fun <N> String.toAST(
     number: KevalNumber<N>,
     operators: Map<String, KevalOperator<N>>,
 ): Node<N> {
     if (this.replace("""[()]""".toRegex(), "").isBlank())
-        throw KevalInvalidExpressionException("", -1)
+        throw KevalMalformedExpressionException("", -1)
 
     val tokens = this.tokenize(number, operators)
     val tokensToString = tokens.joinToString("")

@@ -11,7 +11,7 @@ class KevalBigDecimalBuilderTest {
 
     @Test
     fun kevalNumbersBigDecimalEntryPoint() {
-        assertEquals(KevalNumberBigDecimal, KevalNumbers.BigDecimal)
+        assertEquals(KevalNumberBigDecimal.Default, KevalNumbers.BigDecimal)
     }
 
     @Test
@@ -100,7 +100,7 @@ class KevalBigDecimalBuilderTest {
 
     @Test
     fun excludedDoubleOnlyFunctionsNotInDefaults() {
-        val defaults = KevalNumberBigDecimal.defaultResources()
+        val defaults = KevalNumberBigDecimal.Default.defaultResources()
         listOf("sin", "cos", "tan", "sqrt", "ln", "exp", "rand", "!", "PI", "e", "median", "percentile")
             .forEach { name ->
                 assertFalse(name in defaults, "$name should not be in BigDecimal defaults")
@@ -109,7 +109,7 @@ class KevalBigDecimalBuilderTest {
 
     @Test
     fun includedFunctionsAreInDefaults() {
-        val defaults = KevalNumberBigDecimal.defaultResources()
+        val defaults = KevalNumberBigDecimal.Default.defaultResources()
         listOf(
             "+", "-", "*", "/", "%", "^",
             "neg", "abs", "sign", "min", "max", "sum", "avg",

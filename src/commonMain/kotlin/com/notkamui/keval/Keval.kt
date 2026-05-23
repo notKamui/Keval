@@ -9,19 +9,21 @@ import kotlin.jvm.JvmStatic
  */
 class Keval<N> internal constructor(
     private val number: KevalNumber<N>,
-    private val resources: Map<String, KevalOperator<N>>
+    private val resources: Map<String, KevalOperator<N>>,
+    private val operators: Map<String, KevalOperator<N>>,
 ) {
 
-    /**
-     * Creates a new instance which contains a binary operator.
-     *
-     * @param symbol The symbol representing the operator.
-     * @param precedence The precedence of the operator.
-     * @param isLeftAssociative Whether the operator is left associative.
-     * @param implementation The implementation of the operator.
-     * @return This Keval instance.
-     * @throws KevalDSLException If one of the fields isn't set properly.
-     */
+    internal constructor(
+        number: KevalNumber<N>,
+        resources: Map<String, KevalOperator<N>>,
+    ) : this(
+        number = number,
+        resources = resources,
+        operators = resources + (
+            "*" to KevalBinaryOperator(3, true) { a, b -> number.multiply(a, b) }
+            ),
+    )
+
     fun withBinaryOperator(
         symbol: Char,
         precedence: Int,
@@ -36,16 +38,6 @@ class Keval<N> internal constructor(
         }
         .build()
 
-
-    /**
-     * Adds a unary operator to this Keval instance.
-     *
-     * @param symbol The symbol representing the operator.
-     * @param isPrefix Whether the operator is prefix.
-     * @param implementation The implementation of the operator.
-     * @return This Keval instance.
-     * @throws KevalDSLException If one of the fields isn't set properly.
-     */
     fun withUnaryOperator(
         symbol: Char,
         isPrefix: Boolean,
@@ -58,15 +50,6 @@ class Keval<N> internal constructor(
         }
         .build()
 
-    /**
-     * Adds a function to this Keval instance.
-     *
-     * @param name The name of the function.
-     * @param arity The number of arguments the function takes. `null` if the function should be variadic.
-     * @param implementation The implementation of the function.
-     * @return This Keval instance.
-     * @throws KevalDSLException If one of the fields isn't set properly.
-     */
     fun withFunction(
         name: String,
         arity: Int? = null,
@@ -79,14 +62,6 @@ class Keval<N> internal constructor(
         }
         .build()
 
-    /**
-     * Adds a constant to this Keval instance.
-     *
-     * @param name The name of the constant.
-     * @param value The value of the constant.
-     * @return This Keval instance.
-     * @throws KevalDSLException If one of the fields isn't set properly.
-     */
     fun withConstant(
         name: String,
         value: N
@@ -97,48 +72,40 @@ class Keval<N> internal constructor(
         }
         .build()
 
-    /**
-     * Adds the default resources to this Keval instance.
-     *
-     * @return This Keval instance.
-     */
     fun withDefault(): Keval<N> = KevalBuilder(number, resources).includeDefault().build()
 
-    /**
-     * Evaluates a mathematical expression.
-     *
-     * @param mathExpression The mathematical expression to evaluate.
-     * @return The result of the evaluation.
-     * @throws KevalInvalidSymbolException If there's an invalid operator in the expression.
-     * @throws KevalInvalidExpressionException If the expression is invalid (i.e., mismatched parentheses).
-     * @throws KevalZeroDivisionException If a division by zero occurs.
-     */
-    fun eval(
-        mathExpression: String,
-    ): N {
-        val operators = resourcesView()
-        return mathExpression.toAST(number, operators).eval()
+    fun compile(mathExpression: String): CompiledExpression<N> {
+        val root = mathExpression.toAST(number, operators)
+        return CompiledExpression(root, root.collectVariables())
+    }
+
+    fun eval(mathExpression: String): N = eval(mathExpression, emptyMap())
+
+    fun eval(mathExpression: String, bindings: Map<String, N>): N =
+        compile(mathExpression).eval(bindings)
+
+    fun evalOrNull(mathExpression: String): N? = evalOrNull(mathExpression, emptyMap())
+
+    fun evalOrNull(mathExpression: String, bindings: Map<String, N>): N? = try {
+        eval(mathExpression, bindings)
+    } catch (_: KevalException) {
+        null
+    }
+
+    fun evalResult(mathExpression: String): Result<N> = evalResult(mathExpression, emptyMap())
+
+    fun evalResult(mathExpression: String, bindings: Map<String, N>): Result<N> = try {
+        Result.success(eval(mathExpression, bindings))
+    } catch (e: KevalException) {
+        Result.failure(e)
     }
 
     /**
-     * Returns the resources of this [Keval] instance.
-     * The tokenizer assumes multiplication, hence disallowing overriding `*` operator
+     * Returns the operator resources of this [Keval] instance, including the non-overridable `*` operator.
      */
-    fun resourcesView(): Map<String, KevalOperator<N>> =
-        resources + ("*" to requireNotNull(number.defaultResources()["*"]) {
-            "Number type must define a default * operator"
-        })
+    fun resourcesView(): Map<String, KevalOperator<N>> = operators
 
     companion object {
-
-        /**
-         * Creates a new instance of [Keval] with the provided resources.
-         *
-         * @param number The numeric type context for parsing and default resources.
-         * @param generator A lambda function that configures a KevalBuilder instance.
-         * @return The new instance of Keval.
-         * @throws KevalDSLException If one of the fields isn't set properly.
-         */
         @JvmStatic
         fun <N> create(
             number: KevalNumber<N>,
@@ -146,45 +113,18 @@ class Keval<N> internal constructor(
         ): Keval<N> =
             KevalBuilder(number).apply(generator).build()
 
-        /**
-         * Evaluates a mathematical expression using the default Double resources.
-         *
-         * @param mathExpression The mathematical expression to evaluate.
-         * @return The result of the evaluation.
-         * @throws KevalInvalidSymbolException If there's an invalid operator in the expression.
-         * @throws KevalInvalidExpressionException If the expression is invalid (i.e., mismatched parentheses).
-         * @throws KevalZeroDivisionException If a division by zero occurs.
-         */
         @JvmName("evaluate")
         @JvmStatic
-        fun eval(
-            mathExpression: String,
-        ): Double = create(KevalNumbers.Double) { includeDefault() }.eval(mathExpression)
+        fun eval(mathExpression: String): Double =
+            KevalNumbers.defaultRealKeval.eval(mathExpression)
     }
 }
 
-/**
- * Evaluates a mathematical expression using the provided resources.
- *
- * @receiver The mathematical expression to evaluate.
- * @param generator A lambda function that configures a KevalBuilder instance.
- * @return The result of the evaluation.
- * @throws KevalInvalidSymbolException If there's an invalid operator in the expression.
- * @throws KevalInvalidExpressionException If the expression is invalid (i.e., mismatched parentheses).
- * @throws KevalZeroDivisionException If a division by zero occurs.
- * @throws KevalDSLException If one of the fields isn't set properly.
- */
-fun String.keval(
-    generator: KevalBuilder<Double>.() -> Unit
-): Double = Keval.create(KevalNumbers.Double, generator).eval(this)
+fun String.keval(generator: KevalBuilder<Double>.() -> Unit): Double =
+    Keval.create(KevalNumbers.real, generator).eval(this)
 
-/**
- * Evaluates a mathematical expression using the default resources.
- *
- * @receiver The mathematical expression to evaluate.
- * @return The result of the evaluation.
- * @throws KevalInvalidSymbolException If there's an invalid operator in the expression.
- * @throws KevalInvalidExpressionException If the expression is invalid (i.e., mismatched parentheses).
- * @throws KevalZeroDivisionException If a division by zero occurs.
- */
-fun String.keval(): Double = KevalNumbers.Double.eval(this)
+fun String.keval(): Double = KevalNumbers.real.eval(this)
+
+fun String.kevalOrNull(): Double? = KevalNumbers.defaultRealKeval.evalOrNull(this)
+
+fun String.kevalResult(): Result<Double> = KevalNumbers.defaultRealKeval.evalResult(this)
