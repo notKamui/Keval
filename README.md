@@ -20,7 +20,7 @@ Maven
   <dependency>
     <groupId>com.notkamui.libs</groupId>
     <artifactId>keval</artifactId>
-    <version>1.2.0</version>
+    <version>2.0.0</version>
   </dependency>
 </dependencies>
 ```
@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-  implementation("com.notkamui.libs:keval:1.2.0")
+  implementation("com.notkamui.libs:keval:2.0.0")
 }
 ```
 
@@ -147,7 +147,7 @@ Keval.eval("(3+4)(2/8 * 5) % PI") // uses default resources
 
 "(3+4)(2/8 * 5) % PI".keval() // extension ; uses default resources
 
-Keval.create { // builder instance
+Keval.create(KevalNumbers.real) { // builder instance
     includeDefault() // this function includes the built-in resources
     
     binaryOperator { // this function adds a binary operator ; you can call it several times
@@ -220,8 +220,7 @@ many `eval` as you need.
 In concordance with creating a Keval instance, you can also add resources like this:
 
 ```Kotlin
-val kvl = Keval().create {}
-    .withDefault() // includes default resources // it is unnecessary here since Keval() with no DSL already does it
+val kvl = Keval.create(KevalNumbers.real) { includeDefault() }
     .withBinaryOperator( // includes a new binary operator
         ';', // symbol
         3, // precedence
@@ -261,6 +260,86 @@ operator to
 
 In addition, the symbols `(`,`)`,`,` are reserved and trying to create operator using one of those symbols will result with an exception.
 
+## Generic number types
+
+Keval is generic over the numeric result type via [KevalNumber](src/commonMain/kotlin/com/notkamui/keval/KevalNumber.kt). The default is [Double](src/commonMain/kotlin/com/notkamui/keval/KevalNumberDouble.kt) on all platforms (JVM, JS, Native, Android via `commonMain`). Use [KevalNumbers.real](src/commonMain/kotlin/com/notkamui/keval/KevalNumber.kt) as the primary name for the built-in `Double` implementation.
+
+```Kotlin
+// Custom numeric type: implement KevalNumber and pass it to Keval.create
+Keval.create(myNumber) {
+    includeDefault()
+    function {
+        name = "twice"
+        arity = 1
+        implementation = { args -> args[0] + args[0] }
+    }
+}.eval("twice(21)")
+
+// Unified entry points for any number type
+"1 + 2".evalWith(KevalNumbers.real)
+val compiled = "x * 2".compileWith(KevalNumbers.real)
+```
+
+Function implementations take `List<N>` instead of `DoubleArray`. The `String.keval()` extension and `Keval.eval(String)` companion remain `Double`-only shortcuts.
+
+### Compile once, evaluate many times
+
+Parsing is the expensive part. Use [`compile()`](src/commonMain/kotlin/com/notkamui/keval/Keval.kt) or [`String.compileWith()`](src/commonMain/kotlin/com/notkamui/keval/KevalNumber.kt) to produce a [`CompiledExpression<N>`](src/commonMain/kotlin/com/notkamui/keval/CompiledExpression.kt) that can be evaluated repeatedly:
+
+```Kotlin
+val keval = Keval.create(KevalNumbers.real) { includeDefault() }
+val expr = keval.compile("2 + rate * hours")
+expr.eval(mapOf("rate" to 25.0, "hours" to 8.0)) // 202.0
+expr.variables // setOf("rate", "hours")
+```
+
+### Variables
+
+Identifiers that are not operators, functions, or constants are treated as variables. Constants and functions take precedence over variable names with the same spelling.
+
+```Kotlin
+val keval = Keval.create(KevalNumbers.real) { includeDefault() }
+keval.eval("x + y", mapOf("x" to 3.0, "y" to 7.0)) // 10.0
+keval.compile("x(y + 1)").eval(mapOf("x" to 2.0, "y" to 2.0)) // implicit mul: 6.0
+```
+
+Unresolved variables throw [`KevalUnresolvedVariableException`](src/commonMain/kotlin/com/notkamui/keval/KevalException.kt).
+
+### Non-throwing evaluation
+
+[`evalOrNull`](src/commonMain/kotlin/com/notkamui/keval/Keval.kt) and [`evalResult`](src/commonMain/kotlin/com/notkamui/keval/Keval.kt) catch [`KevalException`](src/commonMain/kotlin/com/notkamui/keval/KevalException.kt) only (not arbitrary throwables). The same variants exist on [`CompiledExpression`](src/commonMain/kotlin/com/notkamui/keval/CompiledExpression.kt) and as `String.kevalOrNull()` / `String.kevalResult()` for `Double`.
+
+### BigDecimal (JVM only)
+
+On the JVM artifact, [KevalNumberBigDecimal](src/jvmMain/kotlin/com/notkamui/keval/KevalNumberBigDecimal.kt) provides a reduced default set (arithmetic, comparison, aggregates, rounding — no trig/log/random). Decimal comparison operators (`eq`, `ne`, `gt`, …) use numeric equality via `compareTo`, not scale equality. Other targets continue to use `Double` through `commonMain`.
+
+```Kotlin
+"0.1 + 0.2".kevalBigDecimal() // BigDecimal("0.3")
+
+Keval.create(KevalNumbers.BigDecimal) {
+    includeDefault()
+}.eval("sum(1, 2, 3)")
+
+// Configurable precision
+val lowPrecision = KevalNumberBigDecimal.withContext(MathContext(4))
+Keval.create(lowPrecision) { includeDefault() }.eval("1 / 3") // 0.3333
+```
+
+#### BigDecimal on Android
+
+The JVM `jvmMain` artifact (including `KevalNumberBigDecimal`) is not on the Android classpath. Android apps can still use `Double` via `KevalNumbers.real` from `commonMain`. For `BigDecimal` on Android, implement [`KevalNumber<BigDecimal>`](src/commonMain/kotlin/com/notkamui/keval/KevalNumber.kt) locally — copy or adapt the defaults from [KevalNumberBigDecimal](src/jvmMain/kotlin/com/notkamui/keval/KevalNumberBigDecimal.kt) using `java.math.BigDecimal`.
+
+### Migrating from v1.x
+
+| v1.x | v2.x |
+|---|---|
+| `Keval.create { includeDefault() }` | `Keval.create(KevalNumbers.real) { includeDefault() }` |
+| `(Double, Double) -> Double` operators | `(N, N) -> N` |
+| `(DoubleArray) -> Double` functions | `(List<N>) -> N` |
+| `KevalBuilder.DEFAULT_RESOURCES` | `KevalNumbers.real.defaultResources()` |
+
+`String.keval()` and `Keval.eval(expr)` are unchanged for `Double`.
+
 ## Error Handling
 
 In case of an error, Keval will throw one of several `KevalException`s:
@@ -268,19 +347,17 @@ In case of an error, Keval will throw one of several `KevalException`s:
 - `KevalZeroDivisionException` in the case a zero division occurs
 - `KevalInvalidArgumentException` in the case a operator or function is called with an invalid argument (i.e. a negative number
   for a factorial)
-- `KevalInvalidExpressionException` if the expression is invalid, with the following properties:
+- `KevalInvalidExpressionException` if the expression is invalid (sealed; includes malformed syntax), with the following properties:
   - `expression` contains the fully sanitized expression
   - `position` is an estimate of the position of the error
 - `KevalInvalidSymbolException` if the expression contains an invalid operator, with the following properties:
   - `invalidSymbol` contains the actual invalid operator
   - `expression` contains the fully sanitized expression
   - `position` is an estimate of the position of the error
+- `KevalUnresolvedVariableException` if a variable is used without a binding
 - `KevalDSLException` if, in the DSL, one of the field is either not set, or doesn't follow its restrictions (defined
   above)
 
-`KevalZeroDivisionException` and `KevalInvalidArgumentException` are instantiable so that you can throw them when
-implementing a custom operator/function.
+`KevalZeroDivisionException`, `KevalInvalidArgumentException`, and `KevalUnresolvedVariableException` are instantiable so that you can throw them when implementing a custom operator/function.
 
-## Future Plans
-
-- Support for variables (will produce a `DoubleArray` instead of a single `Double`)
+Use `evalOrNull` / `evalResult` (or `String.kevalOrNull()` / `String.kevalResult()` for `Double`) when you prefer not to catch exceptions manually.
