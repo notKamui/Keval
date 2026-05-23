@@ -2,7 +2,7 @@
 
 ***A Kotlin Multiplatform mini library for string evaluation***
 
-[![Kotlin](https://img.shields.io/badge/Kotlin-1.9.22-7f52ff.svg)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7f52ff.svg)](https://kotlinlang.org)
 [![Maven Central](https://img.shields.io/maven-central/v/com.notkamui.libs/keval.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/com.notkamui.libs/keval)
 
 (You may need to watch out using it:
@@ -20,7 +20,7 @@ Maven
   <dependency>
     <groupId>com.notkamui.libs</groupId>
     <artifactId>keval</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
   </dependency>
 </dependencies>
 ```
@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-  implementation("com.notkamui.libs:keval:1.1.1")
+  implementation("com.notkamui.libs:keval:1.2.0")
 }
 ```
 
