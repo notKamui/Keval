@@ -1,3 +1,17 @@
+## [1.2.0]
+
+### Added
+
+### Changed
+
+#### Non-breaking
+
+#### Breaking
+
+### Fixed
+
+- Publishing
+
 ## [1.1.1]
 
 ### Added

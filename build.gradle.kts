@@ -13,8 +13,9 @@ plugins {
     id("com.vanniktech.maven.publish") version "0.36.0"
 }
 
+val artifactId = "keval"
 group = "com.notkamui.libs"
-version = "1.1.1"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -22,11 +23,14 @@ repositories {
 
 kotlin {
     jvm()
+
     js(IR) {
         nodejs()
         browser()
     }
+
     linuxX64()
+
     mingwX64()
 
     macosArm64()
@@ -61,7 +65,7 @@ tasks {
 }
 
 mavenPublishing {
-    coordinates(group.toString(), "keval", version.toString())
+    coordinates(group.toString(), artifactId, version.toString())
 
     publishToMavenCentral()
 
@@ -83,7 +87,7 @@ mavenPublishing {
             developer {
                 id.set("notKamui")
                 name.set("Jimmy Teillard")
-                email.set("jimmy.teillard@notkamui.com")
+                email.set("jimmy.teillard@proton.me")
             }
         }
         scm {
