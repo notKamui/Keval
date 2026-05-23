@@ -7,7 +7,10 @@ import kotlin.jvm.JvmStatic
  * Main class for evaluating mathematical expressions.
  * It can be customized with additional operators, functions, and constants.
  */
-class Keval internal constructor(private val resources: Map<String, KevalOperator>) {
+class Keval<N> internal constructor(
+    private val number: KevalNumber<N>,
+    private val resources: Map<String, KevalOperator<N>>
+) {
 
     /**
      * Creates a new instance which contains a binary operator.
@@ -23,8 +26,8 @@ class Keval internal constructor(private val resources: Map<String, KevalOperato
         symbol: Char,
         precedence: Int,
         isLeftAssociative: Boolean,
-        implementation: (Double, Double) -> Double
-    ): Keval = KevalBuilder(resources)
+        implementation: (N, N) -> N
+    ): Keval<N> = KevalBuilder(number, resources)
         .binaryOperator {
             this.symbol = symbol
             this.precedence = precedence
@@ -46,8 +49,8 @@ class Keval internal constructor(private val resources: Map<String, KevalOperato
     fun withUnaryOperator(
         symbol: Char,
         isPrefix: Boolean,
-        implementation: (Double) -> Double
-    ): Keval = KevalBuilder(resources)
+        implementation: (N) -> N
+    ): Keval<N> = KevalBuilder(number, resources)
         .unaryOperator {
             this.symbol = symbol
             this.isPrefix = isPrefix
@@ -67,8 +70,8 @@ class Keval internal constructor(private val resources: Map<String, KevalOperato
     fun withFunction(
         name: String,
         arity: Int? = null,
-        implementation: (DoubleArray) -> Double
-    ): Keval = KevalBuilder(resources)
+        implementation: (List<N>) -> N
+    ): Keval<N> = KevalBuilder(number, resources)
         .function {
             this.name = name
             this.arity = arity
@@ -86,8 +89,8 @@ class Keval internal constructor(private val resources: Map<String, KevalOperato
      */
     fun withConstant(
         name: String,
-        value: Double
-    ): Keval = KevalBuilder(resources)
+        value: N
+    ): Keval<N> = KevalBuilder(number, resources)
         .constant {
             this.name = name
             this.value = value
@@ -99,7 +102,7 @@ class Keval internal constructor(private val resources: Map<String, KevalOperato
      *
      * @return This Keval instance.
      */
-    fun withDefault(): Keval = KevalBuilder(resources).includeDefault().build()
+    fun withDefault(): Keval<N> = KevalBuilder(number, resources).includeDefault().build()
 
     /**
      * Evaluates a mathematical expression.
@@ -112,33 +115,39 @@ class Keval internal constructor(private val resources: Map<String, KevalOperato
      */
     fun eval(
         mathExpression: String,
-    ): Double {
+    ): N {
         val operators = resourcesView()
-        return mathExpression.toAST(operators).eval()
+        return mathExpression.toAST(number, operators).eval()
     }
 
     /**
      * Returns the resources of this [Keval] instance.
      * The tokenizer assumes multiplication, hence disallowing overriding `*` operator
      */
-    fun resourcesView(): Map<String, KevalOperator> =
-        resources + ("*" to KevalBinaryOperator(3, true) { a, b -> a * b })
+    fun resourcesView(): Map<String, KevalOperator<N>> =
+        resources + ("*" to requireNotNull(number.defaultResources()["*"]) {
+            "Number type must define a default * operator"
+        })
 
     companion object {
 
         /**
          * Creates a new instance of [Keval] with the provided resources.
          *
+         * @param number The numeric type context for parsing and default resources.
          * @param generator A lambda function that configures a KevalBuilder instance.
          * @return The new instance of Keval.
          * @throws KevalDSLException If one of the fields isn't set properly.
          */
         @JvmStatic
-        fun create(generator: KevalBuilder.() -> Unit = { includeDefault() }): Keval =
-            KevalBuilder().apply(generator).build()
+        fun <N> create(
+            number: KevalNumber<N>,
+            generator: KevalBuilder<N>.() -> Unit = { includeDefault() }
+        ): Keval<N> =
+            KevalBuilder(number).apply(generator).build()
 
         /**
-         * Evaluates a mathematical expression using the default resources.
+         * Evaluates a mathematical expression using the default Double resources.
          *
          * @param mathExpression The mathematical expression to evaluate.
          * @return The result of the evaluation.
@@ -150,7 +159,7 @@ class Keval internal constructor(private val resources: Map<String, KevalOperato
         @JvmStatic
         fun eval(
             mathExpression: String,
-        ): Double = mathExpression.toAST(KevalBuilder.DEFAULT_RESOURCES).eval()
+        ): Double = create(KevalNumbers.Double) { includeDefault() }.eval(mathExpression)
     }
 }
 
@@ -166,8 +175,8 @@ class Keval internal constructor(private val resources: Map<String, KevalOperato
  * @throws KevalDSLException If one of the fields isn't set properly.
  */
 fun String.keval(
-    generator: KevalBuilder.() -> Unit
-): Double = KevalBuilder().apply(generator).build().eval(this)
+    generator: KevalBuilder<Double>.() -> Unit
+): Double = Keval.create(KevalNumbers.Double, generator).eval(this)
 
 /**
  * Evaluates a mathematical expression using the default resources.
@@ -178,4 +187,4 @@ fun String.keval(
  * @throws KevalInvalidExpressionException If the expression is invalid (i.e., mismatched parentheses).
  * @throws KevalZeroDivisionException If a division by zero occurs.
  */
-fun String.keval(): Double = Keval.eval(this)
+fun String.keval(): Double = KevalNumbers.Double.eval(this)

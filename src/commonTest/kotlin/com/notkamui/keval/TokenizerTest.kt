@@ -14,7 +14,7 @@ class TokenizerTest {
      */
     @Test
     fun parseString() {
-        val operators = KevalBuilder.DEFAULT_RESOURCES.plus(
+        val operators = KevalNumbers.Double.defaultResources().plus(
             listOf(
                 "A_1a2b3c" to KevalConstant(1.2),
                 "A_a1b2c3" to KevalConstant(2.3),
@@ -25,7 +25,7 @@ class TokenizerTest {
                 "__A" to KevalConstant(7.8),
             )
         )
-        val tokens = "((34+8)/3)+3.3*(5+2)%2^6+A_1a2b3c^4.2+A_a1b2c3/4.2-A1_1A_A1_AB_AB_12%4.2+A__B-A__+_A-__A".tokenize(operators)
+        val tokens = "((34+8)/3)+3.3*(5+2)%2^6+A_1a2b3c^4.2+A_a1b2c3/4.2-A1_1A_A1_AB_AB_12%4.2+A__B-A__+_A-__A".tokenize(KevalNumbers.Double, operators)
         assertEquals(
             listOf(
                 "(",
@@ -73,7 +73,7 @@ class TokenizerTest {
             tokens
         )
 
-        val tokens2 = "(3+4 ) (2-5) ".tokenize(operators) // check auto mul
+        val tokens2 = "(3+4 ) (2-5) ".tokenize(KevalNumbers.Double, operators) // check auto mul
         assertEquals(
             listOf("(", "3", "+", "4", ")", "*", "(", "2", "-", "5", ")"),
             tokens2
@@ -81,7 +81,7 @@ class TokenizerTest {
 
         assertTrue {
             try {
-                "(37+4)a+5".tokenize(operators)
+                "(37+4)a+5".tokenize(KevalNumbers.Double, operators)
                 false
             } catch (e: KevalInvalidSymbolException) {
                 e.invalidSymbol == "a" && e.position == 6 && e.expression == "(37+4)a+5"
@@ -91,7 +91,7 @@ class TokenizerTest {
 
     @Test
     fun checkRepeatingParentheses() {
-        val k = Keval.create {
+        val k = Keval.create(KevalNumbers.Double) {
             includeDefault()
             function {
                 name = "f"
@@ -100,13 +100,13 @@ class TokenizerTest {
             }
         }
 
-        val nodes = "f(((1)))".tokenize(k.resourcesView())
+        val nodes = "f(((1)))".tokenize(KevalNumbers.Double, k.resourcesView())
         assertEquals("f(((1)))", nodes.joinToString(separator = ""))
     }
 
     @Test
     fun checkNestedFunctions() {
-        val k = Keval.create {
+        val k = Keval.create(KevalNumbers.Double) {
             includeDefault()
             function {
                 name = "f"
@@ -124,7 +124,7 @@ class TokenizerTest {
             }
         }
 
-        val nodes = "f(s(a(1,2),3))".tokenize(k.resourcesView())
+        val nodes = "f(s(a(1,2),3))".tokenize(KevalNumbers.Double, k.resourcesView())
         assertEquals("f(s(a(1,2),3))", nodes.joinToString(separator = ""))
     }
 }

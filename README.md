@@ -20,7 +20,7 @@ Maven
   <dependency>
     <groupId>com.notkamui.libs</groupId>
     <artifactId>keval</artifactId>
-    <version>1.2.0</version>
+    <version>2.0.0</version>
   </dependency>
 </dependencies>
 ```
@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-  implementation("com.notkamui.libs:keval:1.2.0")
+  implementation("com.notkamui.libs:keval:2.0.0")
 }
 ```
 
@@ -147,7 +147,7 @@ Keval.eval("(3+4)(2/8 * 5) % PI") // uses default resources
 
 "(3+4)(2/8 * 5) % PI".keval() // extension ; uses default resources
 
-Keval.create { // builder instance
+Keval.create(KevalNumbers.Double) { // builder instance
     includeDefault() // this function includes the built-in resources
     
     binaryOperator { // this function adds a binary operator ; you can call it several times
@@ -220,8 +220,7 @@ many `eval` as you need.
 In concordance with creating a Keval instance, you can also add resources like this:
 
 ```Kotlin
-val kvl = Keval().create {}
-    .withDefault() // includes default resources // it is unnecessary here since Keval() with no DSL already does it
+val kvl = Keval.create(KevalNumbers.Double) { includeDefault() }
     .withBinaryOperator( // includes a new binary operator
         ';', // symbol
         3, // precedence
@@ -260,6 +259,47 @@ operator to
 ```
 
 In addition, the symbols `(`,`)`,`,` are reserved and trying to create operator using one of those symbols will result with an exception.
+
+## Generic number types
+
+Keval is generic over the numeric result type via [KevalNumber](src/commonMain/kotlin/com/notkamui/keval/KevalNumber.kt). The default is [Double](src/commonMain/kotlin/com/notkamui/keval/KevalNumberDouble.kt) on all platforms (JVM, JS, Native, Android via `commonMain`).
+
+```Kotlin
+// Custom numeric type: implement KevalNumber and pass it to Keval.create
+Keval.create(myNumber) {
+    includeDefault()
+    function {
+        name = "twice"
+        arity = 1
+        implementation = { args -> args[0] + args[0] }
+    }
+}.eval("twice(21)")
+```
+
+Function implementations take `List<N>` instead of `DoubleArray`. The `String.keval()` extension and `Keval.eval(String)` companion remain `Double`-only shortcuts.
+
+### BigDecimal (JVM only)
+
+On the JVM artifact, [KevalNumberBigDecimal](src/jvmMain/kotlin/com/notkamui/keval/KevalNumberBigDecimal.kt) provides a reduced default set (arithmetic, comparison, aggregates, rounding — no trig/log/random). Other targets continue to use `Double` through `commonMain`.
+
+```Kotlin
+"0.1 + 0.2".kevalBigDecimal() // BigDecimal("0.3")
+
+Keval.create(KevalNumbers.BigDecimal) {
+    includeDefault()
+}.eval("sum(1, 2, 3)")
+```
+
+### Migrating from v1.x
+
+| v1.x | v2.x |
+|---|---|
+| `Keval.create { includeDefault() }` | `Keval.create(KevalNumbers.Double) { includeDefault() }` |
+| `(Double, Double) -> Double` operators | `(N, N) -> N` |
+| `(DoubleArray) -> Double` functions | `(List<N>) -> N` |
+| `KevalBuilder.DEFAULT_RESOURCES` | `KevalNumbers.Double.defaultResources()` |
+
+`String.keval()` and `Keval.eval(expr)` are unchanged for `Double`.
 
 ## Error Handling
 

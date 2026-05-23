@@ -3,7 +3,7 @@ package com.notkamui.keval
 /**
  * Represents an operator, may be either a binary operator, a unary operator, a function, or a constant
  */
-sealed interface KevalOperator
+sealed interface KevalOperator<N>
 
 /**
  * Represents a binary operator
@@ -12,21 +12,21 @@ sealed interface KevalOperator
  * @property isLeftAssociative is true if the operator is left associative, false otherwise
  * @property implementation is the actual implementation of the operator
  */
-internal data class KevalBinaryOperator(
+internal data class KevalBinaryOperator<N>(
     val precedence: Int,
     val isLeftAssociative: Boolean,
-    val implementation: (Double, Double) -> Double
-) : KevalOperator
+    val implementation: (N, N) -> N
+) : KevalOperator<N>
 
-internal data class KevalUnaryOperator(
+internal data class KevalUnaryOperator<N>(
     val isPrefix: Boolean,
-    val implementation: (Double) -> Double,
-) : KevalOperator
+    val implementation: (N) -> N,
+) : KevalOperator<N>
 
-internal data class KevalBothOperator(
-    val binary: KevalBinaryOperator,
-    val unary: KevalUnaryOperator,
-) : KevalOperator
+internal data class KevalBothOperator<N>(
+    val binary: KevalBinaryOperator<N>,
+    val unary: KevalUnaryOperator<N>,
+) : KevalOperator<N>
 
 /**
  * Represents a function
@@ -34,33 +34,33 @@ internal data class KevalBothOperator(
  * @property arity is the arity of the function (how many arguments it takes). If null, the function is variadic
  * @property implementation is the actual implementation of the function
  */
-internal data class KevalFunction(
+internal data class KevalFunction<N>(
     val arity: Int?,
-    val implementation: (DoubleArray) -> Double
-) : KevalOperator
+    val implementation: (List<N>) -> N
+) : KevalOperator<N>
 
 /**
  * Represents a constant
  *
  * @property value is the value of the constant
  */
-internal data class KevalConstant(
-    val value: Double
-) : KevalOperator
+internal data class KevalConstant<N>(
+    val value: N
+) : KevalOperator<N>
 
 /**
  * Represents a node in an AST and can evaluate its value
  *
  * Can either be an operator, or a leaf (a value)
  */
-internal interface Node {
+internal interface Node<N> {
     /**
      * Evaluates the value of this node
      *
      * @return the value of the node
      * @throws KevalZeroDivisionException in case of a zero division
      */
-    fun eval(): Double
+    fun eval(): N
 }
 
 /**
@@ -71,26 +71,26 @@ internal interface Node {
  * @property right is its right child
  * @constructor Creates an operator node
  */
-internal data class BinaryOperatorNode(
-    private val left: Node,
-    private val op: (Double, Double) -> Double,
-    private val right: Node
-) : Node {
-    override fun eval(): Double = op(left.eval(), right.eval())
+internal data class BinaryOperatorNode<N>(
+    private val left: Node<N>,
+    private val op: (N, N) -> N,
+    private val right: Node<N>
+) : Node<N> {
+    override fun eval(): N = op(left.eval(), right.eval())
 }
 
-internal data class UnaryOperatorNode(
-    private val op: (Double) -> Double,
-    private val child: Node
-) : Node {
-    override fun eval(): Double = op(child.eval())
+internal data class UnaryOperatorNode<N>(
+    private val op: (N) -> N,
+    private val child: Node<N>
+) : Node<N> {
+    override fun eval(): N = op(child.eval())
 }
 
-internal data class FunctionNode(
-    private val func: (DoubleArray) -> Double,
-    private val children: List<Node>
-) : Node {
-    override fun eval(): Double = func(children.map(Node::eval).toDoubleArray())
+internal data class FunctionNode<N>(
+    private val func: (List<N>) -> N,
+    private val children: List<Node<N>>
+) : Node<N> {
+    override fun eval(): N = func(children.map { it.eval() })
 }
 
 /**
@@ -99,8 +99,8 @@ internal data class FunctionNode(
  * @property value is its value
  * @constructor Creates a value node
  */
-internal data class ValueNode(
-    private val value: Double
-) : Node {
-    override fun eval(): Double = value
+internal data class ValueNode<N>(
+    private val value: N
+) : Node<N> {
+    override fun eval(): N = value
 }

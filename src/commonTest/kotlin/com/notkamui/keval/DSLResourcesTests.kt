@@ -12,7 +12,7 @@ fun hypotenuse(x: Double, y: Double): Double = sqrt(x*x + y*y)
 class DLSTest {
     @Test
     fun checkSimpleDLS() {
-        val kvl = Keval.create {
+        val kvl = Keval.create(KevalNumbers.Double) {
             binaryOperator {
                 symbol = ';'
                 implementation = ::hypotenuse
@@ -42,7 +42,7 @@ class DLSTest {
 
     @Test
     fun checkCombinedDSL() {
-        val kvl = Keval.create {
+        val kvl = Keval.create(KevalNumbers.Double) {
             includeDefault()
             binaryOperator {
                 symbol = ';'
@@ -84,7 +84,7 @@ class DLSTest {
 
     @Test
     fun conflictTests() {
-        val kvl = Keval.create {
+        val kvl = Keval.create(KevalNumbers.Double) {
             function {
                 name = "a"
                 arity = 1
@@ -106,7 +106,7 @@ class DLSTest {
 
     @Test
     fun checkWith() {
-        val kvl = Keval.create()
+        val kvl = Keval.create(KevalNumbers.Double)
             .withDefault()
             .withBinaryOperator(
                 ';',
@@ -152,7 +152,7 @@ class DLSTest {
 
     @Test
     fun checkOrder() {
-        val k = Keval.create {
+        val k = Keval.create(KevalNumbers.Double) {
             includeDefault()
             function {
                 name = "first"
@@ -183,7 +183,7 @@ class DLSTest {
 
     @Test
     fun checkCoherence() {
-        val k = Keval.create {
+        val k = Keval.create(KevalNumbers.Double) {
             includeDefault()
             function {
                 name = "if"
@@ -198,7 +198,7 @@ class DLSTest {
 
     @Test
     fun checkRepeatingParentheses() {
-        val k = Keval.create {
+        val k = Keval.create(KevalNumbers.Double) {
             includeDefault()
             function {
                 name = "f"
@@ -211,7 +211,7 @@ class DLSTest {
 
     @Test
     fun checkFlexibleArity() {
-        val k = Keval.create {
+        val k = Keval.create(KevalNumbers.Double) {
             includeDefault()
             function {
                 name = "sum"
@@ -223,7 +223,7 @@ class DLSTest {
 
     @Test
     fun checkFlexibleArityWithZeroArgs() {
-        val k = Keval.create {
+        val k = Keval.create(KevalNumbers.Double) {
             includeDefault()
             function {
                 name = "sum"
@@ -236,7 +236,7 @@ class DLSTest {
 
     @Test
     fun checkOverrideAnOperatorShouldNotFail() {
-        val k = Keval.create {
+        val k = Keval.create(KevalNumbers.Double) {
             includeDefault()
             binaryOperator {
                 symbol = '+'
@@ -251,7 +251,7 @@ class DLSTest {
     // this test fails due to wrong handling of nested calls
     @Test
     fun checkLogicalOperations() {
-        val k = Keval.create {
+        val k = Keval.create(KevalNumbers.Double) {
             includeDefault()
             function {
                 name = "isPositive"

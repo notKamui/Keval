@@ -1,12 +1,12 @@
 package com.notkamui.keval
 
-private fun String.isDouble(): Boolean = this.toDoubleOrNull() != null
 private fun String.pluralize(count: Int): String = if (count == 1) this else "${this}s"
 
-internal class Parser(
+internal class Parser<N>(
+    private val number: KevalNumber<N>,
     private val tokens: Iterator<String>,
     private val tokensToString: String,
-    private val operators: Map<String, KevalOperator>
+    private val operators: Map<String, KevalOperator<N>>
 ) {
     private var currentTokenOrNull: String? = tokens.next()
     private val currentToken: String
@@ -52,7 +52,7 @@ internal class Parser(
         (it is KevalUnaryOperator && !it.isPrefix) || (it is KevalBothOperator && !it.unary.isPrefix)
     }
 
-    private fun getBinaryOperator(token: String): KevalBinaryOperator = operators[token].let {
+    private fun getBinaryOperator(token: String): KevalBinaryOperator<N> = operators[token].let {
         if (it is KevalBothOperator) {
             it.binary
         } else {
@@ -60,7 +60,7 @@ internal class Parser(
         }
     }
 
-    private fun getUnaryOperator(token: String): KevalUnaryOperator = operators[token].let {
+    private fun getUnaryOperator(token: String): KevalUnaryOperator<N> = operators[token].let {
         if (it is KevalBothOperator) {
             it.unary
         } else {
@@ -68,7 +68,7 @@ internal class Parser(
         }
     }
 
-    private fun handleBinaryOperator(node: Node, minPrecedence: Int): Node {
+    private fun handleBinaryOperator(node: Node<N>, minPrecedence: Int): Node<N> {
         var result = node
         while (currentTokenOrNull != null && isBinaryOrBoth(currentToken)) {
             val op = getBinaryOperator(currentToken)
@@ -80,18 +80,18 @@ internal class Parser(
         return result
     }
 
-    private fun handleUnaryOperator(node: Node? = null): Node {
+    private fun handleUnaryOperator(node: Node<N>? = null): Node<N> {
         val op = getUnaryOperator(currentToken)
         consume(currentToken)
         return UnaryOperatorNode(op.implementation, node ?: primary())
     }
 
-    private fun handleFunction(): Node {
+    private fun handleFunction(): Node<N> {
         val functionName = currentToken
         consume(functionName)
         val op = operators[functionName] as KevalFunction
         consume("(")
-        val args = mutableListOf<Node>()
+        val args = mutableListOf<Node<N>>()
         while (currentTokenOrNull != ")") {
             args.add(expression())
             if (op.arity != null && args.size > op.arity) {
@@ -116,13 +116,13 @@ internal class Parser(
         return FunctionNode(op.implementation, args)
     }
 
-    private fun handleConstant(): Node {
+    private fun handleConstant(): Node<N> {
         val op = operators[currentToken] as KevalConstant
         consume(currentToken)
         return ValueNode(op.value)
     }
 
-    private fun expression(minPrecedence: Int = 0): Node {
+    private fun expression(minPrecedence: Int = 0): Node<N> {
         var node = primary()
         while (currentTokenOrNull != null && isUnaryOrBothPostfix(currentToken)) {
             node = handleUnaryOperator(node)
@@ -131,7 +131,7 @@ internal class Parser(
         return node
     }
 
-    private fun primary(): Node {
+    private fun primary(): Node<N> {
         if (currentTokenOrNull != null && isUnaryOrBothPrefix(currentToken)) {
             return handleUnaryOperator()
         } else if (currentTokenOrNull == "(") {
@@ -148,7 +148,7 @@ internal class Parser(
             }
         }
         val token = currentToken
-        if (!token.isDouble()) {
+        if (!number.isValidLiteral(token)) {
             throw KevalInvalidExpressionException(
                 tokensToString,
                 currentPos,
@@ -156,11 +156,10 @@ internal class Parser(
             )
         }
         consume(currentToken)
-        val node = ValueNode(token.toDouble())
-        return node
+        return ValueNode(number.parseLiteral(token))
     }
 
-    fun parse(): Node {
+    fun parse(): Node<N> {
         val node = expression()
         if (currentTokenOrNull != null) {
             throw KevalInvalidExpressionException(
@@ -182,13 +181,16 @@ internal class Parser(
  * @throws KevalInvalidSymbolException if the expression contains an invalid symbol
  * @throws KevalInvalidExpressionException if the expression is invalid (i.e. mismatched parenthesis, missing operand, or empty expression)
  */
-internal fun String.toAST(operators: Map<String, KevalOperator>): Node {
+internal fun <N> String.toAST(
+    number: KevalNumber<N>,
+    operators: Map<String, KevalOperator<N>>,
+): Node<N> {
     if (this.replace("""[()]""".toRegex(), "").isBlank())
         throw KevalInvalidExpressionException("", -1)
 
-    val tokens = this.tokenize(operators)
+    val tokens = this.tokenize(number, operators)
     val tokensToString = tokens.joinToString("")
 
-    val parser = Parser(tokens.iterator(), tokensToString, operators)
+    val parser = Parser(number, tokens.iterator(), tokensToString, operators)
     return parser.parse()
 }
