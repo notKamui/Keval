@@ -63,9 +63,11 @@ Keval has support for all classic unary operators:
 Keval has support for functions of variable arity:
 
 - Negate/Oppose `neg(expr)` (where 'expr' is an expression)
+- Expression sign `sign(expr)` (where 'expr' is an expression)
 - Absolute `abs(expr)` (where 'expr' is an expression)
 - Square root `sqrt(expr)` (where 'expr' is an expression)
 - Cube root `cbrt(expr)` (where 'expr' is an expression)
+- Root of nth power `nthrt(expr_a, expr_pow)` (where 'expr_a' is an expression and 'expr_pow' is target power)
 - Exponential `exp(expr)` (where 'expr' is an expression)
 - Natural logarithm `ln(expr)` (where 'expr' is an expression)
 - Base 10 logarithm `log10(expr)` (where 'expr' is an expression)
@@ -79,6 +81,28 @@ Keval has support for functions of variable arity:
 - Ceiling `ceil(expr)` (where 'expr' is an expression)
 - Floor `floor(expr)` (where 'expr' is an expression)
 - Round `round(expr)` (where 'expr' is an expression)
+- Truncate decimal part `trunc(expr)` (where 'expr' is an expression)
+- Minimal/maximal/average/median value `min(expr...)`/`max(expr...)`/`avg(expr...)`/`median(expr...)` (where 'expr...' is any number of expressions to get results from)
+- Percentile `percentile(expr_perc, expr_a)` (where 'expr_a' is the expression to get percentile from, and 'expr_perc' is the percent value)
+- Random number generator/selector `rand(expr...)` (where 'expr...' is any number of expressions; either generates a random double (zero arguments), or generates a random integer up to expr (one argument), or selects a random value of given arguments (two or more arguments)
+- Random number between 'start' and 'end' with 'step' `randRange(expr_start, expr_end, expr_step)`
+- Built-in boolean operations (0.0 is equivalent to false, anything else is equivalent to true):
+  - Convert to "boolean" form (0/1) `bool(expr)` (where 'expr' is an expression)
+  - Invert `not(bool)` (where 'bool' is a boolean)
+  - And `and(bool...)` (where 'bool...' is any number of booleans)
+  - Not And `nand(bool...)` (where 'bool...' is any number of booleans)
+  - Or `or(bool...)` (where 'bool...' is any number of booleans)
+  - Not Or `nor(bool...)` (where 'bool...' is any number of booleans)
+  - Exclusive Or `xor(bool...)` (where 'bool...' is any number of booleans)
+  - Exlusive Not Or `xnor(bool...)` (where 'bool...' is any number of booleans)
+  - Implies `imply(bool_a, bool_b)` (where 'bool_a' and 'bool_b' are booleans)
+  - Does Not Imply `nimply(bool_a, bool_b)` (where 'bool_a' and 'bool_b' are booleans)
+  - Equals `eq(expr...)` (where 'expr...' is any number of expressions; returns a boolean)
+  - Does Not Equal `ne(expr...)` (where 'expr...' is any number of expressions; returns a boolean)
+  - Greater Than `gt(expr_a, expr_b)` (where 'expr_a' and 'expr_b' are expressions; returns a boolean)
+  - Greater Or Equal To `ge(expr_a, expr_b)` (where 'expr_a' and 'expr_b' are expressions; returns a boolean)
+  - Less Than `lt(expr_a, expr_b)` (where 'expr_a' and 'expr_b' are expressions; returns a boolean)
+  - Less Or Equal To `le(expr_a, expr_b)` (where 'expr_a' and 'expr_b' are expressions; returns a boolean)
 
 Keval has support for constants, it has two built-in constant:
 

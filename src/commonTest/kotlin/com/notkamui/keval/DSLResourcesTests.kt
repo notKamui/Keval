@@ -247,4 +247,46 @@ class DLSTest {
         }
         assertEquals(3.0, k.eval("1+2"), "1+2")
     }
+
+    // this test fails due to wrong handling of nested calls
+    @Test
+    fun checkLogicalOperations() {
+        val k = Keval.create {
+            includeDefault()
+            function {
+                name = "isPositive"
+                arity = 1
+                implementation = { args -> if (args[0] > 0.0) 1.0 else 0.0 }
+            }
+            binaryOperator {
+                symbol = '#'
+                implementation = { a, b -> if (a > b) 1.0 else 0.0 }
+                precedence = 3
+                isLeftAssociative = true
+            }
+        }
+
+        val expr = """
+            and(
+                not(lt(5, 3)),
+                or(
+                    gt(4,2),
+                    xor(
+                        eq(1, 1, 1),
+                        ne(1, 2, 3)
+                    )
+                ),
+                nand(
+                    ge(5, 5),
+                    not(le(3, 4))
+                ),
+                nor(
+                    imply(1, 0),
+                    nimply(1, 1)
+                ),
+                xnor(1, 1)
+            )
+        """.trimIndent()
+        assertEquals(1.0, k.eval(expr), expr)
+    }
 }
