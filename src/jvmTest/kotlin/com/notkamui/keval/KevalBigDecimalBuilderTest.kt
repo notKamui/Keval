@@ -60,7 +60,7 @@ class KevalBigDecimalBuilderTest {
             function {
                 name = "double"
                 arity = 1
-                implementation = { it[0].multiply(BigDecimal.TWO) }
+                implementation = { it[0].multiply(BigDecimal(2)) }
             }
         }
         assertEquals(BigDecimal("42"), kvl.eval("double(21)"))
@@ -82,7 +82,7 @@ class KevalBigDecimalBuilderTest {
     fun withMethodsChain() {
         val kvl = Keval.create(KevalNumbers.BigDecimal) { includeDefault() }
             .withConstant("PHI", BigDecimal("1.618"))
-            .withFunction("twice", 1) { it[0].multiply(BigDecimal.TWO) }
+            .withFunction("twice", 1) { it[0].multiply(BigDecimal(2)) }
 
         assertDecimalEquals("3.236", kvl.eval("twice(PHI)"))
     }
