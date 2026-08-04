@@ -50,7 +50,9 @@ private fun <N> Sequence<String>.normalizeTokens(
 
             token == ")" -> TokenType.RPAREN.also {
                 if (functionAtCount.last() == parenthesesCount) {
-                    functionAtCount.removeLast()
+                    // Avoid removeLast(): it can bind to java.util.List.removeLast (API 35+)
+                    // and crash with NoSuchMethodError on older Android when closing a function call.
+                    functionAtCount.removeAt(functionAtCount.lastIndex)
                 }
                 parenthesesCount -= 1
                 ret.add(token)
