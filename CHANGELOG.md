@@ -1,3 +1,9 @@
+## [2.0.1]
+
+### Fixed
+
+- Android crash when evaluating function calls (`ln(1)`, `cos(0)`, …): `Tokenizer` used `MutableList.removeLast()`, which can resolve to `java.util.List.removeLast()` (Android 15 / API 35+) and throw `NoSuchMethodError` on older devices. Replaced with `removeAt(lastIndex)`. ([#68](https://github.com/notKamui/Keval/issues/68))
+
 ## [2.0.0]
 
 ### Added
