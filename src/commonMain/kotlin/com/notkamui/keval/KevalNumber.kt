@@ -1,7 +1,7 @@
 package com.notkamui.keval
 
 /**
- * Parses string literals into values of type [N].
+ * Parses numeric literals in expressions into values of type [N].
  */
 interface KevalLiteralParser<N> {
     fun isValidLiteral(token: String): Boolean
@@ -9,26 +9,29 @@ interface KevalLiteralParser<N> {
 }
 
 /**
- * Provides built-in operators, functions, and constants for a numeric type.
+ * Built-in operators, functions, and constants loaded by [KevalBuilder.includeDefault].
+ *
+ * Prefer building the map with [kevalResources].
  */
 interface KevalDefaults<N> {
     fun defaultResources(): Map<String, KevalOperator<N>>
 }
 
 /**
- * Describes how a numeric type is parsed, multiplied (for implicit `*`), and which defaults are available.
+ * Hooks Keval needs for a numeric type: parsing literals, multiplication, and optional defaults.
  */
 interface KevalNumber<N> : KevalLiteralParser<N>, KevalDefaults<N> {
-    /** Used for implicit and explicit multiplication; cannot be overridden by consumers. */
+    /** Multiplication for `*` and for implicit products such as `(2)(3)`. */
     fun multiply(a: N, b: N): N
 }
 
 typealias KevalReal = Keval<Double>
 
 /**
- * Entry points for built-in numeric type implementations.
+ * Built-in [KevalNumber] implementations.
  */
 object KevalNumbers {
+    /** Default `Double` number type (all platforms). */
     val real: KevalNumber<Double> = KevalNumberDouble
 
     internal val defaultRealKeval: Keval<Double> by lazy {
@@ -48,7 +51,7 @@ fun <N> KevalNumber<N>.eval(expression: String): N =
     }
 
 /**
- * Evaluates [expression] using the given [number] context and optional [configure] block.
+ * Evaluates this expression using [number] and an optional [configure] block.
  */
 fun <N> String.evalWith(
     number: KevalNumber<N>,
@@ -56,7 +59,7 @@ fun <N> String.evalWith(
 ): N = Keval.create(number, configure).eval(this)
 
 /**
- * Compiles [expression] using the given [number] context and optional [configure] block.
+ * Compiles this expression using [number] and an optional [configure] block.
  */
 fun <N> String.compileWith(
     number: KevalNumber<N>,
