@@ -3,45 +3,21 @@ package com.notkamui.keval
 /**
  * Builds a [Keval] instance with custom operators, functions, and constants.
  *
- * Resource registration is shared with [kevalResources] via [KevalResourcesBuilder].
+ * Resource registration is delegated to [KevalResourcesBuilder] via [KevalResourcesDsl].
  */
-class KevalBuilder<N> internal constructor(
+class KevalBuilder<N> private constructor(
     private val number: KevalNumber<N>,
-    baseResources: Map<String, KevalOperator<N>> = mapOf(),
-) {
-    private val resourcesBuilder = KevalResourcesBuilder(baseResources)
+    private val resourcesBuilder: KevalResourcesBuilder<N>,
+) : KevalResourcesDsl<N> by resourcesBuilder {
+
+    internal constructor(
+        number: KevalNumber<N>,
+        baseResources: Map<String, KevalOperator<N>> = mapOf(),
+    ) : this(number, KevalResourcesBuilder(baseResources))
 
     /** Includes the number type's [KevalDefaults.defaultResources]. */
     fun includeDefault(): KevalBuilder<N> = apply {
         resourcesBuilder.addAll(number.defaultResources())
-    }
-
-    /** Defines a binary operator for the current Keval instance. */
-    fun binaryOperator(
-        definition: KevalResourcesBuilder.BinaryOperator<N>.() -> Unit,
-    ): KevalBuilder<N> = apply {
-        resourcesBuilder.binaryOperator(definition)
-    }
-
-    /** Defines a unary operator for the current Keval instance. */
-    fun unaryOperator(
-        definition: KevalResourcesBuilder.UnaryOperator<N>.() -> Unit,
-    ): KevalBuilder<N> = apply {
-        resourcesBuilder.unaryOperator(definition)
-    }
-
-    /** Defines a function for the current Keval instance. */
-    fun function(
-        definition: KevalResourcesBuilder.Function<N>.() -> Unit,
-    ): KevalBuilder<N> = apply {
-        resourcesBuilder.function(definition)
-    }
-
-    /** Defines a constant for the current Keval instance. */
-    fun constant(
-        definition: KevalResourcesBuilder.Constant<N>.() -> Unit,
-    ): KevalBuilder<N> = apply {
-        resourcesBuilder.constant(definition)
     }
 
     /** Builds the [Keval] instance with the defined resources. */

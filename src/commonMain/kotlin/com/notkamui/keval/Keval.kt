@@ -29,48 +29,48 @@ class Keval<N> internal constructor(
         precedence: Int,
         isLeftAssociative: Boolean,
         implementation: (N, N) -> N
-    ): Keval<N> = KevalBuilder(number, resources)
-        .binaryOperator {
+    ): Keval<N> = KevalBuilder(number, resources).apply {
+        binaryOperator {
             this.symbol = symbol
             this.precedence = precedence
             this.isLeftAssociative = isLeftAssociative
             this.implementation = implementation
         }
-        .build()
+    }.build()
 
     fun withUnaryOperator(
         symbol: Char,
         isPrefix: Boolean,
         implementation: (N) -> N
-    ): Keval<N> = KevalBuilder(number, resources)
-        .unaryOperator {
+    ): Keval<N> = KevalBuilder(number, resources).apply {
+        unaryOperator {
             this.symbol = symbol
             this.isPrefix = isPrefix
             this.implementation = implementation
         }
-        .build()
+    }.build()
 
     fun withFunction(
         name: String,
         arity: Int? = null,
         implementation: (List<N>) -> N
-    ): Keval<N> = KevalBuilder(number, resources)
-        .function {
+    ): Keval<N> = KevalBuilder(number, resources).apply {
+        function {
             this.name = name
             this.arity = arity
             this.implementation = implementation
         }
-        .build()
+    }.build()
 
     fun withConstant(
         name: String,
         value: N
-    ): Keval<N> = KevalBuilder(number, resources)
-        .constant {
+    ): Keval<N> = KevalBuilder(number, resources).apply {
+        constant {
             this.name = name
             this.value = value
         }
-        .build()
+    }.build()
 
     fun withDefault(): Keval<N> = KevalBuilder(number, resources).includeDefault().build()
 

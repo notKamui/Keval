@@ -14,22 +14,38 @@ fun <N> kevalResources(definition: KevalResourcesBuilder<N>.() -> Unit): Map<Str
     KevalResourcesBuilder<N>().apply(definition).build()
 
 /**
- * Mutable builder used by [kevalResources] and, internally, by [KevalBuilder].
+ * Shared registration DSL for [KevalResourcesBuilder] and [KevalBuilder].
+ */
+interface KevalResourcesDsl<N> {
+    /** Defines a binary operator. */
+    fun binaryOperator(definition: KevalResourcesBuilder.BinaryOperator<N>.() -> Unit)
+
+    /** Defines a unary operator. */
+    fun unaryOperator(definition: KevalResourcesBuilder.UnaryOperator<N>.() -> Unit)
+
+    /** Defines a function. */
+    fun function(definition: KevalResourcesBuilder.Function<N>.() -> Unit)
+
+    /** Defines a constant. */
+    fun constant(definition: KevalResourcesBuilder.Constant<N>.() -> Unit)
+}
+
+/**
+ * Mutable builder used by [kevalResources] and, as a delegate, by [KevalBuilder].
  *
  * Owns the DSL property-holder types ([BinaryOperator], [UnaryOperator], [Function], [Constant]).
  */
 class KevalResourcesBuilder<N> internal constructor(
     baseResources: Map<String, KevalOperator<N>> = emptyMap(),
-) {
+) : KevalResourcesDsl<N> {
     private val resources: MutableMap<String, KevalOperator<N>> = baseResources.toMutableMap()
 
     /** Adds every entry from [extra] (later keys overwrite earlier ones). */
-    fun addAll(extra: Map<String, KevalOperator<N>>): KevalResourcesBuilder<N> = apply {
+    fun addAll(extra: Map<String, KevalOperator<N>>) {
         resources += extra
     }
 
-    /** Defines a binary operator. */
-    fun binaryOperator(definition: BinaryOperator<N>.() -> Unit): KevalResourcesBuilder<N> = apply {
+    override fun binaryOperator(definition: BinaryOperator<N>.() -> Unit) {
         val op = BinaryOperator<N>().apply(definition)
         addOperator(
             requireBinarySymbol(op.symbol),
@@ -42,8 +58,7 @@ class KevalResourcesBuilder<N> internal constructor(
         )
     }
 
-    /** Defines a unary operator. */
-    fun unaryOperator(definition: UnaryOperator<N>.() -> Unit): KevalResourcesBuilder<N> = apply {
+    override fun unaryOperator(definition: UnaryOperator<N>.() -> Unit) {
         val op = UnaryOperator<N>().apply(definition)
         addOperator(
             requireOperatorSymbol(op.symbol),
@@ -55,15 +70,13 @@ class KevalResourcesBuilder<N> internal constructor(
         )
     }
 
-    /** Defines a function. */
-    fun function(definition: Function<N>.() -> Unit): KevalResourcesBuilder<N> = apply {
+    override fun function(definition: Function<N>.() -> Unit) {
         val fn = Function<N>().apply(definition)
         resources[requireIdentifier(fn.name, "function")] =
             KevalFunction(requireArity(fn.arity), requireProperty(fn.implementation, "implementation"))
     }
 
-    /** Defines a constant. */
-    fun constant(definition: Constant<N>.() -> Unit): KevalResourcesBuilder<N> = apply {
+    override fun constant(definition: Constant<N>.() -> Unit) {
         val const = Constant<N>().apply(definition)
         resources[requireIdentifier(const.name, "constant")] =
             KevalConstant(requireProperty(const.value, "value"))
