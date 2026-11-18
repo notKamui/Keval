@@ -17,22 +17,30 @@ class KevalBuilder<N> internal constructor(
     }
 
     /** Defines a binary operator for the current Keval instance. */
-    fun binaryOperator(definition: BinaryOperatorBuilder<N>.() -> Unit): KevalBuilder<N> = apply {
+    fun binaryOperator(
+        definition: KevalResourcesBuilder.BinaryOperator<N>.() -> Unit,
+    ): KevalBuilder<N> = apply {
         resourcesBuilder.binaryOperator(definition)
     }
 
     /** Defines a unary operator for the current Keval instance. */
-    fun unaryOperator(definition: UnaryOperatorBuilder<N>.() -> Unit): KevalBuilder<N> = apply {
+    fun unaryOperator(
+        definition: KevalResourcesBuilder.UnaryOperator<N>.() -> Unit,
+    ): KevalBuilder<N> = apply {
         resourcesBuilder.unaryOperator(definition)
     }
 
     /** Defines a function for the current Keval instance. */
-    fun function(definition: FunctionBuilder<N>.() -> Unit): KevalBuilder<N> = apply {
+    fun function(
+        definition: KevalResourcesBuilder.Function<N>.() -> Unit,
+    ): KevalBuilder<N> = apply {
         resourcesBuilder.function(definition)
     }
 
     /** Defines a constant for the current Keval instance. */
-    fun constant(definition: ConstantBuilder<N>.() -> Unit): KevalBuilder<N> = apply {
+    fun constant(
+        definition: KevalResourcesBuilder.Constant<N>.() -> Unit,
+    ): KevalBuilder<N> = apply {
         resourcesBuilder.constant(definition)
     }
 
@@ -40,54 +48,70 @@ class KevalBuilder<N> internal constructor(
     fun build(): Keval<N> = Keval(number, resourcesBuilder.build())
 
     /**
-     * Builder representation of a binary operator.
-     *
-     * @property symbol The symbol which represents the operator.
-     * @property precedence The precedence of the operator.
-     * @property isLeftAssociative True when the operator is left associative, false otherwise.
-     * @property implementation The actual implementation of the operator.
+     * @deprecated Use [KevalResourcesBuilder.BinaryOperator].
      */
-    data class BinaryOperatorBuilder<N>(
-        var symbol: Char? = null,
-        var precedence: Int? = null,
-        var isLeftAssociative: Boolean? = null,
-        var implementation: ((N, N) -> N)? = null,
+    @Deprecated(
+        message = "Moved to KevalResourcesBuilder.BinaryOperator",
+        replaceWith = ReplaceWith("KevalResourcesBuilder.BinaryOperator"),
+    )
+    class BinaryOperatorBuilder<N>(
+        symbol: Char? = null,
+        precedence: Int? = null,
+        isLeftAssociative: Boolean? = null,
+        implementation: ((N, N) -> N)? = null,
+    ) : KevalResourcesBuilder.BinaryOperator<N>(
+        symbol,
+        precedence,
+        isLeftAssociative,
+        implementation,
     )
 
     /**
-     * Builder representation of a unary operator.
-     *
-     * @property symbol The symbol which represents the operator.
-     * @property isPrefix True when the operator is prefix, false otherwise.
-     * @property implementation The actual implementation of the operator.
+     * @deprecated Use [KevalResourcesBuilder.UnaryOperator].
      */
-    data class UnaryOperatorBuilder<N>(
-        var symbol: Char? = null,
-        var isPrefix: Boolean? = null,
-        var implementation: ((N) -> N)? = null,
+    @Deprecated(
+        message = "Moved to KevalResourcesBuilder.UnaryOperator",
+        replaceWith = ReplaceWith("KevalResourcesBuilder.UnaryOperator"),
+    )
+    class UnaryOperatorBuilder<N>(
+        symbol: Char? = null,
+        isPrefix: Boolean? = null,
+        implementation: ((N) -> N)? = null,
+    ) : KevalResourcesBuilder.UnaryOperator<N>(
+        symbol,
+        isPrefix,
+        implementation,
     )
 
     /**
-     * Builder representation of a function.
-     *
-     * @property name The identifier which represents the function.
-     * @property arity The arity of the function (how many arguments it takes). If null, the function is variadic.
-     * @property implementation The actual implementation of the function.
+     * @deprecated Use [KevalResourcesBuilder.Function].
      */
-    data class FunctionBuilder<N>(
-        var name: String? = null,
-        var arity: Int? = null,
-        var implementation: ((List<N>) -> N)? = null,
+    @Deprecated(
+        message = "Moved to KevalResourcesBuilder.Function",
+        replaceWith = ReplaceWith("KevalResourcesBuilder.Function"),
+    )
+    class FunctionBuilder<N>(
+        name: String? = null,
+        arity: Int? = null,
+        implementation: ((List<N>) -> N)? = null,
+    ) : KevalResourcesBuilder.Function<N>(
+        name,
+        arity,
+        implementation,
     )
 
     /**
-     * Builder representation of a constant.
-     *
-     * @property name The identifier which represents the constant.
-     * @property value The value of the constant.
+     * @deprecated Use [KevalResourcesBuilder.Constant].
      */
-    data class ConstantBuilder<N>(
-        var name: String? = null,
-        var value: N? = null,
+    @Deprecated(
+        message = "Moved to KevalResourcesBuilder.Constant",
+        replaceWith = ReplaceWith("KevalResourcesBuilder.Constant"),
+    )
+    class ConstantBuilder<N>(
+        name: String? = null,
+        value: N? = null,
+    ) : KevalResourcesBuilder.Constant<N>(
+        name,
+        value,
     )
 }

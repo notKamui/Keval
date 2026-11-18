@@ -16,8 +16,7 @@ fun <N> kevalResources(definition: KevalResourcesBuilder<N>.() -> Unit): Map<Str
 /**
  * Mutable builder used by [kevalResources] and, internally, by [KevalBuilder].
  *
- * DSL property holders remain [KevalBuilder.BinaryOperatorBuilder] et al. so existing
- * public type names stay stable.
+ * Owns the DSL property-holder types ([BinaryOperator], [UnaryOperator], [Function], [Constant]).
  */
 class KevalResourcesBuilder<N> internal constructor(
     baseResources: Map<String, KevalOperator<N>> = emptyMap(),
@@ -30,50 +29,100 @@ class KevalResourcesBuilder<N> internal constructor(
     }
 
     /** Defines a binary operator. */
-    fun binaryOperator(definition: KevalBuilder.BinaryOperatorBuilder<N>.() -> Unit): KevalResourcesBuilder<N> =
-        apply {
-            val op = KevalBuilder.BinaryOperatorBuilder<N>().apply(definition)
-            addOperator(
-                requireBinarySymbol(op.symbol),
-                KevalBinaryOperator(
-                    requirePrecedence(op.precedence),
-                    requireProperty(op.isLeftAssociative, "isLeftAssociative"),
-                    requireProperty(op.implementation, "implementation"),
-                ),
-                isUnary = false,
-            )
-        }
+    fun binaryOperator(definition: BinaryOperator<N>.() -> Unit): KevalResourcesBuilder<N> = apply {
+        val op = BinaryOperator<N>().apply(definition)
+        addOperator(
+            requireBinarySymbol(op.symbol),
+            KevalBinaryOperator(
+                requirePrecedence(op.precedence),
+                requireProperty(op.isLeftAssociative, "isLeftAssociative"),
+                requireProperty(op.implementation, "implementation"),
+            ),
+            isUnary = false,
+        )
+    }
 
     /** Defines a unary operator. */
-    fun unaryOperator(definition: KevalBuilder.UnaryOperatorBuilder<N>.() -> Unit): KevalResourcesBuilder<N> =
-        apply {
-            val op = KevalBuilder.UnaryOperatorBuilder<N>().apply(definition)
-            addOperator(
-                requireOperatorSymbol(op.symbol),
-                KevalUnaryOperator(
-                    requireProperty(op.isPrefix, "isPrefix"),
-                    requireProperty(op.implementation, "implementation"),
-                ),
-                isUnary = true,
-            )
-        }
+    fun unaryOperator(definition: UnaryOperator<N>.() -> Unit): KevalResourcesBuilder<N> = apply {
+        val op = UnaryOperator<N>().apply(definition)
+        addOperator(
+            requireOperatorSymbol(op.symbol),
+            KevalUnaryOperator(
+                requireProperty(op.isPrefix, "isPrefix"),
+                requireProperty(op.implementation, "implementation"),
+            ),
+            isUnary = true,
+        )
+    }
 
     /** Defines a function. */
-    fun function(definition: KevalBuilder.FunctionBuilder<N>.() -> Unit): KevalResourcesBuilder<N> = apply {
-        val fn = KevalBuilder.FunctionBuilder<N>().apply(definition)
+    fun function(definition: Function<N>.() -> Unit): KevalResourcesBuilder<N> = apply {
+        val fn = Function<N>().apply(definition)
         resources[requireIdentifier(fn.name, "function")] =
             KevalFunction(requireArity(fn.arity), requireProperty(fn.implementation, "implementation"))
     }
 
     /** Defines a constant. */
-    fun constant(definition: KevalBuilder.ConstantBuilder<N>.() -> Unit): KevalResourcesBuilder<N> = apply {
-        val const = KevalBuilder.ConstantBuilder<N>().apply(definition)
+    fun constant(definition: Constant<N>.() -> Unit): KevalResourcesBuilder<N> = apply {
+        val const = Constant<N>().apply(definition)
         resources[requireIdentifier(const.name, "constant")] =
             KevalConstant(requireProperty(const.value, "value"))
     }
 
     /** Returns an immutable copy of the registered resources. */
     fun build(): Map<String, KevalOperator<N>> = resources.toMap()
+
+    /**
+     * DSL properties for a binary operator.
+     *
+     * @property symbol The symbol which represents the operator.
+     * @property precedence The precedence of the operator.
+     * @property isLeftAssociative True when the operator is left associative, false otherwise.
+     * @property implementation The actual implementation of the operator.
+     */
+    open class BinaryOperator<N>(
+        var symbol: Char? = null,
+        var precedence: Int? = null,
+        var isLeftAssociative: Boolean? = null,
+        var implementation: ((N, N) -> N)? = null,
+    )
+
+    /**
+     * DSL properties for a unary operator.
+     *
+     * @property symbol The symbol which represents the operator.
+     * @property isPrefix True when the operator is prefix, false otherwise.
+     * @property implementation The actual implementation of the operator.
+     */
+    open class UnaryOperator<N>(
+        var symbol: Char? = null,
+        var isPrefix: Boolean? = null,
+        var implementation: ((N) -> N)? = null,
+    )
+
+    /**
+     * DSL properties for a function.
+     *
+     * @property name The identifier which represents the function.
+     * @property arity The arity of the function (how many arguments it takes). If null, the function is variadic.
+     * @property implementation The actual implementation of the function.
+     */
+    open class Function<N>(
+        var name: String? = null,
+        var arity: Int? = null,
+        var implementation: ((List<N>) -> N)? = null,
+    )
+
+    /**
+     * DSL properties for a constant.
+     *
+     * @property name The identifier which represents the constant.
+     * @property value The value of the constant.
+     */
+    open class Constant<N>(
+        var name: String? = null,
+        var value: N? = null,
+    )
 
     private fun <T> requireProperty(value: T?, name: String): T =
         requireNotNull(value) { "$name is not set" }
