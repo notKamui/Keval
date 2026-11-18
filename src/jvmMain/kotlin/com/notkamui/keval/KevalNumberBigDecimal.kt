@@ -4,6 +4,11 @@ import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
 
+/**
+ * JVM number type for [BigDecimal] evaluation.
+ *
+ * Use [KevalNumbers.BigDecimal] for the default precision, or [withContext] to choose a [MathContext].
+ */
 class KevalNumberBigDecimal private constructor(
     val mathContext: MathContext,
 ) : KevalNumber<BigDecimal> {
@@ -101,6 +106,7 @@ private val defaultBigDecimalKeval: Keval<BigDecimal> by lazy {
     Keval.create(KevalNumbers.BigDecimal) { includeDefault() }
 }
 
+/** Evaluates this expression as [BigDecimal] (JVM). */
 fun String.kevalBigDecimal(
     generator: KevalBuilder<BigDecimal>.() -> Unit = { includeDefault() }
 ): BigDecimal = Keval.create(KevalNumbers.BigDecimal, generator).eval(this)

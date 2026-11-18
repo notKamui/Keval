@@ -14,3 +14,5 @@ out/
 *.rar
 !gradle/wrapper/gradle-wrapper.jar
 .kotlin
+kotlin-js-store
+.openidea
