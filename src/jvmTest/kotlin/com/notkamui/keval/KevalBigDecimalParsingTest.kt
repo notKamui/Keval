@@ -3,6 +3,7 @@ package com.notkamui.keval
 import java.math.BigDecimal
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -33,9 +34,20 @@ class KevalBigDecimalParsingTest {
     }
 
     @Test
+    fun leadingDotDecimal() {
+        assertDecimalEquals("0.8", ".8".evalDecimal())
+        assertDecimalEquals("1.7", ".5 + 1.2".evalDecimal())
+        assertDecimalEquals("0.0005", ".5e-3".evalDecimal())
+        assertDecimalEquals("-0.8", "-.8".evalDecimal())
+        assertDecimalEquals("0.36", "1.2*.3".evalDecimal())
+        assertFailsWith<KevalInvalidSymbolException> { "1.2.3".evalDecimal() }
+    }
+
+    @Test
     fun isValidLiteralAcceptsNumericForms() {
         assertTrue(KevalNumbers.BigDecimal.isValidLiteral("42"))
         assertTrue(KevalNumbers.BigDecimal.isValidLiteral("3.14"))
+        assertTrue(KevalNumbers.BigDecimal.isValidLiteral(".8"))
         assertTrue(KevalNumbers.BigDecimal.isValidLiteral("1e10"))
         assertTrue(KevalNumbers.BigDecimal.isValidLiteral("-2.5"))
     }
@@ -59,6 +71,15 @@ class KevalBigDecimalParsingTest {
             KevalNumberBigDecimal.Default.defaultResources()
         )
         assertEquals(listOf("1e10", "+", "2e-3"), tokens)
+    }
+
+    @Test
+    fun tokenizeLeadingDotDecimal() {
+        val tokens = ".8 + .5e-3".tokenize(
+            KevalNumberBigDecimal.Default,
+            KevalNumberBigDecimal.Default.defaultResources()
+        )
+        assertEquals(listOf(".8", "+", ".5e-3"), tokens)
     }
 
     @Test

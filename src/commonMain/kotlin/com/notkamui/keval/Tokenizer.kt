@@ -28,7 +28,18 @@ private fun <N> Sequence<String>.normalizeTokens(
         prevToken = when {
             token.isNumeric(number) || symbols[token] is KevalConstant || token.isVariableOperand(symbols) ->
                 TokenType.OPERAND.also {
-                    if (shouldAssumeMul(prevToken)) ret.add("*")
+                    if (shouldAssumeMul(prevToken)) {
+                        // Reject glued forms like 1.2.3 (would otherwise become 1.2 * .3)
+                        if (token.isNumeric(number) && token.startsWith(".")) {
+                            throw KevalInvalidSymbolException(
+                                token,
+                                joinToString(""),
+                                currentPos,
+                                "leading-dot decimal cannot follow a value without an operator",
+                            )
+                        }
+                        ret.add("*")
+                    }
                     ret.add(token)
                 }
 
@@ -93,4 +104,4 @@ internal fun <N> String.tokenize(
 private val SANITIZE_REGEX = """\s+""".toRegex()
 
 private val TOKENIZER_REGEX =
-    """(\d+\.\d+(?:[eE][+-]?\d+)?|\d+(?:[eE][+-]?\d+)?|[a-zA-Z_]\w*|[^\w\s])""".toRegex()
+    """(\d*\.\d+(?:[eE][+-]?\d+)?|\d+(?:[eE][+-]?\d+)?|[a-zA-Z_]\w*|[^\w\s])""".toRegex()

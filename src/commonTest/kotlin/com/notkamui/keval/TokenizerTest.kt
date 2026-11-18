@@ -2,6 +2,7 @@ package com.notkamui.keval
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 /**
@@ -98,6 +99,39 @@ class TokenizerTest {
 
         val nodes = "f(((1)))".tokenize(KevalNumbers.real, k.resourcesView())
         assertEquals("f(((1)))", nodes.joinToString(separator = ""))
+    }
+
+    @Test
+    fun tokenizeLeadingDotDecimal() {
+        val operators = KevalNumbers.real.defaultResources()
+        assertEquals(listOf(".8"), ".8".tokenize(KevalNumbers.real, operators))
+        assertEquals(
+            listOf(".5", "+", "1.2"),
+            ".5+1.2".tokenize(KevalNumbers.real, operators),
+        )
+        assertEquals(
+            listOf(".5e-3"),
+            ".5e-3".tokenize(KevalNumbers.real, operators),
+        )
+        assertEquals(
+            listOf("2", "*", "(", ".5", ")"),
+            "2(.5)".tokenize(KevalNumbers.real, operators),
+        )
+        assertEquals(
+            listOf("1.2", "*", ".3"),
+            "1.2*.3".tokenize(KevalNumbers.real, operators),
+        )
+    }
+
+    @Test
+    fun rejectAdjacentLeadingDotDecimal() {
+        val operators = KevalNumbers.real.defaultResources()
+        assertFailsWith<KevalInvalidSymbolException> {
+            "1.2.3".tokenize(KevalNumbers.real, operators)
+        }
+        assertFailsWith<KevalInvalidSymbolException> {
+            "1.2 .3".tokenize(KevalNumbers.real, operators)
+        }
     }
 
     @Test
