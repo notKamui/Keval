@@ -44,7 +44,7 @@ kotlin {
     tvosArm64()
 
     sourceSets {
-        val commonTest by getting {
+        getByName("commonTest") {
             dependencies {
                 implementation(kotlin("test"))
             }
