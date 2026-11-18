@@ -101,7 +101,7 @@ class Keval<N> internal constructor(
     }
 
     /**
-     * Returns the operator resources of this [Keval] instance, including the non-overridable `*` operator.
+     * Operators, functions, and constants available on this instance (including `*`).
      */
     fun resourcesView(): Map<String, KevalOperator<N>> = operators
 

@@ -1,9 +1,9 @@
 package com.notkamui.keval
 
 /**
- * Builds a [Keval] instance with custom operators, functions, and constants.
+ * Configures operators, functions, and constants for a [Keval] instance.
  *
- * Resource registration is delegated to [KevalResourcesBuilder] via [KevalResourcesDsl].
+ * Obtained through [Keval.create]. Supports the same registration DSL as [kevalResources].
  */
 class KevalBuilder<N> private constructor(
     private val number: KevalNumber<N>,
@@ -15,12 +15,12 @@ class KevalBuilder<N> private constructor(
         baseResources: Map<String, KevalOperator<N>> = mapOf(),
     ) : this(number, KevalResourcesBuilder(baseResources))
 
-    /** Includes the number type's [KevalDefaults.defaultResources]. */
+    /** Includes the built-in operators, functions, and constants for this number type. */
     fun includeDefault(): KevalBuilder<N> = apply {
         resourcesBuilder.addAll(number.defaultResources())
     }
 
-    /** Builds the [Keval] instance with the defined resources. */
+    /** Creates a [Keval] instance with the resources registered so far. */
     fun build(): Keval<N> = Keval(number, resourcesBuilder.build())
 
     /**

@@ -1,46 +1,41 @@
 package com.notkamui.keval
 
 /**
- * Builds a [Map] of operators, functions, and constants for [KevalDefaults.defaultResources].
+ * Defines the built-in operators, functions, and constants returned by
+ * [KevalDefaults.defaultResources], using the same DSL as [Keval.create].
  *
- * Concrete [KevalOperator] implementations stay internal; this DSL is the public way to
- * construct them. The non-overridable `*` operator still comes from [KevalNumber.multiply]
- * when a [Keval] instance is built — it does not need to appear in default resources.
- *
- * Binary and unary operators that share a symbol (e.g. `+`, `-`) are merged automatically
- * when both are registered.
+ * Register both a binary and a unary operator under the same symbol (for example `+` or `-`)
+ * when you need both forms. Do not register `*`; implement [KevalNumber.multiply] instead.
  */
 fun <N> kevalResources(definition: KevalResourcesBuilder<N>.() -> Unit): Map<String, KevalOperator<N>> =
     KevalResourcesBuilder<N>().apply(definition).build()
 
 /**
- * Shared registration DSL for [KevalResourcesBuilder] and [KevalBuilder].
+ * DSL for registering operators, functions, and constants — used by [Keval.create] and [kevalResources].
  */
 interface KevalResourcesDsl<N> {
-    /** Defines a binary operator. */
+    /** Adds a binary operator. */
     fun binaryOperator(definition: KevalResourcesBuilder.BinaryOperator<N>.() -> Unit)
 
-    /** Defines a unary operator. */
+    /** Adds a unary operator. */
     fun unaryOperator(definition: KevalResourcesBuilder.UnaryOperator<N>.() -> Unit)
 
-    /** Defines a function. */
+    /** Adds a function. */
     fun function(definition: KevalResourcesBuilder.Function<N>.() -> Unit)
 
-    /** Defines a constant. */
+    /** Adds a constant. */
     fun constant(definition: KevalResourcesBuilder.Constant<N>.() -> Unit)
 }
 
 /**
- * Mutable builder used by [kevalResources] and, as a delegate, by [KevalBuilder].
- *
- * Owns the DSL property-holder types ([BinaryOperator], [UnaryOperator], [Function], [Constant]).
+ * Receiver for [kevalResources]. Prefer calling [kevalResources] rather than constructing this type yourself.
  */
 class KevalResourcesBuilder<N> internal constructor(
     baseResources: Map<String, KevalOperator<N>> = emptyMap(),
 ) : KevalResourcesDsl<N> {
     private val resources: MutableMap<String, KevalOperator<N>> = baseResources.toMutableMap()
 
-    /** Adds every entry from [extra] (later keys overwrite earlier ones). */
+    /** Merges additional operators, functions, and constants (same name overwrites). */
     fun addAll(extra: Map<String, KevalOperator<N>>) {
         resources += extra
     }
@@ -82,16 +77,16 @@ class KevalResourcesBuilder<N> internal constructor(
             KevalConstant(requireProperty(const.value, "value"))
     }
 
-    /** Returns an immutable copy of the registered resources. */
+    /** The operators, functions, and constants registered so far. */
     fun build(): Map<String, KevalOperator<N>> = resources.toMap()
 
     /**
-     * DSL properties for a binary operator.
+     * Settings for a binary operator in the DSL.
      *
-     * @property symbol The symbol which represents the operator.
-     * @property precedence The precedence of the operator.
-     * @property isLeftAssociative True when the operator is left associative, false otherwise.
-     * @property implementation The actual implementation of the operator.
+     * @property symbol Operator symbol (not a letter, digit, `_`, `(`, `)`, or `,`).
+     * @property precedence Priority level (`0` or greater).
+     * @property isLeftAssociative `true` if left-associative.
+     * @property implementation `(left, right) -> result`.
      */
     open class BinaryOperator<N>(
         var symbol: Char? = null,
@@ -101,11 +96,11 @@ class KevalResourcesBuilder<N> internal constructor(
     )
 
     /**
-     * DSL properties for a unary operator.
+     * Settings for a unary operator in the DSL.
      *
-     * @property symbol The symbol which represents the operator.
-     * @property isPrefix True when the operator is prefix, false otherwise.
-     * @property implementation The actual implementation of the operator.
+     * @property symbol Operator symbol (not a letter, digit, `_`, `(`, `)`, or `,`).
+     * @property isPrefix `true` for prefix (e.g. `-x`), `false` for postfix (e.g. `x!`).
+     * @property implementation `(argument) -> result`.
      */
     open class UnaryOperator<N>(
         var symbol: Char? = null,
@@ -114,11 +109,11 @@ class KevalResourcesBuilder<N> internal constructor(
     )
 
     /**
-     * DSL properties for a function.
+     * Settings for a function in the DSL.
      *
-     * @property name The identifier which represents the function.
-     * @property arity The arity of the function (how many arguments it takes). If null, the function is variadic.
-     * @property implementation The actual implementation of the function.
+     * @property name Function name (letter/digit/`_` identifier, not starting with a digit).
+     * @property arity Argument count, or `null` for a variadic function.
+     * @property implementation `(arguments) -> result`.
      */
     open class Function<N>(
         var name: String? = null,
@@ -127,10 +122,10 @@ class KevalResourcesBuilder<N> internal constructor(
     )
 
     /**
-     * DSL properties for a constant.
+     * Settings for a constant in the DSL.
      *
-     * @property name The identifier which represents the constant.
-     * @property value The value of the constant.
+     * @property name Constant name (letter/digit/`_` identifier, not starting with a digit).
+     * @property value Constant value.
      */
     open class Constant<N>(
         var name: String? = null,

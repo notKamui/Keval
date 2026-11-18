@@ -1,8 +1,26 @@
+## [2.1.0]
+
+### Added
+
+- Custom number types can define their built-in operators, functions, and constants with [`kevalResources { … }`](src/commonMain/kotlin/com/notkamui/keval/KevalResources.kt), then load them through `includeDefault()`. ([#70](https://github.com/notKamui/Keval/issues/70))
+
+### Changed
+
+#### Non-breaking
+
+- Existing `Keval.create { … }` / `"…".keval { … }` usage with `binaryOperator`, `unaryOperator`, `function`, and `constant` is unchanged.
+
+#### Breaking
+
+- If you referenced DSL helper types by name, prefer `KevalResourcesBuilder.BinaryOperator`, `UnaryOperator`, `Function`, and `Constant` instead of `KevalBuilder.BinaryOperatorBuilder`, `UnaryOperatorBuilder`, `FunctionBuilder`, and `ConstantBuilder`. The old names remain as deprecated aliases.
+
+This stays a **minor** release: those helper types are almost never named in real usage (the DSL only needs the lambda blocks), so most projects need no code changes.
+
 ## [2.0.1]
 
 ### Fixed
 
-- Android crash when evaluating function calls (`ln(1)`, `cos(0)`, …): `Tokenizer` used `MutableList.removeLast()`, which can resolve to `java.util.List.removeLast()` (Android 15 / API 35+) and throw `NoSuchMethodError` on older devices. Replaced with `removeAt(lastIndex)`. ([#68](https://github.com/notKamui/Keval/issues/68))
+- Android: evaluating function calls such as `ln(1)` or `cos(0)` no longer crashes on devices below API 35. ([#68](https://github.com/notKamui/Keval/issues/68))
 
 ## [2.0.0]
 
