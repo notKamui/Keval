@@ -33,6 +33,18 @@ class GrammarTest {
         }
     }
 
+    @Test
+    fun leadingDotDecimalTest() {
+        assertEquals(0.8, ".8".keval())
+        assertEquals(1.7, ".5 + 1.2".keval())
+        assertEquals(1.0, "2(.5)".keval())
+        assertEquals(0.0005, ".5e-3".keval())
+        assertEquals(-0.8, "-.8".keval())
+        assertEquals(0.36, "1.2*.3".keval())
+        assertFailsWith<KevalInvalidSymbolException> { "1.2.3".keval() }
+        assertFailsWith<KevalInvalidSymbolException> { "1.2 .3".keval() }
+    }
+
     /**
      * Tests Keval on empty expression
      */

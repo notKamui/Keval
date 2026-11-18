@@ -3,6 +3,7 @@
 ### Added
 
 - Custom number types can define their built-in operators, functions, and constants with [`kevalResources { … }`](src/commonMain/kotlin/com/notkamui/keval/KevalResources.kt), then load them through `includeDefault()`. ([#70](https://github.com/notKamui/Keval/issues/70))
+- Decimal literals may omit the leading zero (e.g. `.8`, `.5e-3`). Forms like `1.2.3` are rejected instead of becoming implicit multiplication. ([#71](https://github.com/notKamui/Keval/issues/71))
 
 ### Changed
 
