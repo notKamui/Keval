@@ -2,7 +2,7 @@
 
 ***A Kotlin Multiplatform mini library for string evaluation***
 
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7f52ff.svg)](https://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.4.21-7f52ff.svg)](https://kotlinlang.org)
 [![Maven Central](https://img.shields.io/maven-central/v/com.notkamui.libs/keval.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/com.notkamui.libs/keval)
 
 (You may need to watch out using it:
